@@ -73,6 +73,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 	// japp->RootFillLock(this);
 	//  ... fill historgrams or trees ...
 	// japp->RootFillUnLock(this);
+  vector<const DFCALHit*> FCALHits;
+
+  loop->Get(DFCALHits);
+  
+  
 
 
 	return NOERROR;
@@ -86,6 +91,7 @@ jerror_t JEventProcessor_EventReader::erun(void)
 	// This is called whenever the run number changes, before it is
 	// changed to give you a chance to clean up before processing
 	// events from the next run number.
+
 	return NOERROR;
 }
 
