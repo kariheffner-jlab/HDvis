@@ -6,6 +6,12 @@
 //
 
 #include "JEventProcessor_EventReader.h"
+#include <FCAL/DFCALHit.h>
+#include <FCAL/DFCALDigiHit.h>
+#include <FCAL/DFCALCluster.h>
+#include <FCAL/DFCALShower.h>
+#include <FCAL/DFCALTruthShower.h>
+
 using namespace jana;
 
 
@@ -74,11 +80,20 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 	//  ... fill historgrams or trees ...
 	// japp->RootFillUnLock(this);
   vector<const DFCALHit*> FCALHits;
-
-  loop->Get(DFCALHits);
+  vector<const DFCALDigiHit*> FCALDigiHits;
+  vector<const DFCALCluster*> FCALClusters;
+  vector<const DFCALShower*> FCALShowers;
+  vector<const DFCALTruthShower*> FCALTruthShowers;
   
-  
 
+  loop->Get(FCALHits);
+  loop->Get(FCALDigiHits);
+  loop->Get(FCALClusters);
+  loop->Get(FCALShowers);
+  loop->Get(FCALTruthShowers);
+
+
+  jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
 
 	return NOERROR;
 }
