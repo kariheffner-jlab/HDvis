@@ -8,7 +8,8 @@
 #ifndef _JEventProcessor_EventReader_
 #define _JEventProcessor_EventReader_
 
-#include <JANA/JEventProcessor.h>//"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
+#include <JANA/JEventProcessor.h>
+//"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
 
 class JEventProcessor_EventReader:public jana::JEventProcessor{
 	public:

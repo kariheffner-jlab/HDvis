@@ -1,7 +1,6 @@
 #include <iostream>
 #include "HDvis.h"
-#include "EventReader/JEventProcessor_EventReader.h"
-
+#include "./EventReader/JEventProcessor_EventReader.h"
 
 int main()
 {

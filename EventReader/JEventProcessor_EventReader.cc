@@ -18,6 +18,7 @@ using namespace jana;
 // Routine used to create our JEventProcessor
 #include <JANA/JApplication.h>
 #include <JANA/JFactory.h>
+
 extern "C"{
 void InitPlugin(JApplication *app){
 	InitJANAPlugin(app);
