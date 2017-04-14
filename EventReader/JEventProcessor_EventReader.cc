@@ -86,7 +86,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
   vector<const DFCALShower*> FCALShowers;
   vector<const DFCALTruthShower*> FCALTruthShowers;
   
-
   loop->Get(FCALHits);
   loop->Get(FCALDigiHits);
   loop->Get(FCALClusters);
