@@ -250,3 +250,11 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+\.sconsign\.dblite
+
+EventReader/JEventProcessor_EventReader\.o
+
+EventReader/JEventProcessor_EventReader\.os
+
+EventReader/EventReader\.so
