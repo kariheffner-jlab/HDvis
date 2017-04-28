@@ -1,8 +1,9 @@
-import sys
 import os
  
 jana_home = os.environ['JANA_HOME']
+BMS_OS_Name= os.environ['BMS_OSNAME']
 jana_include = os.path.join(jana_home, 'include')
+hdpmgx_top = os.environ['GLUEX_TOP']
 jana_lib = os.path.join(jana_home, 'lib')
 print(jana_include)
 print(jana_lib)
@@ -10,16 +11,16 @@ print(jana_lib)
 jana_plugin_path = os.environ['JANA_PLUGIN_PATH']
 print(jana_plugin_path)
 
-sim_recon_include = "/home/romanov/gluex/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include"
-sim_recon_lib = "/home/romanov/gluex/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/lib"
+simrecon_include =os.path.join(hdpmgx_top, "sim-recon/master/", BMS_OS_Name, 'include')
+sim_recon_lib = os.path.join(hdpmgx_top, "sim-recon/master/", BMS_OS_Name, 'lib')
 
 ccdb_home = os.environ['CCDB_HOME']
 ccdb_lib = os.path.join(ccdb_home, 'lib')
-print(sim_recon_include)
+print(simrecon_include)
 print()
 print()
 # SConstruct
-env = Environment(CPPPATH=[jana_include, sim_recon_include], CXXFLAGS="-std=c++11")
+env = Environment(CPPPATH=[jana_include, simrecon_include], CXXFLAGS="-std=c++11")
 
 print(WhereIs('root-config'))
 
