@@ -13,6 +13,7 @@
 #include "DANA/DApplication.h"
 using namespace std;
 
+
 typedef void SetTFilePtrAddress_t(TFile **);
 TFile* tfilePtr = NULL;
 string OUTPUT_FILENAME = "hd_root.root";
@@ -69,10 +70,10 @@ void ParseCommandLineArguments(int &narg, char *argv[])
 				Usage();
 				break;
 			case 'D':
-				//toprint.push_back(&argv[i][2]);
+				toprint.push_back(&argv[i][2]);
 				break;
 			case 'A':
-				//ACTIVATE_ALL = 1;
+				ACTIVATE_ALL = 1;
 			case 'o':
 				if(i>=narg-1){
 					cerr<<"\"-o\" requires a filename!"<<endl;
