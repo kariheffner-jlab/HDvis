@@ -9,6 +9,7 @@
 #define _JEventProcessor_EventReader_
 
 #include <JANA/JEventProcessor.h>
+#include <TApplication.h>
 //"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
 
 class JEventProcessor_EventReader:public jana::JEventProcessor{
@@ -16,6 +17,10 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		JEventProcessor_EventReader();
 		~JEventProcessor_EventReader();
 		const char* className(void){return "JEventProcessor_EventReader";}
+		void setRootApplication(TApplication *app)
+		{
+			mApplication = app;
+		}
 
 	private:
 		jerror_t init(void);						///< Called once at program start.
@@ -23,6 +28,7 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		jerror_t evnt(jana::JEventLoop *eventLoop, uint64_t eventnumber);	///< Called every event.
 		jerror_t erun(void);						///< Called everytime run number changes, provided brun has been called.
 		jerror_t fini(void);						///< Called after last event of last event source has been processed.
+		TApplication *mApplication;
 };
 
 #endif // _JEventProcessor_EventReader_
