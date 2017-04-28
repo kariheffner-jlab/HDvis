@@ -11,6 +11,7 @@
 #include <FCAL/DFCALCluster.h>
 #include <FCAL/DFCALShower.h>
 #include <FCAL/DFCALTruthShower.h>
+#include <TBrowser.h>
 
 using namespace jana;
 
@@ -18,6 +19,9 @@ using namespace jana;
 // Routine used to create our JEventProcessor
 #include <JANA/JApplication.h>
 #include <JANA/JFactory.h>
+
+
+
 
 extern "C"{
 void InitPlugin(JApplication *app){
@@ -49,6 +53,7 @@ JEventProcessor_EventReader::~JEventProcessor_EventReader()
 jerror_t JEventProcessor_EventReader::init(void)
 {
 	// This is called once at program startup. 
+
 
 	return NOERROR;
 }
@@ -94,6 +99,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
 
   jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
+
+  TBrowser tb;
+  mApplication->Run();
 
 	return NOERROR;
 }

@@ -8,11 +8,7 @@
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": "",
-                "path": [
-                    "/usr/include",
-                    "/usr/local/include"
-                ]
+                "databaseFilename": ""
             }
         },
         {
@@ -20,18 +16,11 @@
             "includePath": [
                 "/usr/include",
                 "/usr/local/include",
-                "/home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include",
-                "/home/romanov/gluex/root/6.08.06/include"
+                "/home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": "",
-                "path": [
-                    "/usr/include",
-                    "/usr/local/include",
-                    "/home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include",
-                    "/home/romanov/gluex/root/6.08.06/include"
-                ]
+                "databaseFilename": ""
             }
         },
         {
@@ -41,10 +30,7 @@
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": "",
-                "path": [
-                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*"
-                ]
+                "databaseFilename": ""
             }
         }
     ]

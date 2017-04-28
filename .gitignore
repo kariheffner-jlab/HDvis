@@ -252,3 +252,12 @@ paket-files/
 *.sln.iml
 
 \.sconsign\.dblite
+<<<<<<< HEAD
+
+EventReader/JEventProcessor_EventReader\.o
+
+EventReader/JEventProcessor_EventReader\.os
+
+EventReader/EventReader\.so
+=======
+>>>>>>> plugin
