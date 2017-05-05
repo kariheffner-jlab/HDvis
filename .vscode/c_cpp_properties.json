@@ -21,7 +21,9 @@
                 "/usr/include",
                 "/usr/local/include",
                 "/home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include",
-                "/home/tbritton/hdpm/jana/0.7.8/Linux_Ubuntu16.04-x86_64-gcc5.4.0/include",
+                "/home/romanov/gluex/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include",                
+                "/home/tbritton/hdpm/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include",
+                "/home/tbritton/hdpm/jana/0.7.8/Linux_Ubuntu16.04-x86_64-gcc5.4.0/include",                
                 "/home/romanov/gluex/root/6.08.06/include",
                 "/home/tbritton/hdpm/root/6.08.06/include"
             ],
