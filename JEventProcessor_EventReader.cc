@@ -13,6 +13,7 @@
 #include <FCAL/DFCALTruthShower.h>
 #include <TCanvas.h>
 
+
 using namespace jana;
 
 vector<string> toprint;
@@ -49,6 +50,7 @@ void InitPlugin(JApplication *app){
 JEventProcessor_EventReader::JEventProcessor_EventReader()
 {
 ROOTfile = NULL;
+h2=new TH2F("FCAL Hits", "FCAL Hits",100,-50,50,100,-50,50);
 }
 
 //------------------
@@ -197,10 +199,16 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
   jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
 
+  for( uint i=0; i<FCALHits.size(); i++)
+{
+	//std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<std::endl;
+	h2->Fill(FCALHits[i]->x,FCALHits[i]->y);
+}
   //TBrowser tb;
   auto c = new TCanvas("Ha!");
   c->Draw();
 
+  h2->Draw("colz");
   
   mApplication->Run();
 

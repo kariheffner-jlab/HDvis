@@ -9,6 +9,15 @@
 #include <TFile.h>
 #include <TApplication.h>
 
+#include <TSystem.h>
+#include <TEveCalo.h>
+#include <TEveWindow.h>
+#include <TEveManager.h>
+#include <TEveBrowser.h>
+#include <TEveProjectionAxes.h>
+#include <TEveScene.h>
+#include <TEveViewer.h>
+
 #include "EventReader/JEventProcessor_EventReader.h"
 #include "DANA/DApplication.h"
 using namespace std;
@@ -39,10 +48,10 @@ int main(int narg, char *argv[])
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
+	//TEveManager::Create();
 	// Instantiate our event processor
 	JEventProcessor_EventReader *myproc = new JEventProcessor_EventReader();
 	myproc->setRootApplication(gApp);
-
 	
 	
 	// Decide on the output filename
