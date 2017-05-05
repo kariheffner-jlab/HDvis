@@ -21,7 +21,8 @@ using namespace jana;
 #include <JANA/JFactory.h>
 
 
-
+vector<string> toprint;
+bool ACTIVATE_ALL=false;
 
 extern "C"{
 void InitPlugin(JApplication *app){
