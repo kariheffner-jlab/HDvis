@@ -1,0 +1,112 @@
+cmake_minimum_required(VERSION 3.1)
+
+project(EveStandAlone C CXX)
+
+# You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:
+#   - ROOT built with classic configure/make use the provided $ROOTSYS/etc/cmake/FindROOT.cmake
+#   - ROOT built with CMake. Add in CMAKE_PREFIX_PATH the installation prefix for ROOT
+list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
+
+
+
+#---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
+find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve TMVA)
+
+#---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
+include(${ROOT_USE_FILE})
+
+include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
+
+link_directories(
+        /home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/lib
+        /home/romanov/gluex/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/lib
+        /home/romanov/gluex/evio/4.4.6/Linux-x86_64/lib/
+        /home/romanov/gluex/ccdb/1.06.03/lib/
+)
+
+
+add_definitions(${ROOT_CXX_FLAGS})
+#ROOT_GENERATE_DICTIONARY(G__Event Event.h LINKDEF EventLinkDef.h)
+#---Create a shared library with geneated dictionary
+#add_library(Event SHARED Event.cxx G__Event.cxx)
+
+
+include_directories(
+        /home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include/
+        /home/romanov/gluex/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include/
+        EventReader
+)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
+
+set(SOURCE_FILES
+        hd_vis.cpp
+        JEventProcessor_EventReader.cpp)
+
+add_executable(EveStandAlone ${SOURCE_FILES})
+
+target_link_libraries(EveStandAlone
+
+        #sim-recon
+        DANA
+        TTAB
+        AMPTOOLS_AMPS
+        AMPTOOLS_DATAIO
+        AMPTOOLS_MCGEN
+        ANALYSIS
+        BCAL
+        CCAL
+        CDC
+        CERE
+        DAQ
+        DIRC
+        EVENTSTORE
+        FCAL
+        FDC
+        FMWPC
+        gelhad
+        HDDM
+
+        hitutil
+        KINFITTER
+        PAIR_SPECTROMETER
+        PID
+        RF
+        START_COUNTER
+        TAGGER
+        TOF
+        TPOL
+        TRACKING
+        HDGEOMETRY
+        TRIGGER
+        xstream
+
+        ${ROOT_LIBRARIES}
+
+
+
+        #JANA
+        JANA
+        evio
+        evioxx
+
+        # xerces
+        xerces-c-3.1
+
+        # ccdb
+        ccdb
+
+        #xml parsing lib
+        expat
+
+        #system
+        dl
+        z
+        m
+        bz2
+
+        mysqlclient
+        pthread
+        rt
+
+        )
