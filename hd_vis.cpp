@@ -48,7 +48,8 @@ int main(int narg, char *argv[])
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
-	//TEveManager::Create();
+	TEveManager::Create();
+
 	// Instantiate our event processor
 	JEventProcessor_EventReader *myproc = new JEventProcessor_EventReader();
 	myproc->setRootApplication(gApp);
