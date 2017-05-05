@@ -11,6 +11,7 @@
 #include <FCAL/DFCALCluster.h>
 #include <FCAL/DFCALShower.h>
 #include <FCAL/DFCALTruthShower.h>
+#include <TCanvas.h>
 
 using namespace jana;
 
@@ -178,6 +179,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 			}
 		}
 	}
+	
   vector<const DFCALHit*> FCALHits;
   vector<const DFCALDigiHit*> FCALDigiHits;
   vector<const DFCALCluster*> FCALClusters;
@@ -190,8 +192,17 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
   loop->Get(FCALShowers);
   loop->Get(FCALTruthShowers);
 
+  if( FCALHits.size()==0 && FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0)
+  {std::cout<<"skip"<<std::endl;return NOERROR;}
 
   jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
+
+  //TBrowser tb;
+  auto c = new TCanvas("Ha!");
+  c->Draw();
+
+  
+  mApplication->Run();
 
 	return NOERROR;
 }

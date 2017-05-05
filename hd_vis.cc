@@ -34,14 +34,16 @@ int main(int narg, char *argv[])
 	ParseCommandLineArguments(narg, argv);
 
 	// Create ROOT application 
+	// Instantiate an event loop object
+	DApplication app(narg, argv);
+
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
 	// Instantiate our event processor
 	JEventProcessor_EventReader *myproc = new JEventProcessor_EventReader();
 	myproc->setRootApplication(gApp);
 
-	// Instantiate an event loop object
-	DApplication app(narg, argv);
+	
 	
 	// Decide on the output filename
 	DecideOutputFilename();
