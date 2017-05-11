@@ -17,11 +17,14 @@ include(${ROOT_USE_FILE})
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
+
+
+
 link_directories(
-        /home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/lib
-        /home/romanov/gluex/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/lib
-        /home/romanov/gluex/evio/4.4.6/Linux-x86_64/lib/
-        /home/romanov/gluex/ccdb/1.06.03/lib/
+        $ENV{JANA_HOME}/lib
+        $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/lib
+        $ENV{EVIOROOT}/lib
+        $ENV{CCDB_HOME}/lib
 )
 
 
@@ -32,8 +35,8 @@ add_definitions(${ROOT_CXX_FLAGS})
 
 
 include_directories(
-        /home/romanov/gluex/jana/0.7.8/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include/
-        /home/romanov/gluex/sim-recon/master/Linux_LinuxMint18.1-x86_64-gcc5.4.0/include/
+        $ENV{JANA_HOME}/include
+        $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/include
         EventReader
 )
 
@@ -41,6 +44,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 
 set(SOURCE_FILES
         hd_vis.cpp
+        geometry.cpp
         JEventProcessor_EventReader.cpp)
 
 add_executable(EveStandAlone ${SOURCE_FILES})

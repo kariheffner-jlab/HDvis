@@ -16,6 +16,20 @@
 #include <TH2F.h>
 #include <TCanvas.h>
 
+#include <TGLViewer.h>
+#include <TCanvas.h>
+#include <TEveViewer.h>
+#include <TEveGedEditor.h>
+#include <TEveScene.h>
+#include <TEveCaloLegoEditor.h>
+#include <TEveCaloLegoOverlay.h>
+#include <TEveCaloLegoGL.h>
+#include <TEveBrowser.h>
+#include <TEveTrans.h>
+#include <TEveCaloLegoOverlay.h>
+#include <TEveLegoEventHandler.h>
+#include <TGLWidget.h>
+
 //"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
 extern vector<string> toprint;
 extern bool ACTIVATE_ALL;
@@ -30,6 +44,11 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 			mApplication = app;
 		}
 
+		void setCanvas(TCanvas *cnv)
+		{
+			canvas = cnv;
+		}
+
 		typedef struct{
 			string dataClassName;
 			string tag;
@@ -38,7 +57,7 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 
 		TFile *ROOTfile ;
 		TH2F* h2;
-        TCanvas* canvas;
+
 
 
 	private:
@@ -47,7 +66,9 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		jerror_t evnt(jana::JEventLoop *eventLoop, uint64_t eventnumber);	///< Called every event.
 		jerror_t erun(void);						///< Called everytime run number changes, provided brun has been called.
 		jerror_t fini(void);						///< Called after last event of last event source has been processed.
+		TCanvas *canvas;
 		TApplication *mApplication;
+        TEveCaloDataHist* data;
 };
 
 #endif // _JEventProcessor_EventReader_

@@ -11,7 +11,21 @@
 #include <FCAL/DFCALCluster.h>
 #include <FCAL/DFCALShower.h>
 #include <FCAL/DFCALTruthShower.h>
+
+#include <TGLViewer.h>
 #include <TCanvas.h>
+#include <TEveViewer.h>
+#include <TEveGedEditor.h>
+#include <TEveScene.h>
+#include <TEveCaloLegoEditor.h>
+#include <TEveCaloLegoOverlay.h>
+#include <TEveCaloLegoGL.h>
+#include <TEveBrowser.h>
+#include <TEveTrans.h>
+#include <TEveCaloLegoOverlay.h>
+#include <TEveLegoEventHandler.h>
+#include <TGLWidget.h>
+
 
 
 using namespace jana;
@@ -23,18 +37,22 @@ extern string OUTPUT_FILENAME;
 #define ansi_escape		((char)0x1b)
 #define ansi_bold 		ansi_escape<<"[1m"
 #define ansi_black		ansi_escape<<"[30m"
-#define ansi_red			ansi_escape<<"[31m"
+#define ansi_red		ansi_escape<<"[31m"
 #define ansi_green		ansi_escape<<"[32m"
-#define ansi_blue			ansi_escape<<"[34m"
+#define ansi_blue		ansi_escape<<"[34m"
 #define ansi_normal		ansi_escape<<"[0m"
 #define ansi_up(A)		ansi_escape<<"["<<(A)<<"A"
-#define ansi_down(A)		ansi_escape<<"["<<(A)<<"B"
+#define ansi_down(A)	ansi_escape<<"["<<(A)<<"B"
 #define ansi_forward(A)	ansi_escape<<"["<<(A)<<"C"
-#define ansi_back(A)		ansi_escape<<"["<<(A)<<"D"
+#define ansi_back(A)	ansi_escape<<"["<<(A)<<"D"
 
 // Routine used to create our JEventProcessor
 #include <JANA/JApplication.h>
 #include <JANA/JFactory.h>
+#include <TEveCaloData.h>
+#include <TEveManager.h>
+
+
 
 extern "C"{
 void InitPlugin(JApplication *app){
@@ -52,10 +70,49 @@ JEventProcessor_EventReader::JEventProcessor_EventReader()
     ROOTfile = NULL;
     h2=new TH2F("FCAL Hits", "FCAL Hits",100,-50,50,100,-50,50);
 
-    canvas = new TCanvas("Ha!");
-    canvas->Draw();
+    data = new TEveCaloDataHist();
+    data->AddHistogram(h2);
+    data->RefSliceInfo(0).Setup("FCAL", 0.3, kBlue);
 
-    h2->Draw("colz");
+
+    gEve->AddToListTree(data, kFALSE);
+
+    TEveWindowSlot* slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+    TEveViewer* v = new TEveViewer("Viewer");
+    v->SpawnGLViewer(gEve->GetEditor());
+    slot->ReplaceWindow(v);
+    gEve->GetViewers()->AddElement(v);
+    TEveScene* s = gEve->SpawnNewScene("Scene");
+    v->AddScene(s);
+
+
+
+    v->SetElementName("Viewer - Lego");
+    s->SetElementName("Scene - Lego");
+
+
+    TEveCaloLego* lego = new TEveCaloLego(data);
+
+    s->AddElement(lego);
+
+    // By the default lego extends is (1x1x1). Resize it to put in 'natural'
+    // coordinates, so that y extend in 2*Pi and set height of lego two times
+    //  smaller than y extend to have better view in 3D perspective.
+    lego->InitMainTrans();
+    lego->RefMainTrans().SetScale(TMath::TwoPi(), TMath::TwoPi(), TMath::Pi());
+
+    // draws scales and axis on borders of window
+    TGLViewer* glv = v->GetGLViewer();
+    TEveCaloLegoOverlay* overlay = new TEveCaloLegoOverlay();
+    glv->AddOverlayElement(overlay);
+    overlay->SetCaloLego(lego);
+
+    // set event handler to move from perspective to orthographic view.
+    glv->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
+    glv->SetEventHandler
+            (new TEveLegoEventHandler(glv->GetGLWidget(), glv, lego));
+    gEve->AddToListTree(lego, kTRUE);
+
 }
 
 //------------------
@@ -187,30 +244,36 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 		}
 	}
 	
-  vector<const DFCALHit*> FCALHits;
-  vector<const DFCALDigiHit*> FCALDigiHits;
-  vector<const DFCALCluster*> FCALClusters;
-  vector<const DFCALShower*> FCALShowers;
-  vector<const DFCALTruthShower*> FCALTruthShowers;
+    vector<const DFCALHit*> FCALHits;
+    vector<const DFCALDigiHit*> FCALDigiHits;
+    vector<const DFCALCluster*> FCALClusters;
+    vector<const DFCALShower*> FCALShowers;
+    vector<const DFCALTruthShower*> FCALTruthShowers;
   
-  loop->Get(FCALHits);
-  loop->Get(FCALDigiHits);
-  loop->Get(FCALClusters);
-  loop->Get(FCALShowers);
-  loop->Get(FCALTruthShowers);
+    loop->Get(FCALHits);
+    loop->Get(FCALDigiHits);
+    loop->Get(FCALClusters);
+    loop->Get(FCALShowers);
+    loop->Get(FCALTruthShowers);
 
-  if( FCALHits.size()==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/)
-  {std::cout<<"skip"<<std::endl;return NOERROR;}
+    if( FCALHits.size()==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/)
+    {
+        std::cout<<"skip"<<std::endl;
+        return NOERROR;
+    }
 
-  jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
+    jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
 
+    //h2->Reset();
     for( uint i=0; i<FCALHits.size(); i++)
     {
-	    //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<std::endl;
+	        //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<std::endl;
 	    h2->Fill(FCALHits[i]->x,FCALHits[i]->y);
     }
 
-    h2->Draw("same");
+    h2->Draw("colz same");
+    data->AddHistogram(h2);
+
     canvas->Update();
 	return NOERROR;
 }

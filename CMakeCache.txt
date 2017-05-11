@@ -184,12 +184,6 @@ ProcessorCount_cmd_getconf:FILEPATH=/usr/bin/getconf
 //Path to a program.
 ProcessorCount_cmd_sysctl:FILEPATH=/sbin/sysctl
 
-//Value Computed by CMake
-Project_BINARY_DIR:STATIC=/home/romanov/gluex/hdvis/github
-
-//Value Computed by CMake
-Project_SOURCE_DIR:STATIC=/home/romanov/gluex/hdvis/github
-
 //Path to a library.
 ROOT_Core_LIBRARY:FILEPATH=/home/romanov/gluex/root/6.08.06/lib/libCore.so
 

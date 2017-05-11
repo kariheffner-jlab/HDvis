@@ -1,9 +1,4 @@
-
 #include <thread>
-
-#include <dlfcn.h>
-
-
 
 #include <TFile.h>
 #include <TApplication.h>
@@ -16,13 +11,19 @@
 #include <TEveProjectionAxes.h>
 #include <TEveScene.h>
 #include <TEveViewer.h>
-
+#include <TGeoManager.h>
+#include <TEveGeoNode.h>
+#include <TEveGedEditor.h>
+#include <TGTab.h>
 #include "EventReader/JEventProcessor_EventReader.h"
 #include "DANA/DApplication.h"
 
 
+
 using namespace std;
 
+TGeoManager * hddsroot();
+//TGeoManager * getGeom();
 
 typedef void SetTFilePtrAddress_t(TFile **);
 TFile* tfilePtr = NULL;
@@ -38,7 +39,7 @@ TApplication *gApp;
 
 void RunRootApp()
 {
-    gApp->Run(true);
+    gApp->Run();
 }
 
 
@@ -56,25 +57,66 @@ int main(int narg, char *argv[])
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
+    new TGeoManager("GLUEX", "GlueX Geometry");
+
+    auto geometry = hddsroot();
+    gGeoManager->DefaultColors();
+
+
     TEveManager::Create();
 
+    TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetTopVolume()->FindNode("HALL_1");
+    cout<<"hallNode is "<<hallNode<<endl;
+
+
+    TGeoNode* fcalNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FCAL_1");
+    cout<<"fcalNode is "<<fcalNode<<endl;
+
+
+
+
+    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, hallNode));
+    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
+
+    TEveWindowSlot* slot = 0;
+    slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+
+    TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
+    sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
+    sv->AddScene(gEve->GetGlobalScene());
+
+    slot->ReplaceWindow(sv);
+
+    gEve->GetViewers()->AddElement(sv);
+
+    gEve->GetBrowser()->GetTabRight()->SetTab(1);
+
+    // --- Redraw ---
+
+
+
+    //RunRootApp();
+
 	// Instantiate our event processor
-    unique_ptr<JEventProcessor_EventReader> myproc(new JEventProcessor_EventReader());
+    auto myproc = new JEventProcessor_EventReader();
 	myproc->setRootApplication(gApp);
+    myproc->setCanvas(gEve->AddCanvasTab("FCAL histogram"));
+
+    gEve->FullRedraw3D(kTRUE);
+    gEve->EditElement(sv);
 
     std::thread t1(RunRootApp);
 
 
-
-	
 	// Decide on the output filename
 	DecideOutputFilename();
 	
 	// Run though all events, calling our event processor's methods
 	app.monitor_heartbeat = 0;
-	app.Run(myproc.release());
+	app.Run(myproc);
 	
-	//return app.GetExitCode();
+	return app.GetExitCode();
+
 }
 
 
