@@ -49,8 +49,13 @@ void InitPlugin(JApplication *app){
 //------------------
 JEventProcessor_EventReader::JEventProcessor_EventReader()
 {
-ROOTfile = NULL;
-h2=new TH2F("FCAL Hits", "FCAL Hits",100,-50,50,100,-50,50);
+    ROOTfile = NULL;
+    h2=new TH2F("FCAL Hits", "FCAL Hits",100,-50,50,100,-50,50);
+
+    canvas = new TCanvas("Ha!");
+    canvas->Draw();
+
+    h2->Draw("colz");
 }
 
 //------------------
@@ -194,24 +199,19 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
   loop->Get(FCALShowers);
   loop->Get(FCALTruthShowers);
 
-  if( FCALHits.size()==0 && FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0)
+  if( FCALHits.size()==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/)
   {std::cout<<"skip"<<std::endl;return NOERROR;}
 
   jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
 
-  for( uint i=0; i<FCALHits.size(); i++)
-{
-	//std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<std::endl;
-	h2->Fill(FCALHits[i]->x,FCALHits[i]->y);
-}
-  //TBrowser tb;
-  auto c = new TCanvas("Ha!");
-  c->Draw();
+    for( uint i=0; i<FCALHits.size(); i++)
+    {
+	    //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<std::endl;
+	    h2->Fill(FCALHits[i]->x,FCALHits[i]->y);
+    }
 
-  h2->Draw("colz");
-  
-  mApplication->Run();
-
+    h2->Draw("same");
+    canvas->Update();
 	return NOERROR;
 }
 

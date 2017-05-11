@@ -14,6 +14,8 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
+#include <TCanvas.h>
+
 //"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
 extern vector<string> toprint;
 extern bool ACTIVATE_ALL;
@@ -34,8 +36,10 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		}factory_info_t;
 		vector<factory_info_t> fac_info;
 
-		TFile *ROOTfile;
+		TFile *ROOTfile ;
 		TH2F* h2;
+        TCanvas* canvas;
+
 
 	private:
 		jerror_t init(void);						///< Called once at program start.

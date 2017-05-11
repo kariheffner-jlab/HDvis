@@ -1,10 +1,9 @@
-// Author: Edward Brash February 15, 2005
-//
-//
-// hd_rootOB.cc
-//
+
+#include <thread>
 
 #include <dlfcn.h>
+
+
 
 #include <TFile.h>
 #include <TApplication.h>
@@ -20,6 +19,8 @@
 
 #include "EventReader/JEventProcessor_EventReader.h"
 #include "DANA/DApplication.h"
+
+
 using namespace std;
 
 
@@ -34,6 +35,13 @@ void DecideOutputFilename(void);
 void Usage(void);
 
 TApplication *gApp;
+
+void RunRootApp()
+{
+    gApp->Run(true);
+}
+
+
 //-----------
 // main
 //-----------
@@ -48,23 +56,25 @@ int main(int narg, char *argv[])
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
-	TEveManager::Create();
+    TEveManager::Create();
 
 	// Instantiate our event processor
-	JEventProcessor_EventReader *myproc = new JEventProcessor_EventReader();
+    unique_ptr<JEventProcessor_EventReader> myproc(new JEventProcessor_EventReader());
 	myproc->setRootApplication(gApp);
-	
+
+    std::thread t1(RunRootApp);
+
+
+
 	
 	// Decide on the output filename
 	DecideOutputFilename();
 	
 	// Run though all events, calling our event processor's methods
 	app.monitor_heartbeat = 0;
-	app.Run(myproc);
+	app.Run(myproc.release());
 	
-	delete myproc;
-	
-	return app.GetExitCode();
+	//return app.GetExitCode();
 }
 
 
