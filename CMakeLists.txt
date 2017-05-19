@@ -18,8 +18,6 @@ include(${ROOT_USE_FILE})
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
 
-
-
 link_directories(
         $ENV{JANA_HOME}/lib
         $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/lib
@@ -45,9 +43,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 set(SOURCE_FILES
         hd_vis.cpp
         geometry.cpp
-        JEventProcessor_EventReader.cpp)
+        JEventProcessor_EventReader.cpp examples/calorimeters.cpp)
+
 
 add_executable(EveStandAlone ${SOURCE_FILES})
+
+
 
 target_link_libraries(EveStandAlone
 
@@ -114,3 +115,5 @@ target_link_libraries(EveStandAlone
         rt
 
         )
+
+add_subdirectory(examples)
