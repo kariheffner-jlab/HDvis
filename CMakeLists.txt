@@ -49,11 +49,19 @@ set(SOURCE_FILES
         EventReader/JEventProcessor_EventReader.cpp
 
         )
+set(GEO_SOURCE_FILES
+        hd_vis_geo.cpp
+        geometry.cpp
 
+        )
 
 add_executable(EveStandAlone ${SOURCE_FILES})
+add_executable(EveGeo ${GEO_SOURCE_FILES})
 
+target_link_libraries(EveGeo
+        ${ROOT_LIBRARIES}
 
+)
 
 target_link_libraries(EveStandAlone
 
