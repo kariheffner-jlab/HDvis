@@ -38,6 +38,7 @@ TEveCaloLego* MakeCaloLego(TEveCaloData* data, TEveWindowSlot* slot);
 TEveCalo2D* MakeCalo2D(TEveCalo3D* calo3d, TEveWindowSlot* slot, TEveProjection::EPType_e t);
 TEveCalo3D* MakeCalo3D(TEveCaloData* data, TEveWindowSlot* slot);
 TEveCalo2D* MakeCalo2D(TEveCalo3D* calo3d, TEveWindowSlot* slot, TEveProjection::EPType_e t);
+
 void MakeViewerScene(TEveWindowSlot* slot, TEveViewer*& v, TEveScene*& s);
 void add_jet(TEveElement*, const char*, Float_t, Float_t, Float_t, Float_t);
 
