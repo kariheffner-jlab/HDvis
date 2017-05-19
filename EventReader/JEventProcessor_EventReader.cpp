@@ -5,7 +5,7 @@
 // Creator: tbritton (on Linux ifarm1401.jlab.org 3.10.0-327.el7.x86_64 x86_64)
 //
 
-#include "EventReader/JEventProcessor_EventReader.h"
+#include "JEventProcessor_EventReader.h"
 #include <FCAL/DFCALHit.h>
 #include <FCAL/DFCALDigiHit.h>
 #include <FCAL/DFCALCluster.h>

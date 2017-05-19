@@ -23,6 +23,9 @@ link_directories(
         $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/lib
         $ENV{EVIOROOT}/lib
         $ENV{CCDB_HOME}/lib
+        $ENV{XERCESCROOT}/lib/
+        /group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/xerces-c/xerces-c-3.1.2/lib/
+        /usr/lib64/mysql/
 )
 
 
@@ -43,7 +46,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 set(SOURCE_FILES
         hd_vis.cpp
         geometry.cpp
-        JEventProcessor_EventReader.cpp examples/calorimeters.cpp)
+        EventReader/JEventProcessor_EventReader.cpp
+
+        )
 
 
 add_executable(EveStandAlone ${SOURCE_FILES})
