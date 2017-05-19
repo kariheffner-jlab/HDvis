@@ -7,7 +7,7 @@ project(eve_examples)
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
 #---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
-find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve)
+find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve Gui TreePlayer)
 
 #---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
 include(${ROOT_USE_FILE})
@@ -28,6 +28,17 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_executable(evex_calorimeters calorimeters.cpp)
 add_executable(evex_calo_detail calo_detail.cpp)
+add_executable(evex_box box.cpp)
+add_executable(evex_boxset boxset.cpp)
+add_executable(evex_track track.cpp)
+add_executable(evex_pointset pointset.cpp)
+add_executable(evex_alice_vsd alice_vsd.cpp)
+
 
 target_link_libraries(evex_calorimeters ${ROOT_LIBRARIES})
 target_link_libraries(evex_calo_detail ${ROOT_LIBRARIES})
+target_link_libraries(evex_box ${ROOT_LIBRARIES})
+target_link_libraries(evex_boxset ${ROOT_LIBRARIES})
+target_link_libraries(evex_track ${ROOT_LIBRARIES})
+target_link_libraries(evex_pointset ${ROOT_LIBRARIES})
+target_link_libraries(evex_alice_vsd ${ROOT_LIBRARIES})
