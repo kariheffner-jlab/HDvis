@@ -27,5 +27,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 
 add_executable(evex_calorimeters calorimeters.cpp)
+add_executable(evex_calo_detail calo_detail.cpp)
 
 target_link_libraries(evex_calorimeters ${ROOT_LIBRARIES})
+target_link_libraries(evex_calo_detail ${ROOT_LIBRARIES})
