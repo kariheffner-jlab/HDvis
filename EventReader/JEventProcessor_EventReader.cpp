@@ -6,6 +6,7 @@
 //
 
 #include "JEventProcessor_EventReader.h"
+#include <FDC/DFDCHit.h>
 #include <FCAL/DFCALHit.h>
 #include <FCAL/DFCALDigiHit.h>
 #include <FCAL/DFCALCluster.h>
@@ -25,7 +26,7 @@
 #include <TEveCaloLegoOverlay.h>
 #include <TEveLegoEventHandler.h>
 #include <TGLWidget.h>
-
+#include <TEveGeoNode.h>
 
 
 using namespace jana;
@@ -57,7 +58,8 @@ extern string OUTPUT_FILENAME;
 extern "C"{
 void InitPlugin(JApplication *app){
 	InitJANAPlugin(app);
-	app->AddProcessor(new JEventProcessor_EventReader());
+    TGeoNode* hall;
+	//app->AddProcessor(new JEventProcessor_EventReader(hall));
 }
 } // "C"
 
@@ -65,8 +67,10 @@ void InitPlugin(JApplication *app){
 //------------------
 // JEventProcessor_EventReader (Constructor)
 //------------------
-JEventProcessor_EventReader::JEventProcessor_EventReader()
+JEventProcessor_EventReader::JEventProcessor_EventReader(TGeoNode* node)
 {
+    hallD=node;
+    gEve->AddElement(FCAL_ps);
     ROOTfile = NULL;
     h2=new TH2F("FCAL Hits", "FCAL Hits",100,-50,50,100,-50,50);
 
@@ -137,6 +141,7 @@ jerror_t JEventProcessor_EventReader::init(void)
 {
 	// This is called once at program startup. 
 	// open ROOT file
+    FCAL_ps->SetOwnIds(kTRUE);
 	ROOTfile = new TFile(OUTPUT_FILENAME.c_str(),"RECREATE","Produced by hd_root");
 	if(!ROOTfile->IsOpen()){
 		cout << "Cannot open ROOT file. Quitting now." << endl;
@@ -243,8 +248,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 			}
 		}
 	}
+    FCAL_ps->Reset();
 	
     vector<const DFCALHit*> FCALHits;
+    vector<const DFDCHit*> FDCHits;
     vector<const DFCALDigiHit*> FCALDigiHits;
     vector<const DFCALCluster*> FCALClusters;
     vector<const DFCALShower*> FCALShowers;
@@ -258,22 +265,36 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
     if( FCALHits.size()==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/)
     {
-        std::cout<<"skip"<<std::endl;
+        //std::cout<<"skip"<<std::endl;
         return NOERROR;
     }
 
-    jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
+    //     jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
 
     //h2->Reset();
     for( uint i=0; i<FCALHits.size(); i++)
     {
 	        //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<std::endl;
-	    h2->Fill(FCALHits[i]->x,FCALHits[i]->y);
+	    FCAL_ps->SetNextPoint(FCALHits[i]->x,FCALHits[i]->y,26.5);
+        FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
+        h2->Fill(FCALHits[i]->x,FCALHits[i]->y);
     }
 
+
+    h2->SetStats(0);
     h2->Draw("colz same");
+
     data->AddHistogram(h2);
 
+	TGeoNode* fcalNode = (TGeoNode *) hallD->GetNodes()->FindObject("FCAL_1");
+	//cout<<"fcalNode is "<<fcalNode<<endl;
+
+    FCAL_ps->SetMarkerSize(1);
+	FCAL_ps->SetMarkerStyle(4);
+    FCAL_ps->SetMarkerColor(5);
+    //    ((TEveElement*) fcalNode)->AddElement(FCAL_ps);
+    gEve->AddElement(FCAL_ps);
+    gEve->Redraw3D();
     canvas->Update();
 	return NOERROR;
 }

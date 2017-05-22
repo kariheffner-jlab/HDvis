@@ -8,15 +8,14 @@
 #include <TEveWindow.h>
 #include <TEveManager.h>
 #include <TEveBrowser.h>
-#include <TEveProjectionAxes.h>
 #include <TEveScene.h>
 #include <TEveViewer.h>
 #include <TGeoManager.h>
-#include <TEveGeoNode.h>
 #include <TEveGedEditor.h>
 #include <TGTab.h>
 #include "EventReader/JEventProcessor_EventReader.h"
 #include "DANA/DApplication.h"
+#include <TEveGeoNode.h>
 
 
 
@@ -98,7 +97,7 @@ int main(int narg, char *argv[])
     //RunRootApp();
 
 	// Instantiate our event processor
-    auto myproc = new JEventProcessor_EventReader();
+    auto myproc = new JEventProcessor_EventReader(hallNode);
 	myproc->setRootApplication(gApp);
     myproc->setCanvas(gEve->AddCanvasTab("FCAL histogram"));
 

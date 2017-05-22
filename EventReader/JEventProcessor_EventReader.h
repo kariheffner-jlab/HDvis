@@ -10,7 +10,7 @@
 
 #include <JANA/JEventProcessor.h>
 #include <TApplication.h>
-
+#include <TEvePointSet.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
@@ -29,6 +29,8 @@
 #include <TEveCaloLegoOverlay.h>
 #include <TEveLegoEventHandler.h>
 #include <TGLWidget.h>
+#include <TGeoNode.h>
+
 
 //"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
 extern vector<string> toprint;
@@ -36,7 +38,7 @@ extern bool ACTIVATE_ALL;
 
 class JEventProcessor_EventReader:public jana::JEventProcessor{
 	public:
-		JEventProcessor_EventReader();
+		JEventProcessor_EventReader(TGeoNode* node);
 		~JEventProcessor_EventReader();
 		const char* className(void){return "JEventProcessor_EventReader";}
 		void setRootApplication(TApplication *app)
@@ -57,6 +59,8 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 
 		TFile *ROOTfile ;
 		TH2F* h2;
+        TGeoNode* hallD;
+        TEvePointSet* FCAL_ps=new TEvePointSet();
 
 
 
