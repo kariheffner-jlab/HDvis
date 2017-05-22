@@ -74,7 +74,7 @@ int main(int narg, char *argv[])
 
 
 
-    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, hallNode));
+    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, hallNode));//needs alignment
     gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
 
     TEveWindowSlot* slot = 0;
