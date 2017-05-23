@@ -36,9 +36,30 @@ void Usage(void);
 
 TApplication *gApp;
 
+
+std::mutex gEventMutex;     /// Mutex between ROOT graphical thread and EvenRead function
+
 void RunRootApp()
 {
-    gApp->Run();
+    // Here is what happens in gApp->Run();
+    // 3 root functions should be called in this order:
+    // gApplication->StartIdleing() -> gSystem->InnerLoop() -> gApplication->StartIdleing()
+    // In this function we want to pause ROOT graphical thread, run EventRead, continue ROOT graph. thread
+    // In order to do it we use gEventMutex
+
+    gApplication->StartIdleing();
+
+    while (1) {
+
+        while(!gEventMutex.try_lock())
+        {
+            std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
+
+            gSystem->InnerLoop();
+            gApplication->StopIdleing();
+            gApplication->StartIdleing();
+        }
+    }
 }
 
 
@@ -61,7 +82,6 @@ int main(int narg, char *argv[])
     auto geometry = hddsroot();
     gGeoManager->DefaultColors();
 
-
     TEveManager::Create();
 
     TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetTopVolume()->FindNode("HALL_1");
@@ -70,8 +90,6 @@ int main(int narg, char *argv[])
 
     TGeoNode* fcalNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FCAL_1");
     cout<<"fcalNode is "<<fcalNode<<endl;
-
-
 
 
     //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, hallNode));//needs alignment
