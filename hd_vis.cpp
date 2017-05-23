@@ -51,14 +51,14 @@ void RunRootApp()
 
     while (1) {
 
-        while(!gEventMutex.try_lock())
-        {
+        while(!gEventMutex.try_lock());
+
             std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
 
             gSystem->InnerLoop();
             gApplication->StopIdleing();
             gApplication->StartIdleing();
-        }
+
     }
 }
 
