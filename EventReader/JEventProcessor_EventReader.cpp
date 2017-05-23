@@ -6,7 +6,7 @@
 //
 
 #include <thread>
-
+#include <TEveEventManager.h>
 #include "JEventProcessor_EventReader.h"
 #include <FDC/DFDCHit.h>
 #include <FCAL/DFCALHit.h>
@@ -54,6 +54,7 @@ extern string OUTPUT_FILENAME;
 #include <JANA/JFactory.h>
 #include <TEveCaloData.h>
 #include <TEveManager.h>
+#include <mutex>
 
 
 extern "C" {
@@ -232,88 +233,89 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
     while (!gEventMutex.try_lock()) {
-        std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
+		std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
 
-        for (unsigned int i = 0; i < toprint.size(); i++) {
-            string name = fac_info[i].dataClassName;
-            string tag = fac_info[i].tag;
-            JFactory_base *factory = loop->GetFactory(name, tag.c_str());
-            if (!factory)factory = loop->GetFactory("D" + name, tag.c_str());
-            if (factory) {
-                try {
-                    factory->GetNrows();
-                } catch (...) {
-                    // someone threw an exception
-                }
-            }
-        }
-        //FCAL_ps=new TEvePointSet();
-        //FCAL_ps->Reset();
-        gEve->DoRedraw3D();
+		for (unsigned int i = 0; i < toprint.size(); i++) {
+			string name = fac_info[i].dataClassName;
+			string tag = fac_info[i].tag;
+			JFactory_base *factory = loop->GetFactory(name, tag.c_str());
+			if (!factory)factory = loop->GetFactory("D" + name, tag.c_str());
+			if (factory) {
+				try {
+					factory->GetNrows();
+				} catch (...) {
+					// someone threw an exception
+				}
+			}
+		}
+		//FCAL_ps=new TEvePointSet();gEve->GetCurrentEvent()->DestroyElements();
+		//FCAL_ps->Reset();
+		gEve->DoRedraw3D();
 
-        vector<const DFCALHit *> FCALHits;
-        vector<const DFDCHit *> FDCHits;
-        vector<const DFCALDigiHit *> FCALDigiHits;
-        vector<const DFCALCluster *> FCALClusters;
-        vector<const DFCALShower *> FCALShowers;
-        vector<const DFCALTruthShower *> FCALTruthShowers;
+		vector<const DFCALHit *> FCALHits;
+		vector<const DFDCHit *> FDCHits;
+		vector<const DFCALDigiHit *> FCALDigiHits;
+		vector<const DFCALCluster *> FCALClusters;
+		vector<const DFCALShower *> FCALShowers;
+		vector<const DFCALTruthShower *> FCALTruthShowers;
 
-        loop->Get(FCALHits);
-        loop->Get(FCALDigiHits);
-        loop->Get(FCALClusters);
-        loop->Get(FCALShowers);
-        loop->Get(FCALTruthShowers);
+		loop->Get(FCALHits);
+		loop->Get(FCALDigiHits);
+		loop->Get(FCALClusters);
+		loop->Get(FCALShowers);
+		loop->Get(FCALTruthShowers);
 
-        if (FCALHits.size() ==
-            0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
-            //std::cout<<"skip"<<std::endl;
-            return NOERROR;
-        }
-
-
+		if (FCALHits.size() ==
+			0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
+			//std::cout<<"skip"<<std::endl;
+			return NOERROR;
+		}
 
 
-        //h2->Reset();
-        for (uint i = 0; i < FCALHits.size(); i++) {
-            FCAL_ps = new TEvePointSet();
-            //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<"|"<<FCALHits[i]->E<<std::endl;
-            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y, 26.5);
-            FCAL_ps->SetMainColorRGB((FCALHits[i]->E * 10), 0., 0.);
-            FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
-            FCAL_ps->SetMarkerSize(1);
-            FCAL_ps->SetMarkerStyle(4);
-            FCAL_ps->SetElementName(Form("FCAL point %i", i));
-            FCAL_points.push_back(FCAL_ps);
-            h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
-        }
 
 
-        h2->SetStats(0);
-        h2->Draw("colzsame");
-
-        data->AddHistogram(h2);
-
-        TGeoNode *fcalNode = (TGeoNode *) hallD->GetNodes()->FindObject("FCAL_1");
-        //cout<<"fcalNode is "<<fcalNode<<endl;
-
-
-        //    ((TEveElement*) fcalNode)->AddElement(FCAL_ps);
-        //gEve->AddElement(FCAL_ps);
-
-        for (int i = 0; i < FCAL_points.size(); i++) {
-            gEve->AddElement(FCAL_points[i]);
-        }
-
-        gEve->DoRedraw3D();
-        //FCAL_ps->Destroy();
-        //canvas->Update();
-
-        //gEve->GetEventScene()->Draw();
-
-        //sleep(3);
-        //gEve->GetEventScene()->AnnihilateElements();
+		//h2->Reset();
+		for (uint i = 0; i < FCALHits.size(); i++) {
+			FCAL_ps = new TEvePointSet();
+			//std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<"|"<<FCALHits[i]->E<<std::endl;
+			FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y, 26.5);
+			FCAL_ps->SetMainColorRGB((FCALHits[i]->E * 10), 0., 0.);
+			FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
+			FCAL_ps->SetMarkerSize(1);
+			FCAL_ps->SetMarkerStyle(4);
+			FCAL_ps->SetElementName(Form("FCAL point %i", i));
+			FCAL_points.push_back(FCAL_ps);
+			h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
+		}
 
 
+		h2->SetStats(0);
+		h2->Draw("colzsame");
+
+		data->AddHistogram(h2);
+
+		TGeoNode *fcalNode = (TGeoNode *) hallD->GetNodes()->FindObject("FCAL_1");
+		//cout<<"fcalNode is "<<fcalNode<<endl;
+
+
+		//    ((TEveElement*) fcalNode)->AddElement(FCAL_ps);
+		//gEve->AddElement(FCAL_ps);
+
+		for (int i = 0; i < FCAL_points.size(); i++) {
+			gEve->AddElement(FCAL_points[i]);
+		}
+
+		gEve->DoRedraw3D();
+		//FCAL_ps->Destroy();
+		//canvas->Update();
+
+		//gEve->GetEventScene()->Draw();
+
+		sleep(1);
+		for (int i = 0; i < FCAL_points.size(); i++) {
+		gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
+		}
+		//gEve->GetCurrentEvent()->DestroyElements();
         FCAL_points.clear();
     }
 
