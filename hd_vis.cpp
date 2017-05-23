@@ -51,7 +51,7 @@ void RunRootApp()
 
     while (1) {
 
-        while(!gEventMutex.try_lock());
+        while(!gEventMutex.try_lock()) std::this_thread::yield();
 
             std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
 

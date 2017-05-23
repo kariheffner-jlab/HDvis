@@ -232,7 +232,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
-    while (!gEventMutex.try_lock());  // <- (!!!) leave ; there!
+    while (!gEventMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
 
     {
         std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
@@ -252,7 +252,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
         //FCAL_ps=new TEvePointSet();gEve->GetCurrentEvent()->DestroyElements();
         //FCAL_ps->Reset();
-        gEve->DoRedraw3D();
+        //gEve->DoRedraw3D();
+        for (int i = 0; i < FCAL_points.size(); i++) {
+            gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
+        }
+        //gEve->GetCurrentEvent()->DestroyElements();
+        FCAL_points.clear();
+
 
         vector<const DFCALHit *> FCALHits;
         vector<const DFDCHit *> FDCHits;
@@ -313,17 +319,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         //gEve->GetEventScene()->Draw();
 
-
-        for (int i = 0; i < FCAL_points.size(); i++) {
-            gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
-        }
-        //gEve->GetCurrentEvent()->DestroyElements();
-        FCAL_points.clear();
-
-
         //     jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
 
-    }
+    }   // <- unlock EventMutex
+
     sleep(1);
     //gEve->Redraw3D();
     /*int x;
