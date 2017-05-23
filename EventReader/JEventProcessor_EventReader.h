@@ -61,6 +61,7 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		TH2F* h2;
         TGeoNode* hallD;
         TEvePointSet* FCAL_ps=new TEvePointSet();
+        vector<TEvePointSet*> FCAL_points;
 
 
 

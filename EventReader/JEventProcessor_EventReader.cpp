@@ -70,7 +70,7 @@ void InitPlugin(JApplication *app){
 JEventProcessor_EventReader::JEventProcessor_EventReader(TGeoNode* node)
 {
     hallD=node;
-    gEve->AddElement(FCAL_ps);
+    //gEve->AddElement(FCAL_ps);
     ROOTfile = NULL;
     h2=new TH2F("FCAL Hits", "FCAL Hits",100,-50,50,100,-50,50);
 
@@ -248,8 +248,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 			}
 		}
 	}
-    FCAL_ps->Reset();
-	
+	//FCAL_ps=new TEvePointSet();
+    //FCAL_ps->Reset();
+	gEve->DoRedraw3D();
+
     vector<const DFCALHit*> FCALHits;
     vector<const DFDCHit*> FDCHits;
     vector<const DFCALDigiHit*> FCALDigiHits;
@@ -274,28 +276,48 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     //h2->Reset();
     for( uint i=0; i<FCALHits.size(); i++)
     {
-	        //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<std::endl;
+		FCAL_ps=new TEvePointSet();
+		//std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<"|"<<FCALHits[i]->E<<std::endl;
 	    FCAL_ps->SetNextPoint(FCALHits[i]->x,FCALHits[i]->y,26.5);
+        FCAL_ps->SetMainColorRGB((FCALHits[i]->E*10),0.,0.);
         FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
+		FCAL_ps->SetMarkerSize(1);
+		FCAL_ps->SetMarkerStyle(4);
+		FCAL_ps->SetElementName(Form("FCAL point %i",i));
+		FCAL_points.push_back(FCAL_ps);
         h2->Fill(FCALHits[i]->x,FCALHits[i]->y);
     }
 
 
     h2->SetStats(0);
-    h2->Draw("colz same");
+    h2->Draw("colzsame");
 
     data->AddHistogram(h2);
 
 	TGeoNode* fcalNode = (TGeoNode *) hallD->GetNodes()->FindObject("FCAL_1");
 	//cout<<"fcalNode is "<<fcalNode<<endl;
 
-    FCAL_ps->SetMarkerSize(1);
-	FCAL_ps->SetMarkerStyle(4);
-    FCAL_ps->SetMarkerColor(5);
+
     //    ((TEveElement*) fcalNode)->AddElement(FCAL_ps);
-    gEve->AddElement(FCAL_ps);
-    gEve->Redraw3D();
+    //gEve->AddElement(FCAL_ps);
+
+	for(int i=0;i<FCAL_points.size();i++)
+	{
+		gEve->AddElement(FCAL_points[i]);
+	}
+
+	gEve->DoRedraw3D();
+	//FCAL_ps->Destroy();
     canvas->Update();
+
+	//sleep(3);
+//	gEve->GetEventScene()->AnnihilateElements();
+
+
+	FCAL_points.clear();
+	//gEve->Redraw3D();
+	/*int x;
+	cin>>x;*/
 	return NOERROR;
 }
 
