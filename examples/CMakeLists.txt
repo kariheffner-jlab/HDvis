@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 2.8)
 project(eve_examples)
 
 # You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:

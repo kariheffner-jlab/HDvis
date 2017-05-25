@@ -86,14 +86,36 @@ int main(int narg, char *argv[])
 
     TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetTopVolume()->FindNode("HALL_1");
     cout<<"hallNode is "<<hallNode<<endl;
-
+    cout<<hallNode->GetMotherVolume()<<endl;
 
     TGeoNode* fcalNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FCAL_1");
     cout<<"fcalNode is "<<fcalNode<<endl;
 
+    TGeoNode* tofNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FTOF_1");
+    cout<<"tofNode is "<<tofNode<<endl;
+    //TGeoTranslation shift(-150,350,500);
 
-    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, hallNode));//needs alignment
+
+    //add independent
+    /*TGeoMaterial *matVacuum = new TGeoMaterial("Vacuum", 0,0,0);
+    TGeoMedium *Vacuum = new TGeoMedium("Vacuum",1, matVacuum);
+    TGeoVolume *top = gGeoManager->MakeBox("TOP", Vacuum, 1000, 1000., 1000.);
+
+    TGeoNode* lassNode = (TGeoNode *) hallNode->GetNodes()->FindObject("LASS");*/
+    //cout<<"lass node: "<<lassNode<<endl;
+    //top->AddNode(lassNode->GetMotherVolume(),1,new TGeoTranslation(0,0,-500));
+
+    //top->AddNode(hallNode->GetMotherVolume(),1,new TGeoTranslation(-150.501,349.986,-147.406));
+    //hallNode->GetMotherVolume()->AddNode(hallNode->GetMotherVolume(),1,new TGeoTranslation(150,300,500));
+
+    //auto hallTopNode=new TEveGeoTopNode(gGeoManager,top->GetNode("LASS_1"));
+    auto hallTopNode=new TEveGeoTopNode(gGeoManager,hallNode);
+    //top->AddNode(hallNode->GetMotherVolume(),1,new TGeoTranslation(150,300,500));
+
+    //gEve->AddGlobalElement(hallTopNode);//needs alignment
+
     gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
+    //gEve->AddGlobalElement(new TEveGeoTopNode (gGeoManager, tofNode));
 
     TEveWindowSlot* slot = 0;
     slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());

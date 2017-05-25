@@ -14,6 +14,7 @@
 #include <FCAL/DFCALCluster.h>
 #include <FCAL/DFCALShower.h>
 #include <FCAL/DFCALTruthShower.h>
+#include <TRACKING/DTrackCandidate.h>
 
 #include <TGLViewer.h>
 #include <TCanvas.h>
@@ -259,19 +260,20 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //gEve->GetCurrentEvent()->DestroyElements();
         FCAL_points.clear();
 
-
+        vector<const DTrackCandidate *> TrackCandidates;
         vector<const DFCALHit *> FCALHits;
-        vector<const DFDCHit *> FDCHits;
-        vector<const DFCALDigiHit *> FCALDigiHits;
-        vector<const DFCALCluster *> FCALClusters;
-        vector<const DFCALShower *> FCALShowers;
-        vector<const DFCALTruthShower *> FCALTruthShowers;
+        //vector<const DFDCHit *> FDCHits;
+        //vector<const DFCALDigiHit *> FCALDigiHits;
+        //vector<const DFCALCluster *> FCALClusters;
+        //vector<const DFCALShower *> FCALShowers;
+        //vector<const DFCALTruthShower *> FCALTruthShowers;
 
         loop->Get(FCALHits);
-        loop->Get(FCALDigiHits);
-        loop->Get(FCALClusters);
-        loop->Get(FCALShowers);
-        loop->Get(FCALTruthShowers);
+        //loop->Get(FCALDigiHits);
+        //loop->Get(FCALClusters);
+        //loop->Get(FCALShowers);
+        //loop->Get(FCALTruthShowers);
+
 
         if (FCALHits.size() ==
             0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
@@ -286,7 +288,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         for (uint i = 0; i < FCALHits.size(); i++) {
             FCAL_ps = new TEvePointSet();
             //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<"|"<<FCALHits[i]->E<<std::endl;
-            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y, 26.5);
+            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y, 26.5); //FCAL alignment is 150.501,-349.986,147.406
+            //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
             FCAL_ps->SetMainColorRGB((FCALHits[i]->E * 10), 0., 0.);
             FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
             FCAL_ps->SetMarkerSize(1);
@@ -302,7 +305,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         data->AddHistogram(h2);
 
-        TGeoNode *fcalNode = (TGeoNode *) hallD->GetNodes()->FindObject("FCAL_1");
+        //TGeoNode *fcalNode = (TGeoNode *) hallD->GetNodes()->FindObject("FCAL_1");
         //cout<<"fcalNode is "<<fcalNode<<endl;
 
 
