@@ -100,7 +100,19 @@ int main(int narg, char *argv[])
     TGeoMaterial *matVacuum = new TGeoMaterial("Vacuum", 0,0,0);
     TGeoMedium *Vacuum = new TGeoMedium("Vacuum",1, matVacuum);
     TGeoVolume *topVolume = gGeoManager->MakeBox("TOP", Vacuum, 1000, 1000., 1000.);
-    topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(150,300,2500));
+    topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(-150.501,349.986,-147.406));
+
+    TGeoNode* Det5Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET5_1");
+    Det5Node->SetVisibility(0);
+
+    TGeoNode* Det6Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET6_1");
+    Det6Node->SetVisibility(0);
+
+    cout<<"fcalNode is "<<fcalNode<<endl;
+
+    gGeoManager->SetTopVolume(topVolume);
+
+
     gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
 
     TEveWindowSlot* slot = 0;

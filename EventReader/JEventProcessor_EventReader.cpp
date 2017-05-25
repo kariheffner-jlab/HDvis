@@ -234,7 +234,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
     while (!gEventMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
-
     {
         std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
 
@@ -257,6 +256,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         for (int i = 0; i < FCAL_points.size(); i++) {
             gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
         }
+       // gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
         //gEve->GetCurrentEvent()->DestroyElements();
         FCAL_points.clear();
 
@@ -281,14 +281,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             return NOERROR;
         }
 
-
-
+        //FCAL_bs = new TEveBoxSet("FCAL_hits");
 
         //h2->Reset();
         for (uint i = 0; i < FCALHits.size(); i++) {
             FCAL_ps = new TEvePointSet();
             //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<"|"<<FCALHits[i]->E<<std::endl;
-            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y, 26.5); //FCAL alignment is 150.501,-349.986,147.406
+            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y,26.5); //FCAL alignment is 150.501,-349.986,147.406
             //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
             FCAL_ps->SetMainColorRGB((FCALHits[i]->E * 10), 0., 0.);
             FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
@@ -297,6 +296,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             FCAL_ps->SetElementName(Form("FCAL point %i", i));
             FCAL_points.push_back(FCAL_ps);
             h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
+
+            //FCAL_bs->AddBox(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406,(FCALHits[i]->E * 10),  0,  0);
         }
 
 
@@ -315,7 +316,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         for (int i = 0; i < FCAL_points.size(); i++) {
             gEve->AddElement(FCAL_points[i]);
         }
-
+        //gEve->AddElement(FCAL_bs);
         gEve->DoRedraw3D();
         //FCAL_ps->Destroy();
         //canvas->Update();
