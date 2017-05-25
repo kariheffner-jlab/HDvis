@@ -97,25 +97,11 @@ int main(int narg, char *argv[])
 
 
     //add independent
-    /*TGeoMaterial *matVacuum = new TGeoMaterial("Vacuum", 0,0,0);
+    TGeoMaterial *matVacuum = new TGeoMaterial("Vacuum", 0,0,0);
     TGeoMedium *Vacuum = new TGeoMedium("Vacuum",1, matVacuum);
-    TGeoVolume *top = gGeoManager->MakeBox("TOP", Vacuum, 1000, 1000., 1000.);
-
-    TGeoNode* lassNode = (TGeoNode *) hallNode->GetNodes()->FindObject("LASS");*/
-    //cout<<"lass node: "<<lassNode<<endl;
-    //top->AddNode(lassNode->GetMotherVolume(),1,new TGeoTranslation(0,0,-500));
-
-    //top->AddNode(hallNode->GetMotherVolume(),1,new TGeoTranslation(-150.501,349.986,-147.406));
-    //hallNode->GetMotherVolume()->AddNode(hallNode->GetMotherVolume(),1,new TGeoTranslation(150,300,500));
-
-    //auto hallTopNode=new TEveGeoTopNode(gGeoManager,top->GetNode("LASS_1"));
-    auto hallTopNode=new TEveGeoTopNode(gGeoManager,hallNode);
-    //top->AddNode(hallNode->GetMotherVolume(),1,new TGeoTranslation(150,300,500));
-
-    //gEve->AddGlobalElement(hallTopNode);//needs alignment
-
-    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
-    //gEve->AddGlobalElement(new TEveGeoTopNode (gGeoManager, tofNode));
+    TGeoVolume *topVolume = gGeoManager->MakeBox("TOP", Vacuum, 1000, 1000., 1000.);
+    topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(150,300,2500));
+    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
 
     TEveWindowSlot* slot = 0;
     slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
