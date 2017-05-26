@@ -148,6 +148,7 @@ jerror_t JEventProcessor_EventReader::init(void) {
     FCAL_bs->SetPalette(pal);
     //FCAL_bs->SetFrame(frm);
     FCAL_bs->Reset(TEveBoxSet::kBT_AABox, kFALSE, 64);
+    gEve->AddElement(FCAL_bs);
     ROOTfile = new TFile(OUTPUT_FILENAME.c_str(), "RECREATE", "Produced by hd_root");
     if (!ROOTfile->IsOpen()) {
         cout << "Cannot open ROOT file. Quitting now." << endl;
@@ -259,12 +260,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //FCAL_ps=new TEvePointSet();gEve->GetCurrentEvent()->DestroyElements();
         //FCAL_ps->Reset();
         //gEve->DoRedraw3D();
-        for (int i = 0; i < FCAL_points.size(); i++) {
-            gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
-        }
-        //gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
-        //gEve->GetCurrentEvent()->DestroyElements();
-        FCAL_points.clear();
 
         vector<const DTrackCandidate *> TrackCandidates;
         vector<const DFCALHit *> FCALHits;
@@ -287,7 +282,22 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             return NOERROR;
         }
 
+        for (int i = 0; i < FCAL_points.size(); i++) {
+            gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
+        }
+
+            gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
+        //gEve->GetCurrentEvent()->DestroyElements();
+        FCAL_points.clear();
+
+
+
         FCAL_bs = new TEveBoxSet("FCAL_hits");
+        TEveRGBAPalette* pal = new TEveRGBAPalette(-150,150);
+
+        FCAL_bs->SetPalette(pal);
+        //FCAL_bs->SetFrame(frm);
+        FCAL_bs->Reset(TEveBoxSet::kBT_AABox, kTRUE, 64);
 
         //h2->Reset();
         for (uint i = 0; i < FCALHits.size(); i++) {
@@ -303,7 +313,18 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             FCAL_points.push_back(FCAL_ps);
             h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
 
-            FCAL_bs->AddBox(FCALHits[i]->x, FCALHits[i]->y, FCALHits[i]->E*1000,(FCALHits[i]->t * 10),  0,  0);
+            FCAL_bs->AddBox(FCALHits[i]->x-1, FCALHits[i]->y-1, 26.5,2, 2,  20*log(FCALHits[i]->E*1000));
+
+            int redness=255;
+            if(abs(FCALHits[i]->t)*10<255)
+                redness=abs(FCALHits[i]->t)*10;
+
+            if(FCALHits[i]->t>=0.0)
+                FCAL_bs->DigitColor(redness, 0,0,50);
+                //FCAL_bs->DigitValue(FCALHits[i]->t);
+            else
+                FCAL_bs->DigitColor(0,redness,0,50);
+                //FCAL_bs->DigitColor(0,abs(FCALHits[i]->t),0);
         }
 
 
@@ -319,9 +340,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //    ((TEveElement*) fcalNode)->AddElement(FCAL_ps);
         //gEve->AddElement(FCAL_ps);
 
-        for (int i = 0; i < FCAL_points.size(); i++) {
+       /* for (int i = 0; i < FCAL_points.size(); i++) {
             gEve->AddElement(FCAL_points[i]);
-        }
+        }*/
+
         gEve->AddElement(FCAL_bs);
         gEve->DoRedraw3D();
         //FCAL_ps->Destroy();

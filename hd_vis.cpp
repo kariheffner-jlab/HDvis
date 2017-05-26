@@ -114,7 +114,7 @@ int main(int narg, char *argv[])
 
 
     gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
-
+	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
     TEveWindowSlot* slot = 0;
     slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
 
