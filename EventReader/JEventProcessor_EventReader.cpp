@@ -142,6 +142,12 @@ jerror_t JEventProcessor_EventReader::init(void) {
     // This is called once at program startup.
     // open ROOT file
     FCAL_ps->SetOwnIds(kTRUE);
+
+    TEveRGBAPalette* pal = new TEveRGBAPalette(0, 130);
+
+    FCAL_bs->SetPalette(pal);
+    //FCAL_bs->SetFrame(frm);
+    FCAL_bs->Reset(TEveBoxSet::kBT_AABox, kFALSE, 64);
     ROOTfile = new TFile(OUTPUT_FILENAME.c_str(), "RECREATE", "Produced by hd_root");
     if (!ROOTfile->IsOpen()) {
         cout << "Cannot open ROOT file. Quitting now." << endl;
@@ -256,7 +262,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         for (int i = 0; i < FCAL_points.size(); i++) {
             gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
         }
-       // gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
+        //gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
         //gEve->GetCurrentEvent()->DestroyElements();
         FCAL_points.clear();
 
@@ -281,7 +287,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             return NOERROR;
         }
 
-        //FCAL_bs = new TEveBoxSet("FCAL_hits");
+        FCAL_bs = new TEveBoxSet("FCAL_hits");
 
         //h2->Reset();
         for (uint i = 0; i < FCALHits.size(); i++) {
@@ -297,7 +303,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             FCAL_points.push_back(FCAL_ps);
             h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
 
-            //FCAL_bs->AddBox(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406,(FCALHits[i]->E * 10),  0,  0);
+            FCAL_bs->AddBox(FCALHits[i]->x, FCALHits[i]->y, FCALHits[i]->E*1000,(FCALHits[i]->t * 10),  0,  0);
         }
 
 
@@ -316,7 +322,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         for (int i = 0; i < FCAL_points.size(); i++) {
             gEve->AddElement(FCAL_points[i]);
         }
-        //gEve->AddElement(FCAL_bs);
+        gEve->AddElement(FCAL_bs);
         gEve->DoRedraw3D();
         //FCAL_ps->Destroy();
         //canvas->Update();
