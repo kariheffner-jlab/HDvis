@@ -324,7 +324,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             FCAL_points.push_back(FCAL_ps);
             h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
 
-            FCAL_bs->AddBox(FCALHits[i]->x-1, FCALHits[i]->y-1, 173.9,2, 2,  20*log(FCALHits[i]->E*1000));
+            FCAL_bs->AddBox(FCALHits[i]->x-1, FCALHits[i]->y-1, 500+173.9,2, 2,  20*log(FCALHits[i]->E*1000));
 
             int redness=255;
             if(abs(FCALHits[i]->t)*10<255)
@@ -357,7 +357,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             for(int j=0; j<rt.Nswim_steps; j++)
             {
                 DVector3 step_loc=steps[j].origin;
-                cout<<i<<"|"<<step_loc.X()<<","<<step_loc.Y()<<","<<step_loc.Z()<<endl;
+                //cout<<i<<"|"<<step_loc.X()<<","<<step_loc.Y()<<","<<step_loc.Z()<<endl;
                 if(step_loc.Z()>625 )
                     break;
 
