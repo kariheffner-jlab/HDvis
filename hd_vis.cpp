@@ -35,6 +35,7 @@ void DecideOutputFilename(void);
 void Usage(void);
 
 TApplication *gApp;
+DApplication *gDana;
 
 
 std::mutex gEventMutex;     /// Mutex between ROOT graphical thread and EvenRead function
@@ -73,7 +74,8 @@ int main(int narg, char *argv[])
 
 	// Create ROOT application 
 	// Instantiate an event loop object
-	DApplication app(narg, argv);
+	DApplication dana(narg, argv);
+    gDana=&dana;
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
@@ -100,7 +102,8 @@ int main(int narg, char *argv[])
     TGeoMaterial *matVacuum = new TGeoMaterial("Vacuum", 0,0,0);
     TGeoMedium *Vacuum = new TGeoMedium("Vacuum",1, matVacuum);
     TGeoVolume *topVolume = gGeoManager->MakeBox("TOP", Vacuum, 1000, 1000., 1000.);
-    topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(-150.501,349.986,-147.406));
+    topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(-150.501,349.986,500));
+    //topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(0,0,0));
 
     TGeoNode* Det5Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET5_1");
     Det5Node->SetVisibility(0);
@@ -149,10 +152,10 @@ int main(int narg, char *argv[])
 	DecideOutputFilename();
 	
 	// Run though all events, calling our event processor's methods
-	app.monitor_heartbeat = 0;
-	app.Run(myproc);
+	dana.monitor_heartbeat = 0;
+	dana.Run(myproc);
 	
-	return app.GetExitCode();
+	return dana.GetExitCode();
 
 }
 

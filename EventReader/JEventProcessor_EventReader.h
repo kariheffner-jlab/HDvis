@@ -32,6 +32,8 @@
 #include <TGeoNode.h>
 #include <TEveBoxSet.h>
 #include <TEveBox.h>
+#include <HDGEOMETRY/DMagneticFieldMap.h>
+#include <HDGEOMETRY/DRootGeom.h>
 
 
 //"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
@@ -65,6 +67,10 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		TEvePointSet* FCAL_ps=new TEvePointSet();
 		TEveBoxSet* FCAL_bs=new TEveBoxSet("FCAL_Hits");
         vector<TEvePointSet*> FCAL_points;
+		DMagneticFieldMap* Bfield;
+        DRootGeom* RootGeom;
+        TEvePointSet* Track_ps=new TEvePointSet();
+        vector<TEvePointSet*> Track_points;
 
 
 
