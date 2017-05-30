@@ -342,17 +342,19 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                 //FCAL_bs->DigitColor(0,abs(FCALHits[i]->t),0);
         }
 
+        int RMAX_INTERIOR=65;
+        int RMAX_EXTERIOR=89;
+        DReferenceTrajectory rt(Bfield);
+        rt.Rsqmax_interior = RMAX_INTERIOR*RMAX_INTERIOR;//innerBCAL radius
+        rt.Rsqmax_exterior = RMAX_EXTERIOR*RMAX_EXTERIOR;
+
+        rt.SetDRootGeom(RootGeom);
+        rt.SetDGeometry(NULL);
+
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
             Track_ps = new TEvePointSet();
-            int RMAX_INTERIOR=65;
-            int RMAX_EXTERIOR=89;
-            DReferenceTrajectory rt(Bfield);
-            rt.Rsqmax_interior = RMAX_INTERIOR*RMAX_INTERIOR;//innerBCAL radius
-            rt.Rsqmax_exterior = RMAX_EXTERIOR*RMAX_EXTERIOR;
 
-            rt.SetDRootGeom(RootGeom);
-            rt.SetDGeometry(NULL);
 
             rt.SetMass(ChargedTracks[i]->Get_BestFOM()->mass());
             //rt.SetMass(TrackCandidates[i]->mass());
