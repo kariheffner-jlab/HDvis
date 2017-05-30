@@ -15,6 +15,7 @@
 #include <FCAL/DFCALShower.h>
 #include <FCAL/DFCALTruthShower.h>
 #include <TRACKING/DTrackCandidate.h>
+#include <PID/DChargedTrack.h>
 #include <TRACKING/DReferenceTrajectory.h>
 
 #include <TGLViewer.h>
@@ -266,6 +267,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //FCAL_ps->Reset();
         //gEve->DoRedraw3D();
 
+
+        vector<const DChargedTrack*> ChargedTracks;
         vector<const DTrackCandidate *> TrackCandidates;
         vector<const DFCALHit *> FCALHits;
         //vector<const DFDCHit *> FDCHits;
@@ -280,6 +283,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //loop->Get(FCALShowers);
         //loop->Get(FCALTruthShowers);
         loop->Get(TrackCandidates);
+        loop->Get(ChargedTracks);
 
 
         if (FCALHits.size() ==
@@ -324,7 +328,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             FCAL_points.push_back(FCAL_ps);
             h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
 
-            FCAL_bs->AddBox(FCALHits[i]->x-1, FCALHits[i]->y-1, 500+173.9,2, 2,  20*log(FCALHits[i]->E*1000));
+            FCAL_bs->AddBox(FCALHits[i]->x-1, FCALHits[i]->y-1, 500+173.9,2, 2,  FCALHits[i]->E*100/*20*log(FCALHits[i]->E*1000)*/);
 
             int redness=255;
             if(abs(FCALHits[i]->t)*10<255)
@@ -338,7 +342,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                 //FCAL_bs->DigitColor(0,abs(FCALHits[i]->t),0);
         }
 
-        for(int i=0;i<TrackCandidates.size();i++)
+        for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
             Track_ps = new TEvePointSet();
             int RMAX_INTERIOR=65;
@@ -350,8 +354,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             rt.SetDRootGeom(RootGeom);
             rt.SetDGeometry(NULL);
 
-            rt.SetMass(TrackCandidates[i]->mass());
-            rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
+            rt.SetMass(ChargedTracks[i]->Get_BestFOM()->mass());
+            //rt.SetMass(TrackCandidates[i]->mass());
+
+            rt.Swim(ChargedTracks[i]->Get_BestFOM()->position(), ChargedTracks[i]->Get_BestFOM()->momentum(), ChargedTracks[i]->Get_BestFOM()->charge());
+            //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
             DReferenceTrajectory::swim_step_t* steps =rt.swim_steps;
 
             for(int j=0; j<rt.Nswim_steps; j++)
@@ -366,7 +373,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                 Track_ps->SetNextPoint(step_loc.X(), step_loc.Y(),step_loc.Z()); //FCAL alignment is 150.501,-349.986,147.406
                 //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
 
-                if(TrackCandidates[i]->charge()==1)
+                //if(TrackCandidates[i]->charge()==1)
+                if(ChargedTracks[i]->Get_BestFOM()->charge()==1)
                     Track_ps->SetMainColorRGB(0,float(250.), 0.);
                 else
                     Track_ps->SetMainColorRGB(float(250.),0, 0.);
