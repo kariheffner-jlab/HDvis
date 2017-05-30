@@ -411,9 +411,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
 
         gEve->AddElement(FCAL_bs);
-        gEve->DoRedraw3D();
-        sleep(.01);
-        gEve->DoRedraw3D();
+        gEve->FullRedraw3D();
+        //sleep(.01);
+        //gEve->Redraw3D();
         //FCAL_ps->Destroy();
         //canvas->Update();
 
@@ -423,7 +423,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
     }   // <- unlock EventMutex
 
-    sleep(10);
+    sleep(1);
 
     //gEve->Redraw3D();
     /*int x;
