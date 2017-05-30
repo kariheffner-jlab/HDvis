@@ -87,11 +87,11 @@ int main(int narg, char *argv[])
     TEveManager::Create();
 
     TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetTopVolume()->FindNode("HALL_1");
-    cout<<"hallNode is "<<hallNode<<endl;
+    //cout<<"hallNode is "<<hallNode<<endl;
     cout<<hallNode->GetMotherVolume()<<endl;
 
     TGeoNode* fcalNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FCAL_1");
-    cout<<"fcalNode is "<<fcalNode<<endl;
+    //cout<<"fcalNode is "<<fcalNode<<endl;
 
     TGeoNode* tofNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FTOF_1");
     cout<<"tofNode is "<<tofNode<<endl;
@@ -111,7 +111,11 @@ int main(int narg, char *argv[])
     TGeoNode* Det6Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET6_1");
     Det6Node->SetVisibility(0);
 
-    cout<<"fcalNode is "<<fcalNode<<endl;
+    /*TGeoNode* MagNode = (TGeoNode *) hallNode->GetNodes()->FindObject("IYOK_1");
+    cout<<"Mag Node is: "<<MagNode<<std::endl;
+    MagNode->SetVisibility(0);*/
+
+    //cout<<"fcalNode is "<<fcalNode<<endl;
 
     gGeoManager->SetTopVolume(topVolume);
 

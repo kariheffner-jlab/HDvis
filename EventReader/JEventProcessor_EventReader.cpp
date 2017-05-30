@@ -353,6 +353,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
+            rt.Reset();
             Track_ps = new TEvePointSet();
 
 
@@ -370,8 +371,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                 if(step_loc.Z()>625 )
                     break;
 
-                if(step_loc.Z()<0)
+                if(step_loc.Z()<=0)
                     continue;
+
                 Track_ps->SetNextPoint(step_loc.X(), step_loc.Y(),step_loc.Z()); //FCAL alignment is 150.501,-349.986,147.406
                 //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
 
@@ -410,6 +412,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         gEve->AddElement(FCAL_bs);
         gEve->DoRedraw3D();
+        sleep(.01);
+        gEve->DoRedraw3D();
         //FCAL_ps->Destroy();
         //canvas->Update();
 
@@ -419,8 +423,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
     }   // <- unlock EventMutex
 
-    sleep(1);
-    //while(1);
+    sleep(10);
+
     //gEve->Redraw3D();
     /*int x;
     cin>>x;*/
