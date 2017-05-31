@@ -10,7 +10,7 @@ list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
 
 #---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
-find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve TMVA)
+find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve TMVA Gui)
 
 #---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
 include(${ROOT_USE_FILE})
@@ -30,9 +30,10 @@ link_directories(
 
 
 add_definitions(${ROOT_CXX_FLAGS})
-#ROOT_GENERATE_DICTIONARY(G__Event Event.h LINKDEF EventLinkDef.h)
+
+ROOT_GENERATE_DICTIONARY(G__GuiListener GuiListener.h LINKDEF GuiListenerLinkDef.h)
 #---Create a shared library with geneated dictionary
-#add_library(Event SHARED Event.cxx G__Event.cxx)
+add_library(GuiListener SHARED GuiListener.cpp G__GuiListener.cxx)
 
 
 include_directories(
@@ -66,6 +67,7 @@ target_link_libraries(EveGeo
 )
 
 target_link_libraries(EveStandAlone
+        GuiListener
 
         #sim-recon
         DANA

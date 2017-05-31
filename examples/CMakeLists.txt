@@ -33,6 +33,7 @@ add_executable(evex_boxset boxset.cpp)
 add_executable(evex_track track.cpp)
 add_executable(evex_pointset pointset.cpp)
 add_executable(evex_alice_vsd alice_vsd.cpp)
+add_executable(evex_arrow_embedded arrow_embedded.cpp)
 
 
 target_link_libraries(evex_calorimeters ${ROOT_LIBRARIES})
@@ -42,3 +43,4 @@ target_link_libraries(evex_boxset ${ROOT_LIBRARIES})
 target_link_libraries(evex_track ${ROOT_LIBRARIES})
 target_link_libraries(evex_pointset ${ROOT_LIBRARIES})
 target_link_libraries(evex_alice_vsd ${ROOT_LIBRARIES})
+target_link_libraries(evex_arrow_embedded ${ROOT_LIBRARIES})
