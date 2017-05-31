@@ -5,6 +5,7 @@
 #include <TEvePointSet.h>
 #include <TRACKING/DReferenceTrajectory.h>
 #include <PID/DChargedTrack.h>
+#include <TEveManager.h>
 
 #ifndef EVESTANDALONE_TRACKING_H
 #define EVESTANDALONE_TRACKING_H
@@ -27,7 +28,7 @@ public:
     };
 
 
-    vector<TEvePointSet*>Get_DChargedTracks(vector<const DChargedTrack*> ChargedTracks)
+    void Add_DChargedTracks(vector<const DChargedTrack*> ChargedTracks)
     {
         vector<TEvePointSet*> Track_points;
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
@@ -70,7 +71,10 @@ public:
             }
             Track_points.push_back(Track_ps);
         }
-        return Track_points;
+        for (int i = 0; i < Track_points.size(); i++) {
+            gEve->AddElement(Track_points[i]);
+        }
+
     }
 private:
     DReferenceTrajectory* rt;

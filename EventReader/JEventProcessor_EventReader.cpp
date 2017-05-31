@@ -9,29 +9,8 @@
 #include <TEveEventManager.h>
 #include "JEventProcessor_EventReader.h"
 #include "Tracking.h"
-#include <FDC/DFDCHit.h>
-#include <FCAL/DFCALHit.h>
-#include <FCAL/DFCALDigiHit.h>
-#include <FCAL/DFCALCluster.h>
-#include <FCAL/DFCALShower.h>
-#include <FCAL/DFCALTruthShower.h>
+#include "FCAL.h"
 #include <TRACKING/DTrackCandidate.h>
-#include <PID/DChargedTrack.h>
-#include <TRACKING/DReferenceTrajectory.h>
-
-#include <TGLViewer.h>
-#include <TCanvas.h>
-#include <TEveViewer.h>
-#include <TEveGedEditor.h>
-#include <TEveScene.h>
-#include <TEveCaloLegoEditor.h>
-#include <TEveCaloLegoOverlay.h>
-#include <TEveCaloLegoGL.h>
-#include <TEveBrowser.h>
-#include <TEveTrans.h>
-#include <TEveCaloLegoOverlay.h>
-#include <TEveLegoEventHandler.h>
-#include <TGLWidget.h>
 #include <TEveGeoNode.h>
 
 
@@ -43,32 +22,14 @@ extern string OUTPUT_FILENAME;
 
 #define ansi_escape        ((char)0x1b)
 #define ansi_bold        ansi_escape<<"[1m"
-#define ansi_black        ansi_escape<<"[30m"
 #define ansi_red        ansi_escape<<"[31m"
-#define ansi_green        ansi_escape<<"[32m"
-#define ansi_blue        ansi_escape<<"[34m"
 #define ansi_normal        ansi_escape<<"[0m"
-#define ansi_up(A)        ansi_escape<<"["<<(A)<<"A"
-#define ansi_down(A)    ansi_escape<<"["<<(A)<<"B"
-#define ansi_forward(A)    ansi_escape<<"["<<(A)<<"C"
-#define ansi_back(A)    ansi_escape<<"["<<(A)<<"D"
 
 // Routine used to create our JEventProcessor
-#include <JANA/JApplication.h>
-#include <JANA/JFactory.h>
-#include <TEveCaloData.h>
 #include <TEveManager.h>
 #include <mutex>
-#include <DANA/DApplication.h>
-extern DApplication *gDana;
 
-extern "C" {
-void InitPlugin(JApplication *app) {
-    InitJANAPlugin(app);
-    TGeoNode *hall;
-    //app->AddProcessor(new JEventProcessor_EventReader(hall));
-}
-} // "C"
+extern DApplication *gDana;
 
 extern std::mutex gEventMutex;
 
@@ -77,8 +38,7 @@ extern std::mutex gEventMutex;
 //------------------
 JEventProcessor_EventReader::JEventProcessor_EventReader(TGeoNode *node) {
     hallD = node;
-    //gEve->AddElement(FCAL_ps);
-    ROOTfile = NULL;
+
     h2 = new TH2F("FCAL Hits", "FCAL Hits", 100, -50, 50, 100, -50, 50);
 
     data = new TEveCaloDataHist();
@@ -130,13 +90,7 @@ JEventProcessor_EventReader::JEventProcessor_EventReader(TGeoNode *node) {
 //------------------
 JEventProcessor_EventReader::~JEventProcessor_EventReader() {
 //Close the ROOT file
-    if (ROOTfile != NULL) {
-        ROOTfile->Write();
-        ROOTfile->Close();
-        delete ROOTfile;
-        ROOTfile = NULL;
-        cout << endl << "Closed ROOT file" << endl;
-    }
+
 }
 
 //------------------
@@ -145,22 +99,8 @@ JEventProcessor_EventReader::~JEventProcessor_EventReader() {
 jerror_t JEventProcessor_EventReader::init(void) {
     // This is called once at program startup.
     // open ROOT file
-    FCAL_ps->SetOwnIds(kTRUE);
-    Track_ps->SetOwnIds(kTRUE);
+    gEve->AddElement(dummy);
 
-    TEveRGBAPalette* pal = new TEveRGBAPalette(0, 130);
-
-    FCAL_bs->SetPalette(pal);
-    //FCAL_bs->SetFrame(frm);
-    FCAL_bs->Reset(TEveBoxSet::kBT_AABox, kFALSE, 64);
-    gEve->AddElement(FCAL_bs);
-    ROOTfile = new TFile(OUTPUT_FILENAME.c_str(), "RECREATE", "Produced by hd_root");
-    if (!ROOTfile->IsOpen()) {
-        cout << "Cannot open ROOT file. Quitting now." << endl;
-        exit(0);
-    }
-
-    cout << "Opened ROOT file \"" << OUTPUT_FILENAME << "\" ..." << endl;
     return NOERROR;
 }
 
@@ -211,7 +151,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     for (unsigned int i = 0; i < toprint.size(); i++) {
         string name = toprint[i];
         string tag = "";
-        unsigned int pos = name.rfind(":", name.size() - 1);
+        unsigned int pos = uint(name.rfind(":", name.size() - 1));
         if (pos != (unsigned int) string::npos) {
             tag = name.substr(pos + 1, name.size());
             name.erase(pos);
@@ -222,8 +162,8 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
         fac_info.push_back(f);
     }
 
-    Bfield=gDana->GetBfield(runnumber);
-    RootGeom=gDana->GetRootGeom(runnumber);
+    Bfield=gDana->GetBfield(uint(runnumber));
+    RootGeom=gDana->GetRootGeom(uint(runnumber));
     cout << endl;
 
     return NOERROR;
@@ -264,10 +204,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                 }
             }
         }
-        //FCAL_ps=new TEvePointSet();gEve->GetCurrentEvent()->DestroyElements();
-        //FCAL_ps->Reset();
-        //gEve->DoRedraw3D();
-
 
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DTrackCandidate *> TrackCandidates;
@@ -286,104 +222,30 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TrackCandidates);
         loop->Get(ChargedTracks);
 
-
-
-        if (FCALHits.size() ==
-            0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
-            //std::cout<<"skip"<<std::endl;
+        //Skips the first few non-Physics events (find a better way)
+        if (FCALHits.size() ==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
             return NOERROR;
         }
 
+        //Clear the event...unless it is empty
+        gEve->GetCurrentEvent()->DestroyElements();
+
+        //Setup the tracking to display tracking info
         Tracking Tracks(Bfield,RootGeom);
 
-        /*for (int i = 0; i < FCAL_points.size(); i++) {
-            gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
-        }
+        //Will take the Charged Tracks given and visualize them
+        Tracks.Add_DChargedTracks(ChargedTracks);
 
-        for (int i = 0; i <Track_points.size(); i++) {
-            gEve->GetCurrentEvent()->RemoveElement(Track_points[i]);
-        }
+        //Decalre the FCAL "module"
+        FCAL FCALDet;
+        //Take the hits and visualize them
+        FCALDet.Add_FCALHits(FCALHits);
 
-        gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
-        */
-        gEve->GetCurrentEvent()->DestroyElements();
-        FCAL_points.clear();
-        Track_points.clear();
-
-
-
-        FCAL_bs = new TEveBoxSet("FCAL_hits");
-        TEveRGBAPalette* pal = new TEveRGBAPalette(-150,150);
-
-        FCAL_bs->SetPalette(pal);
-        //FCAL_bs->SetFrame(frm);
-        FCAL_bs->Reset(TEveBoxSet::kBT_AABox, kTRUE, 64);
-
-        //h2->Reset();
-        for (uint i = 0; i < FCALHits.size(); i++) {
-            FCAL_ps = new TEvePointSet();
-            //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<"|"<<FCALHits[i]->E<<std::endl;
-            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y,
-                                  500 + 173.906); //FCAL alignment is 150.501,-349.986,147.406
-            //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
-            FCAL_ps->SetMainColorRGB((FCALHits[i]->E * 10), 0., 0.);
-            FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
-            FCAL_ps->SetMarkerSize(1);
-            FCAL_ps->SetMarkerStyle(4);
-            FCAL_ps->SetElementName(Form("FCAL point %i", i));
-            FCAL_points.push_back(FCAL_ps);
-            h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
-
-            FCAL_bs->AddBox(FCALHits[i]->x - 1, FCALHits[i]->y - 1, 500 + 173.9, 2, 2,
-                            FCALHits[i]->E * 100/*20*log(FCALHits[i]->E*1000)*/);
-
-            int redness = 255;
-            if (abs(FCALHits[i]->t) * 10 < 255)
-                redness = abs(FCALHits[i]->t) * 10;
-
-            if (FCALHits[i]->t >= 0.0)
-                FCAL_bs->DigitColor(redness, 0, 0, 50);
-                //FCAL_bs->DigitValue(FCALHits[i]->t);
-            else
-                FCAL_bs->DigitColor(0, redness, 0, 50);
-            //FCAL_bs->DigitColor(0,abs(FCALHits[i]->t),0);
-        }
-
-        Track_points=Tracks.Get_DChargedTracks(ChargedTracks);
-
-
-        h2->SetStats(0);
-        h2->Draw("colzsame");
-
-        data->AddHistogram(h2);
-
-        //TGeoNode *fcalNode = (TGeoNode *) hallD->GetNodes()->FindObject("FCAL_1");
-        //cout<<"fcalNode is "<<fcalNode<<endl;
-
-
-       /* for (int i = 0; i < FCAL_points.size(); i++) {
-            gEve->AddElement(FCAL_points[i]);
-        }*/
-
-         for (int i = 0; i < Track_points.size(); i++) {
-            gEve->AddElement(Track_points[i]);
-        }
-
-        gEve->AddElement(FCAL_bs);
-        //gEve->FullRedraw3D();//This crashes on event8....
-
-        //sleep(.01);
-        //gEve->Redraw3D();
-        //FCAL_ps->Destroy();
-        //canvas->Update();
-
-        //gEve->GetEventScene()->Draw();
-
-        //     jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
-        sleep(.5);
+        //Redraw the scene(s)
+        sleep(1);
         gEve->FullRedraw3D();
-        sleep(.5);
-        //gEve->DoRedraw3D();
+        sleep(1);
+
     }   // <- unlock EventMutex
 
     _waitingLogic.Wait();

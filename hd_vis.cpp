@@ -310,7 +310,7 @@ int main(int narg, char *argv[])
     TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetTopVolume()->FindNode("HALL_1");
     //hallNode->Draw();
     //cout<<"hallNode is "<<hallNode<<endl;
-    cout<<hallNode->GetMotherVolume()<<endl;
+    //cout<<hallNode->GetMotherVolume()<<endl;
 
     TGeoNode* fcalNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FCAL_1");
     //cout<<"fcalNode is "<<fcalNode<<endl;

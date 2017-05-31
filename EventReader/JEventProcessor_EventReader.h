@@ -38,7 +38,6 @@
 
 #include "WaitingLogic.h"
 
-//"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
 extern vector<string> toprint;
 extern bool ACTIVATE_ALL;
 
@@ -63,16 +62,12 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		}factory_info_t;
 		vector<factory_info_t> fac_info;
 
-		TFile *ROOTfile ;
 		TH2F* h2;
         TGeoNode* hallD;
-		TEvePointSet* FCAL_ps=new TEvePointSet();
-		TEveBoxSet* FCAL_bs=new TEveBoxSet("FCAL_Hits");
-        vector<TEvePointSet*> FCAL_points;
+		TEveBoxSet* dummy=new TEveBoxSet();
 		DMagneticFieldMap* Bfield;
         DRootGeom* RootGeom;
         TEvePointSet* Track_ps=new TEvePointSet();
-        vector<TEvePointSet*> Track_points;
 
 		void ProceedToNextEvent(){_waitingLogic.ProceedToNextEvent();}
         void SetAutoPlay(bool value){_waitingLogic.SetAutoPlay(value);}
