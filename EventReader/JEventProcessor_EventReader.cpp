@@ -411,7 +411,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
 
         gEve->AddElement(FCAL_bs);
-        gEve->FullRedraw3D();
+        //gEve->FullRedraw3D();//This crashes on event8....
+
         //sleep(.01);
         //gEve->Redraw3D();
         //FCAL_ps->Destroy();
@@ -420,7 +421,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //gEve->GetEventScene()->Draw();
 
         //     jout<<"this event has: "<<FCALHits.size()<<" FCALHits "<<FCALDigiHits.size()<<" FCALDigiHits "<<FCALClusters.size()<< " Clusters "<<FCALShowers.size()<<" showers and "<<FCALTruthShowers.size()<<" TruthShowers "<<endl;
-
+        sleep(.5);
+        gEve->FullRedraw3D();
+        sleep(.5);
+        //gEve->DoRedraw3D();
     }   // <- unlock EventMutex
 
     _waitingLogic.Wait();

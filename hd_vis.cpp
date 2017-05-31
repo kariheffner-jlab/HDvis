@@ -332,6 +332,7 @@ int main(int narg, char *argv[])
     TGeoNode* Det6Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET6_1");
     Det6Node->SetVisibility(0);
 
+
     TGeoNode* MagNode1 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYUP_1");
     MagNode1->SetVisibility(0);
 
@@ -340,7 +341,7 @@ int main(int narg, char *argv[])
 
     TGeoNode* MagNode3 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYDN_1");
     MagNode3->SetVisibility(0);
-
+/*
     TGeoNode* BarrelCap =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSU_1");
     BarrelCap->SetVisibility(0);
 
@@ -355,16 +356,20 @@ int main(int narg, char *argv[])
 
     TGeoNode* BarrelCap5 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ1_1");
     BarrelCap5->SetVisibility(0);
+*/
 
-    TGeoNode* CDCCab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
-    CDCCab->SetVisibility(0);
+    //The lines below actually crash the first event on track draw....for some reason.  May need a copy of the geometry seperately....
+    /*
+    //TGeoNode* BCSDNone =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSD_1");
+    //BCSDNone->SetVisibility(0);
+
+    //TGeoNode* CDCBcab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
+    //CDCBcab->SetVisibility(0);
 
     //TGeoNode* BCALCab2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
    // BCALCab2->SetVisibility(0);
+*/
 
-    /*TGeoNode* MagNode = (TGeoNode *) hallNode->GetNodes()->FindObject("IYOK_1");
-    cout<<"Mag Node is: "<<MagNode<<std::endl;
-    MagNode->SetVisibility(0);*/
 
     //cout<<"fcalNode is "<<fcalNode<<endl;
 
