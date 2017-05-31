@@ -319,7 +319,6 @@ int main(int narg, char *argv[])
     cout<<"tofNode is "<<tofNode<<endl;
     //TGeoTranslation shift(-150,350,500);
 
-
     //add independent
     TGeoMaterial *matVacuum = new TGeoMaterial("Vacuum", 0,0,0);
     TGeoMedium *Vacuum = new TGeoMedium("Vacuum",1, matVacuum);
@@ -333,6 +332,36 @@ int main(int narg, char *argv[])
     TGeoNode* Det6Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET6_1");
     Det6Node->SetVisibility(0);
 
+    TGeoNode* MagNode1 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYUP_1");
+    MagNode1->SetVisibility(0);
+
+    TGeoNode* MagNode2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYOK_1");
+    MagNode2->SetVisibility(0);
+
+    TGeoNode* MagNode3 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYDN_1");
+    MagNode3->SetVisibility(0);
+
+    TGeoNode* BarrelCap =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSU_1");
+    BarrelCap->SetVisibility(0);
+
+    TGeoNode* BarrelCap2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ4_1");
+    BarrelCap2->SetVisibility(0);
+
+    TGeoNode* BarrelCap3 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ3_1");
+    BarrelCap3->SetVisibility(0);
+
+    TGeoNode* BarrelCap4 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ2_1");
+    BarrelCap4->SetVisibility(0);
+
+    TGeoNode* BarrelCap5 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ1_1");
+    BarrelCap5->SetVisibility(0);
+
+    TGeoNode* CDCCab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
+    CDCCab->SetVisibility(0);
+
+    //TGeoNode* BCALCab2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
+   // BCALCab2->SetVisibility(0);
+
     /*TGeoNode* MagNode = (TGeoNode *) hallNode->GetNodes()->FindObject("IYOK_1");
     cout<<"Mag Node is: "<<MagNode<<std::endl;
     MagNode->SetVisibility(0);*/
@@ -345,6 +374,7 @@ int main(int narg, char *argv[])
 
 
     gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
+    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
 	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
     TEveWindowSlot* slot = 0;
     slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
@@ -360,8 +390,6 @@ int main(int narg, char *argv[])
     gEve->GetBrowser()->GetTabRight()->SetTab(1);
 
     // --- Redraw ---
-
-
 
     //RunRootApp();
 
