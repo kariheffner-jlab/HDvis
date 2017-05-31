@@ -341,7 +341,7 @@ int main(int narg, char *argv[])
 
     TGeoNode* MagNode3 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYDN_1");
     MagNode3->SetVisibility(0);
-/*
+
     TGeoNode* BarrelCap =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSU_1");
     BarrelCap->SetVisibility(0);
 
@@ -356,19 +356,19 @@ int main(int narg, char *argv[])
 
     TGeoNode* BarrelCap5 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ1_1");
     BarrelCap5->SetVisibility(0);
-*/
+
 
     //The lines below actually crash the first event on track draw....for some reason.  May need a copy of the geometry seperately....
-    /*
-    //TGeoNode* BCSDNone =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSD_1");
-    //BCSDNone->SetVisibility(0);
 
-    //TGeoNode* CDCBcab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
-    //CDCBcab->SetVisibility(0);
+    TGeoNode* BCSDNode =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSD_1");
+    BCSDNode->SetVisibility(0);
+
+    TGeoNode* CDCBcab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
+    CDCBcab->SetVisibility(0);
 
     //TGeoNode* BCALCab2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
    // BCALCab2->SetVisibility(0);
-*/
+
 
 
     //cout<<"fcalNode is "<<fcalNode<<endl;
