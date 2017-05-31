@@ -296,7 +296,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         Tracking Tracks(Bfield,RootGeom);
 
-        for (int i = 0; i < FCAL_points.size(); i++) {
+        /*for (int i = 0; i < FCAL_points.size(); i++) {
             gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
         }
 
@@ -304,8 +304,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             gEve->GetCurrentEvent()->RemoveElement(Track_points[i]);
         }
 
-            gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
-        //gEve->GetCurrentEvent()->DestroyElements();
+        gEve->GetCurrentEvent()->RemoveElement(FCAL_bs);
+        */
+        gEve->GetCurrentEvent()->DestroyElements();
         FCAL_points.clear();
         Track_points.clear();
 
