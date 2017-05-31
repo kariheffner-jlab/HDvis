@@ -423,8 +423,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
     }   // <- unlock EventMutex
 
-    sleep(1);
-    while(1);
+    _waitingLogic.Wait();
+
 
     //gEve->Redraw3D();
     /*int x;

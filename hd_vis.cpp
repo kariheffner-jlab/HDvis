@@ -18,6 +18,7 @@
 #include <TEveGeoNode.h>
 #include <mutex>
 #include <GuiListener.h>
+#include <functional>
 
 using namespace std;
 
@@ -369,12 +370,23 @@ int main(int narg, char *argv[])
 	myproc->setRootApplication(gApp);
     myproc->setCanvas(gEve->AddCanvasTab("FCAL histogram"));
 
+    // Wire GUI buttons to myproc actions
+    gGuiListener.WhenNextEventFired = [myproc](){
+        std::cout<<"WOOOOOOOOOOORRRRRKKKKKKSSSSSS AAAAAA !!!!!!!!!11111oneoneone"<<std::endl;
+        myproc->ProceedToNextEvent();
+    };
+
+    gGuiListener.WhenAutoplayCheckedChanged = [myproc](bool t){
+        std::cout<<"Autoplay changed to: "<<t<<std::endl;
+        myproc->SetAutoPlay(t);
+    };
+
     gEve->FullRedraw3D(kTRUE);
     gEve->EditElement(sv);
 
-    //std::thread t1(RunRootApp);
+    std::thread t1(RunRootApp);
 
-    RunRootApp();
+    //RunRootApp();
 	// Decide on the output filename
 	DecideOutputFilename();
 	

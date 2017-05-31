@@ -36,6 +36,8 @@
 #include <HDGEOMETRY/DRootGeom.h>
 
 
+#include "WaitingLogic.h"
+
 //"/group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/jana/jana_0.7.7p1/Linux_CentOS7-x86_64-gcc4.8.5/include/JANA/JEventProcessor.h"
 extern vector<string> toprint;
 extern bool ACTIVATE_ALL;
@@ -72,6 +74,9 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
         TEvePointSet* Track_ps=new TEvePointSet();
         vector<TEvePointSet*> Track_points;
 
+		void ProceedToNextEvent(){_waitingLogic.ProceedToNextEvent();}
+        void SetAutoPlay(bool value){_waitingLogic.SetAutoPlay(value);}
+
 
 
 	private:
@@ -83,6 +88,8 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		TCanvas *canvas;
 		TApplication *mApplication;
         TEveCaloDataHist* data;
+        WaitingLogic _waitingLogic;
+
 };
 
 #endif // _JEventProcessor_EventReader_
