@@ -8,6 +8,7 @@
 #include <thread>
 #include <TEveEventManager.h>
 #include "JEventProcessor_EventReader.h"
+#include "Tracking.h"
 #include <FDC/DFDCHit.h>
 #include <FCAL/DFCALHit.h>
 #include <FCAL/DFCALDigiHit.h>
@@ -286,11 +287,14 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(ChargedTracks);
 
 
+
         if (FCALHits.size() ==
             0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
             //std::cout<<"skip"<<std::endl;
             return NOERROR;
         }
+
+        Tracking Tracks(Bfield,RootGeom);
 
         for (int i = 0; i < FCAL_points.size(); i++) {
             gEve->GetCurrentEvent()->RemoveElement(FCAL_points[i]);
@@ -318,7 +322,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         for (uint i = 0; i < FCALHits.size(); i++) {
             FCAL_ps = new TEvePointSet();
             //std::cout<<FCALHits[i]->x<<","<<FCALHits[i]->y<<"|"<<FCALHits[i]->E<<std::endl;
-            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y,500+173.906); //FCAL alignment is 150.501,-349.986,147.406
+            FCAL_ps->SetNextPoint(FCALHits[i]->x, FCALHits[i]->y,
+                                  500 + 173.906); //FCAL alignment is 150.501,-349.986,147.406
             //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
             FCAL_ps->SetMainColorRGB((FCALHits[i]->E * 10), 0., 0.);
             FCAL_ps->SetPointId(new TNamed(Form("Point %d", i), ""));
@@ -328,69 +333,22 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             FCAL_points.push_back(FCAL_ps);
             h2->Fill(FCALHits[i]->x, FCALHits[i]->y);
 
-            FCAL_bs->AddBox(FCALHits[i]->x-1, FCALHits[i]->y-1, 500+173.9,2, 2,  FCALHits[i]->E*100/*20*log(FCALHits[i]->E*1000)*/);
+            FCAL_bs->AddBox(FCALHits[i]->x - 1, FCALHits[i]->y - 1, 500 + 173.9, 2, 2,
+                            FCALHits[i]->E * 100/*20*log(FCALHits[i]->E*1000)*/);
 
-            int redness=255;
-            if(abs(FCALHits[i]->t)*10<255)
-                redness=abs(FCALHits[i]->t)*10;
+            int redness = 255;
+            if (abs(FCALHits[i]->t) * 10 < 255)
+                redness = abs(FCALHits[i]->t) * 10;
 
-            if(FCALHits[i]->t>=0.0)
-                FCAL_bs->DigitColor(redness, 0,0,50);
+            if (FCALHits[i]->t >= 0.0)
+                FCAL_bs->DigitColor(redness, 0, 0, 50);
                 //FCAL_bs->DigitValue(FCALHits[i]->t);
             else
-                FCAL_bs->DigitColor(0,redness,0,50);
-                //FCAL_bs->DigitColor(0,abs(FCALHits[i]->t),0);
+                FCAL_bs->DigitColor(0, redness, 0, 50);
+            //FCAL_bs->DigitColor(0,abs(FCALHits[i]->t),0);
         }
 
-        int RMAX_INTERIOR=65;
-        int RMAX_EXTERIOR=89;
-        DReferenceTrajectory rt(Bfield);
-        rt.Rsqmax_interior = RMAX_INTERIOR*RMAX_INTERIOR;//innerBCAL radius
-        rt.Rsqmax_exterior = RMAX_EXTERIOR*RMAX_EXTERIOR;
-
-        rt.SetDRootGeom(RootGeom);
-        rt.SetDGeometry(NULL);
-
-        for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
-        {
-            rt.Reset();
-            Track_ps = new TEvePointSet();
-
-
-            rt.SetMass(ChargedTracks[i]->Get_BestFOM()->mass());
-            //rt.SetMass(TrackCandidates[i]->mass());
-
-            rt.Swim(ChargedTracks[i]->Get_BestFOM()->position(), ChargedTracks[i]->Get_BestFOM()->momentum(), ChargedTracks[i]->Get_BestFOM()->charge());
-            //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
-            DReferenceTrajectory::swim_step_t* steps =rt.swim_steps;
-
-            for(int j=0; j<rt.Nswim_steps; j++)
-            {
-                DVector3 step_loc=steps[j].origin;
-                //cout<<i<<"|"<<step_loc.X()<<","<<step_loc.Y()<<","<<step_loc.Z()<<endl;
-                if(step_loc.Z()>625 )
-                    break;
-
-                if(step_loc.Z()<=0)
-                    continue;
-
-                Track_ps->SetNextPoint(step_loc.X(), step_loc.Y(),step_loc.Z()); //FCAL alignment is 150.501,-349.986,147.406
-                //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
-
-                //if(TrackCandidates[i]->charge()==1)
-                if(ChargedTracks[i]->Get_BestFOM()->charge()==1)
-                    Track_ps->SetMainColorRGB(0,float(250.), 0.);
-                else
-                    Track_ps->SetMainColorRGB(float(250.),0, 0.);
-
-                Track_ps->SetPointId(new TNamed(Form("Track Point %d", i), ""));
-                Track_ps->SetMarkerSize(1);
-                Track_ps->SetMarkerStyle(4);
-                Track_ps->SetElementName(Form("Track points %i", i));
-
-            }
-            Track_points.push_back(Track_ps);
-        }
+        Track_points=Tracks.Get_DChargedTracks(ChargedTracks);
 
 
         h2->SetStats(0);

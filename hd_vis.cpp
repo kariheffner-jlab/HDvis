@@ -332,29 +332,30 @@ int main(int narg, char *argv[])
     TGeoNode* Det6Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET6_1");
     Det6Node->SetVisibility(0);
 
+    TGeoNode* LASSNode = (TGeoNode*) hallNode->GetNodes()->FindObject("LASS_1");
 
-    TGeoNode* MagNode1 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYUP_1");
+    TGeoNode* MagNode1 =(TGeoNode*) LASSNode->GetNodes()->FindObject("IYUP_1");
     MagNode1->SetVisibility(0);
 
-    TGeoNode* MagNode2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYOK_1");
+    TGeoNode* MagNode2 =(TGeoNode*) LASSNode->GetNodes()->FindObject("IYOK_1");
     MagNode2->SetVisibility(0);
 
-    TGeoNode* MagNode3 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("IYDN_1");
+    TGeoNode* MagNode3 =(TGeoNode*) LASSNode->GetNodes()->FindObject("IYDN_1");
     MagNode3->SetVisibility(0);
 
-    TGeoNode* BarrelCap =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSU_1");
+    TGeoNode* BarrelCap =(TGeoNode*) LASSNode->GetNodes()->FindObject("BCSU_1");
     BarrelCap->SetVisibility(0);
 
-    TGeoNode* BarrelCap2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ4_1");
+    TGeoNode* BarrelCap2 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ4_1");
     BarrelCap2->SetVisibility(0);
 
-    TGeoNode* BarrelCap3 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ3_1");
+    TGeoNode* BarrelCap3 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ3_1");
     BarrelCap3->SetVisibility(0);
 
-    TGeoNode* BarrelCap4 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ2_1");
+    TGeoNode* BarrelCap4 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ2_1");
     BarrelCap4->SetVisibility(0);
 
-    TGeoNode* BarrelCap5 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("FDQ1_1");
+    TGeoNode* BarrelCap5 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ1_1");
     BarrelCap5->SetVisibility(0);
 
 
