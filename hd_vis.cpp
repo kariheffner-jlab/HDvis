@@ -400,7 +400,7 @@ int main(int narg, char *argv[])
     //RunRootApp();
 
 	// Instantiate our event processor
-    auto myproc = new JEventProcessor_EventReader(hallNode);
+    auto myproc = new JEventProcessor_EventReader();
 	myproc->setRootApplication(gApp);
     myproc->setCanvas(gEve->AddCanvasTab("FCAL histogram"));
 

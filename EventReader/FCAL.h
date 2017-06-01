@@ -63,10 +63,10 @@ public:
             //FCAL_shower->AddEllipticCone(0,  0, 6, 6);
             FCAL_shower->SetApex(show_pos);
             //FCAL_shower->SetCylinder(1,1);
-            TRandom3 r(0);
+            //TRandom3 r(0);
 
 
-            FCAL_shower->AddCone(r.Uniform(0., 3.14), r.Uniform(0., 3.14), 10., 26.5);
+            FCAL_shower->AddCone(1.4, 1.2, 10., 26.5);
             FCAL_shower->SetMainColorRGB(float(255), 255, 0);
             FCAL_shower->SetMainAlpha(.75);
 

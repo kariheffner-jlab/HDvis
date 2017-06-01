@@ -43,7 +43,7 @@ extern bool ACTIVATE_ALL;
 
 class JEventProcessor_EventReader:public jana::JEventProcessor{
 	public:
-		JEventProcessor_EventReader(TGeoNode* node);
+		JEventProcessor_EventReader();
 		~JEventProcessor_EventReader();
 		const char* className(void){return "JEventProcessor_EventReader";}
 		void setRootApplication(TApplication *app)
@@ -63,7 +63,6 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		vector<factory_info_t> fac_info;
 
 		TH2F* h2;
-        TGeoNode* hallD;
 		TEveBoxSet* dummy=new TEveBoxSet();
 		DMagneticFieldMap* Bfield;
         DRootGeom* RootGeom;

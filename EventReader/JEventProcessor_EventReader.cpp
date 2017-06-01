@@ -37,9 +37,7 @@ extern std::mutex gEventMutex;
 //------------------
 // JEventProcessor_EventReader (Constructor)
 //------------------
-JEventProcessor_EventReader::JEventProcessor_EventReader(TGeoNode *node) {
-    hallD = node;
-
+JEventProcessor_EventReader::JEventProcessor_EventReader() {
     h2 = new TH2F("FCAL Hits", "FCAL Hits", 100, -50, 50, 100, -50, 50);
 
     data = new TEveCaloDataHist();
