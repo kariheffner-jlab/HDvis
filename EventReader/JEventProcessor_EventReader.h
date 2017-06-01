@@ -35,6 +35,7 @@
 #include <HDGEOMETRY/DMagneticFieldMap.h>
 #include <HDGEOMETRY/DRootGeom.h>
 
+#include <RootLoopCommander.h>
 
 #include "WaitingLogic.h"
 
@@ -43,7 +44,7 @@ extern bool ACTIVATE_ALL;
 
 class JEventProcessor_EventReader:public jana::JEventProcessor{
 	public:
-		JEventProcessor_EventReader();
+		JEventProcessor_EventReader(hdvis::RootLoopCommander &rootLoopCommander);
 		~JEventProcessor_EventReader();
 		const char* className(void){return "JEventProcessor_EventReader";}
 		void setRootApplication(TApplication *app)
@@ -82,6 +83,7 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		TApplication *mApplication;
         TEveCaloDataHist* data;
         WaitingLogic _waitingLogic;
+        hdvis::RootLoopCommander &_rootLoopCommander;
 
 };
 

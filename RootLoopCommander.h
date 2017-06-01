@@ -9,16 +9,22 @@
 #include <atomic>
 #include <chrono>
 #include <thread>
+#include <mutex>
 
 namespace hdvis {
 
     class RootLoopCommander {
     public:
+        /// Mutex between ROOT graphical thread and EvenRead function
+        static std::mutex InnerLoopMutex;
+
+
         RootLoopCommander() :
                 _mustRedraw3D(false) {
         }
 
-        void Redraw3D() {
+        /// Root GUI loop will
+        void EveFullRedraw3D() {
             _mustRedraw3D = true;
         }
 
@@ -33,6 +39,7 @@ namespace hdvis {
 
     protected:
         std::atomic<bool> _mustRedraw3D;
+
 
     };
 }

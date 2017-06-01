@@ -37,7 +37,10 @@ extern std::mutex gEventMutex;
 //------------------
 // JEventProcessor_EventReader (Constructor)
 //------------------
-JEventProcessor_EventReader::JEventProcessor_EventReader() {
+JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::RootLoopCommander &rootLoopCommander):
+    _rootLoopCommander(rootLoopCommander)
+
+{
     h2 = new TH2F("FCAL Hits", "FCAL Hits", 100, -50, 50, 100, -50, 50);
 
     data = new TEveCaloDataHist();
@@ -186,9 +189,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
-    while (!gEventMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
+    while (!hdvis::RootLoopCommander::InnerLoopMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
     {
-        std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
+        std::lock_guard<std::mutex> eventMutexLockGuard(hdvis::RootLoopCommander::InnerLoopMutex, std::adopt_lock);
 
         for (unsigned int i = 0; i < toprint.size(); i++) {
             string name = fac_info[i].dataClassName;
@@ -249,16 +252,18 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //FCALDet.Add_FCALShowers(FCALShowers);
 
         //Redraw the scene(s)
-        sleep(1);
-        gEve->FullRedraw3D();
-        sleep(1);
+        //sleep(1);
+        //gEve->FullRedraw3D();
+        //sleep(1);
+        _rootLoopCommander.EveFullRedraw3D();
+
 
     }   // <- unlock EventMutex
 
     _waitingLogic.Wait();
 
 
-    //gEve->Redraw3D();
+    //gEve->EveFullRedraw3D();
     /*int x;
     cin>>x;*/
     return NOERROR;

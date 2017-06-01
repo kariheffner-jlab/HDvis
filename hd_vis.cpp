@@ -19,6 +19,7 @@
 #include <mutex>
 #include <GuiListener.h>
 #include <functional>
+#include "RootLoop.h"
 
 using namespace std;
 
@@ -37,9 +38,8 @@ void Usage(void);
 
 TApplication *gApp;
 DApplication *gDana;
+hdvis::RootLoop gRootLoop;
 
-
-std::mutex gEventMutex;     /// Mutex between ROOT graphical thread and EvenRead function
 GuiListener gGuiListener;
 
 
@@ -56,30 +56,6 @@ TGCheckButton *fShowTrajectoriesButton;
 TGCheckButton *fShowG4HitsButton;
 
 TGTextButton *fDrawXDigitsButton;
-
-void RunRootApp()
-{
-    // Here is what happens in gApp->Run();
-    // 3 root functions should be called in this order:
-    // gApplication->StartIdleing() -> gSystem->InnerLoop() -> gApplication->StartIdleing()
-    // In this function we want to pause ROOT graphical thread, run EventRead, continue ROOT graph. thread
-    // In order to do it we use gEventMutex
-
-    gApplication->StartIdleing();
-
-    while (1) {
-
-        while(!gEventMutex.try_lock()) std::this_thread::yield();
-
-            std::lock_guard<std::mutex> eventMutexLockGuard(gEventMutex, std::adopt_lock);
-
-            gSystem->InnerLoop();
-            gApplication->StopIdleing();
-            gApplication->StartIdleing();
-
-    }
-}
-
 
 
 void MakeControlTab() {
@@ -400,7 +376,7 @@ int main(int narg, char *argv[])
     //RunRootApp();
 
 	// Instantiate our event processor
-    auto myproc = new JEventProcessor_EventReader();
+    auto myproc = new JEventProcessor_EventReader(gRootLoop.Commander());
 	myproc->setRootApplication(gApp);
     myproc->setCanvas(gEve->AddCanvasTab("FCAL histogram"));
 
@@ -415,10 +391,10 @@ int main(int narg, char *argv[])
         myproc->SetAutoPlay(t);
     };
 
-    gEve->FullRedraw3D(kTRUE);
-    gEve->EditElement(sv);
+    //gEve->FullRedraw3D(kTRUE);
+    //gEve->EditElement(sv);
 
-    std::thread t1(RunRootApp);
+    gRootLoop.RunRootAppMultithreaded();
 
     //RunRootApp();
 	// Decide on the output filename

@@ -56,7 +56,7 @@ set(SOURCE_FILES
         RootLoopCommander.h
         WaitingLogic.h
 
-        RootLoop.h)
+        RootLoop.h RootLoopCommander.cpp)
 set(GEO_SOURCE_FILES
         hd_vis_geo.cpp
         geometry.cpp
