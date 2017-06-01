@@ -67,7 +67,6 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		TEveBoxSet* dummy=new TEveBoxSet();
 		DMagneticFieldMap* Bfield;
         DRootGeom* RootGeom;
-        TEvePointSet* Track_ps=new TEvePointSet();
 
 		void ProceedToNextEvent(){_waitingLogic.ProceedToNextEvent();}
         void SetAutoPlay(bool value){_waitingLogic.SetAutoPlay(value);}

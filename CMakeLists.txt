@@ -51,7 +51,7 @@ set(SOURCE_FILES
         geometry.cpp
         EventReader/JEventProcessor_EventReader.cpp
 
-        EventReader/Tracking.h EventReader/FCAL.h)
+        EventReader/Tracking.h EventReader/FCAL.h EventReader/TOF.h)
 set(GEO_SOURCE_FILES
         hd_vis_geo.cpp
         geometry.cpp

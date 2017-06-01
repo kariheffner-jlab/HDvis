@@ -316,7 +316,7 @@ int main(int narg, char *argv[])
     //cout<<"fcalNode is "<<fcalNode<<endl;
 
     TGeoNode* tofNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FTOF_1");
-    cout<<"tofNode is "<<tofNode<<endl;
+    //cout<<"tofNode is "<<tofNode<<endl;
     //TGeoTranslation shift(-150,350,500);
 
     //add independent

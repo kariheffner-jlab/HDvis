@@ -10,6 +10,7 @@
 #include "JEventProcessor_EventReader.h"
 #include "Tracking.h"
 #include "FCAL.h"
+#include "TOF.h"
 #include <TRACKING/DTrackCandidate.h>
 #include <TEveGeoNode.h>
 
@@ -207,12 +208,15 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DTrackCandidate *> TrackCandidates;
+
         vector<const DFCALHit *> FCALHits;
         //vector<const DFDCHit *> FDCHits;
         //vector<const DFCALDigiHit *> FCALDigiHits;
         //vector<const DFCALCluster *> FCALClusters;
         vector<const DFCALShower *> FCALShowers;
         //vector<const DFCALTruthShower *> FCALTruthShowers;
+
+        vector<const DTOFPoint *> TOFPoints;
 
         loop->Get(FCALHits);
         //loop->Get(FCALDigiHits);
@@ -221,6 +225,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //loop->Get(FCALTruthShowers);
         loop->Get(TrackCandidates);
         loop->Get(ChargedTracks);
+        loop->Get(TOFPoints);
 
         //Skips the first few non-Physics events (find a better way)
         if (FCALHits.size() ==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
@@ -235,6 +240,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         //Will take the Charged Tracks given and visualize them
         Tracks.Add_DChargedTracks(ChargedTracks);
+
+        TOF TOFDet;
+        TOFDet.Add_TOFPoints(TOFPoints);
 
         //Decalre the FCAL "module"
         FCAL FCALDet;
