@@ -7,6 +7,8 @@
 
 #include <TEveBoxSet.h>
 #include <TEveManager.h>
+#include <TEveJetCone.h>
+#include <TRandom3.h>
 
 class FCAL
 {
@@ -42,6 +44,39 @@ public:
 
         }
         gEve->AddElement(FCAL_bs);
+    }
+    void Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
+    {
+
+        vector<TEveJetCone*> FCAL_showers;
+
+        for(uint i=0;i<FCALShowers.size();i++)
+        {
+            cout<<"totes shower"<<endl;
+            cout<<float(FCALShowers[i]->getPosition().X())<<","<<float(FCALShowers[i]->getPosition().Y())<<","<<float(FCALShowers[i]->getPosition().Z())<<endl;
+            auto FCAL_shower=new TEveJetCone(Form("FCAL Shower %d", i), "");
+            TEveVector show_pos;
+            show_pos.fX=float(FCALShowers[i]->getPosition().X());
+            show_pos.fY=float(FCALShowers[i]->getPosition().Y());
+            show_pos.fZ=float(FCALShowers[i]->getPosition().Z());//float(500 + 173.9);
+            //FCAL_shower->SetCylinder(129 - 10, 268.36 - 10);
+            //FCAL_shower->AddEllipticCone(0,  0, 6, 6);
+            FCAL_shower->SetApex(show_pos);
+            //FCAL_shower->SetCylinder(1,1);
+            TRandom3 r(0);
+
+
+            FCAL_shower->AddCone(r.Uniform(0., 3.14), r.Uniform(0., 3.14), 10., 26.5);
+            FCAL_shower->SetMainColorRGB(float(255), 255, 0);
+            FCAL_shower->SetMainAlpha(.75);
+
+            FCAL_showers.push_back(FCAL_shower);
+        }
+
+        for(uint i=0;i<FCAL_showers.size();i++)
+        {
+            gEve->AddElement(FCAL_showers[i]);
+        }
     }
 private:
 

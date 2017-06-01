@@ -33,6 +33,10 @@ public:
         vector<TEvePointSet*> Track_points;
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
+
+            string PID_name=ParticleType(ChargedTracks[i]->Get_BestFOM()->PID());
+            string name=PID_name + Form(" Track Points %i", i);
+            cout<<name<<endl;
             rt->Reset();
             auto Track_ps = new TEvePointSet();
 
@@ -58,15 +62,16 @@ public:
                 //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
 
                 //if(TrackCandidates[i]->charge()==1)
-                if(ChargedTracks[i]->Get_BestFOM()->charge()==1)
+                if(ChargedTracks[i]->Get_BestFOM()->charge()==-1)
                     Track_ps->SetMainColorRGB(0,float(250.), 0.);
                 else
                     Track_ps->SetMainColorRGB(float(250.),0, 0.);
 
-                Track_ps->SetPointId(new TNamed(Form("Track Point %d", i), ""));
+
+                Track_ps->SetPointId(new TNamed(Form(" Track Points %i", i), ""));
                 Track_ps->SetMarkerSize(1);
                 Track_ps->SetMarkerStyle(4);
-                Track_ps->SetElementName(Form("Track points %i", i));
+                Track_ps->SetElementName(name.c_str());
 
             }
             Track_points.push_back(Track_ps);

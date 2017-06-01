@@ -211,13 +211,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //vector<const DFDCHit *> FDCHits;
         //vector<const DFCALDigiHit *> FCALDigiHits;
         //vector<const DFCALCluster *> FCALClusters;
-        //vector<const DFCALShower *> FCALShowers;
+        vector<const DFCALShower *> FCALShowers;
         //vector<const DFCALTruthShower *> FCALTruthShowers;
 
         loop->Get(FCALHits);
         //loop->Get(FCALDigiHits);
         //loop->Get(FCALClusters);
-        //loop->Get(FCALShowers);
+        loop->Get(FCALShowers);
         //loop->Get(FCALTruthShowers);
         loop->Get(TrackCandidates);
         loop->Get(ChargedTracks);
@@ -240,6 +240,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         FCAL FCALDet;
         //Take the hits and visualize them
         FCALDet.Add_FCALHits(FCALHits);
+        //FCALDet.Add_FCALShowers(FCALShowers);
 
         //Redraw the scene(s)
         sleep(1);
