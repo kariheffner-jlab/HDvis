@@ -208,6 +208,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
 
         vector<const DChargedTrack*> ChargedTracks;
+        vector<const DNeutralParticle*> NeutralTracks;
         vector<const DTrackCandidate *> TrackCandidates;
 
         vector<const DFCALHit *> FCALHits;
@@ -226,6 +227,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //loop->Get(FCALTruthShowers);
         loop->Get(TrackCandidates);
         loop->Get(ChargedTracks);
+        loop->Get(NeutralTracks);
         loop->Get(TOFPoints);
 
         //Skips the first few non-Physics events (find a better way)
@@ -235,12 +237,14 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         //Clear the event...unless it is empty
         gEve->GetCurrentEvent()->DestroyElements();
+        //RESET GEOMETRY COLORS
 
         //Setup the tracking to display tracking info
         Tracking Tracks(Bfield,RootGeom);
 
         //Will take the Charged Tracks given and visualize them
         Tracks.Add_DChargedTracks(ChargedTracks);
+        Tracks.Add_DNeutralParticles(NeutralTracks);
 
         TOF TOFDet;
         TOFDet.Add_TOFPoints(TOFPoints);

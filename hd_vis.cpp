@@ -395,10 +395,6 @@ int main(int narg, char *argv[])
     //gEve->EditElement(sv);
 
     gRootLoop.RunRootAppMultithreaded();
-
-    //RunRootApp();
-	// Decide on the output filename
-	DecideOutputFilename();
 	
 	// Run though all events, calling our event processor's methods
 	dana.monitor_heartbeat = 0;
@@ -444,31 +440,6 @@ void ParseCommandLineArguments(int &narg, char *argv[])
 	}
 }
 
-//-----------
-// DecideOutputFilename
-//-----------
-void DecideOutputFilename(void)
-{
-	/// Decide on the output filename to use based on the command line
-	/// input and configuration parameter input. The command line takes
-	/// precedence. This also makes sure to copy the filename that is
-	/// being used into the configuration parameter.
-
-	// Set the default output filename (avoids later warnings from JANA)
-	gPARMS->SetDefaultParameter("OUTPUT_FILENAME", OUTPUT_FILENAME,"Output filename used by hd_root");
-	
-	// If the user specified an output filename on the command line,
-	// use it to overwrite the config. parameter/default one
-	if(filename_from_command_line){
-		OUTPUT_FILENAME = COMMAND_LINE_OUTPUT_FILENAME;
-	
-		// Set the actual output filename in config. param.
-		gPARMS->SetParameter("OUTPUT_FILENAME", OUTPUT_FILENAME);
-	}
-
-	jout<<"OUTPUT_FILENAME: "<<OUTPUT_FILENAME<<endl;
-
-}
 
 //-----------
 // Usage
