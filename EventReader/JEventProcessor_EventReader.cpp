@@ -253,7 +253,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         FCAL FCALDet;
         //Take the hits and visualize them
         FCALDet.Add_FCALHits(FCALHits);
-        //FCALDet.Add_FCALShowers(FCALShowers);
+        FCALDet.Add_FCALShowers(FCALShowers);
 
         //Redraw the scene(s)
         //sleep(1);

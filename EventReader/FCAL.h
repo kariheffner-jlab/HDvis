@@ -7,8 +7,7 @@
 
 #include <TEveBoxSet.h>
 #include <TEveManager.h>
-#include <TEveJetCone.h>
-#include <TRandom3.h>
+#include <TEveArrow.h>
 
 class FCAL
 {
@@ -48,27 +47,29 @@ public:
     void Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
     {
 
-        vector<TEveJetCone*> FCAL_showers;
+        vector<TEveArrow*> FCAL_showers;
 
         for(uint i=0;i<FCALShowers.size();i++)
         {
-            cout<<"totes shower"<<endl;
-            cout<<float(FCALShowers[i]->getPosition().X())<<","<<float(FCALShowers[i]->getPosition().Y())<<","<<float(FCALShowers[i]->getPosition().Z())<<endl;
-            auto FCAL_shower=new TEveJetCone(Form("FCAL Shower %d", i), "");
+            //auto FCAL_shower=new TEveJetCone(Form("FCAL Shower %d", i), "");
             TEveVector show_pos;
             show_pos.fX=float(FCALShowers[i]->getPosition().X());
             show_pos.fY=float(FCALShowers[i]->getPosition().Y());
             show_pos.fZ=float(FCALShowers[i]->getPosition().Z());//float(500 + 173.9);
-            //FCAL_shower->SetCylinder(129 - 10, 268.36 - 10);
-            //FCAL_shower->AddEllipticCone(0,  0, 6, 6);
-            FCAL_shower->SetApex(show_pos);
-            //FCAL_shower->SetCylinder(1,1);
-            //TRandom3 r(0);
+            auto FCAL_shower=new TEveArrow(0,0,100,show_pos.fX,show_pos.fY,show_pos.fZ);
+            //FCAL_shower->SetTubeR(2);
+            //std::cout<<i<<"|"<<FCALShowers[i]->getEnergy()<<","<<FCAL_shower->GetTubeR()<<","<<FCAL_shower->GetConeR()<<std::endl;
+            //FCAL_shower->SetConeR(FCALShowers[i]->getEnergy()/100);
 
-
-            FCAL_shower->AddCone(1.4, 1.2, 10., 26.5);
-            FCAL_shower->SetMainColorRGB(float(255), 255, 0);
-            FCAL_shower->SetMainAlpha(.75);
+            float redness=1.0;
+            if(FCALShowers[i]->getEnergy()/2.0>1.0)
+                redness=0;
+            else
+                redness=(5.0-(FCALShowers[i]->getEnergy()/2.0));
+            //std::cout<<redness<<endl;
+            //FCAL_shower->SetMainColorRGB(UChar_t(250),0,0);
+            FCAL_shower->SetMainColorRGB(float(5.0), redness, 0);
+            FCAL_shower->SetMainAlpha(.5);
 
             FCAL_showers.push_back(FCAL_shower);
         }
