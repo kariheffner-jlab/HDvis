@@ -35,7 +35,7 @@ add_definitions(${ROOT_CXX_FLAGS})
 ROOT_GENERATE_DICTIONARY(G__GuiListener GuiListener.h LINKDEF GuiListenerLinkDef.h)
 #---Create a shared library with geneated dictionary
 add_library(GuiListener SHARED GuiListener.cpp G__GuiListener.cxx)
-
+target_link_libraries(GuiListener ${ROOT_LIBRARIES})
 
 include_directories(
         $ENV{JANA_HOME}/include
