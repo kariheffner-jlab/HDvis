@@ -1,0 +1,46 @@
+cmake_minimum_required(VERSION 2.8)
+project(eve_examples)
+
+# You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:
+#   - ROOT built with classic configure/make use the provided $ROOTSYS/etc/cmake/FindROOT.cmake
+#   - ROOT built with CMake. Add in CMAKE_PREFIX_PATH the installation prefix for ROOT
+list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
+
+#---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
+find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve Gui TreePlayer)
+
+#---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
+include(${ROOT_USE_FILE})
+
+include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
+
+add_definitions(${ROOT_CXX_FLAGS})
+#ROOT_GENERATE_DICTIONARY(G__Event Event.h LINKDEF EventLinkDef.h)
+#---Create a shared library with geneated dictionary
+#add_library(Event SHARED Event.cxx G__Event.cxx)
+
+
+include_directories(
+)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+
+add_executable(evex_calorimeters calorimeters.cpp)
+add_executable(evex_calo_detail calo_detail.cpp)
+add_executable(evex_box box.cpp)
+add_executable(evex_boxset boxset.cpp)
+add_executable(evex_track track.cpp)
+add_executable(evex_pointset pointset.cpp)
+add_executable(evex_alice_vsd alice_vsd.cpp)
+add_executable(evex_arrow_embedded arrow_embedded.cpp)
+
+
+target_link_libraries(evex_calorimeters ${ROOT_LIBRARIES})
+target_link_libraries(evex_calo_detail ${ROOT_LIBRARIES})
+target_link_libraries(evex_box ${ROOT_LIBRARIES})
+target_link_libraries(evex_boxset ${ROOT_LIBRARIES})
+target_link_libraries(evex_track ${ROOT_LIBRARIES})
+target_link_libraries(evex_pointset ${ROOT_LIBRARIES})
+target_link_libraries(evex_alice_vsd ${ROOT_LIBRARIES})
+target_link_libraries(evex_arrow_embedded ${ROOT_LIBRARIES})

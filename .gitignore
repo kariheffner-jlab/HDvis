@@ -250,3 +250,23 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+\.sconsign\.dblite
+<<<<<<< HEAD
+
+EventReader/JEventProcessor_EventReader\.o
+
+EventReader/JEventProcessor_EventReader\.os
+
+EventReader/EventReader\.so
+=======
+>>>>>>> plugin
+".\\bin/"
+CMakeFiles/
+EveStandAlone
+EveStandAlone.cbp
+Makefile
+cmake-build-debug/
+cmake_install.cmake
+hd_root.root
+CMakeCache.txt
