@@ -308,6 +308,38 @@ int main(int narg, char *argv[])
     TGeoNode* Det6Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET6_1");
     Det6Node->SetVisibility(0);
 
+    TGeoNode* PFO3Node = (TGeoNode*) hallNode->GetNodes()->FindObject("PFO3_1");
+    PFO3Node->SetVisibility(0);
+
+    TGeoNode* PCO1Node = (TGeoNode*) hallNode->GetNodes()->FindObject("PCO1_1");
+    PCO1Node->SetVisibility(0);
+
+    /*TGeoNode* TARMNode = (TGeoNode*) hallNode->GetNodes()->FindObject("TARM_1");
+    TARMNode->SetVisibility(0);*/
+
+    TGeoNode* Mag3Node = (TGeoNode*) hallNode->GetNodes()->FindObject("MAG3_1");
+
+    TGeoNode* POL1NODE=(TGeoNode*) Mag3Node->GetNodes()->FindObject("POL3_1");
+    POL1NODE->SetVisibility(0);
+
+    TGeoNode* POL2NODE=(TGeoNode*) Mag3Node->GetNodes()->FindObject("POL3_2");
+    POL2NODE->SetVisibility(0);
+
+    TGeoNode* GAPNode1=(TGeoNode*) Mag3Node->GetNodes()->FindObject("GAP3_1");
+    GAPNode1->SetVisibility(0);
+
+    TGeoNode* GAPNode2=(TGeoNode*) Mag3Node->GetNodes()->FindObject("GAP3_2");
+    GAPNode2->SetVisibility(0);
+
+    TGeoNode* PFONode1=(TGeoNode*) Mag3Node->GetNodes()->FindObject("PFO1_1");
+    PFONode1->SetVisibility(0);
+
+    TGeoNode* PCONode2=(TGeoNode*) Mag3Node->GetNodes()->FindObject("PCO2_1");
+    PCONode2->SetVisibility(0);
+
+    TGeoNode* HPONode=(TGeoNode*) Mag3Node->GetNodes()->FindObject("HPO1_1");
+    HPONode->SetVisibility(0);
+
     TGeoNode* LASSNode = (TGeoNode*) hallNode->GetNodes()->FindObject("LASS_1");
 
     TGeoNode* MagNode1 =(TGeoNode*) LASSNode->GetNodes()->FindObject("IYUP_1");
@@ -334,18 +366,20 @@ int main(int narg, char *argv[])
     TGeoNode* BarrelCap5 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ1_1");
     BarrelCap5->SetVisibility(0);
 
-
-    //The lines below actually crash the first event on track draw....for some reason.  May need a copy of the geometry seperately....
-
     TGeoNode* BCSDNode =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSD_1");
     BCSDNode->SetVisibility(0);
 
     TGeoNode* CDCBcab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
     CDCBcab->SetVisibility(0);
 
-    //TGeoNode* BCALCab2 =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
-   // BCALCab2->SetVisibility(0);
+    /*TGeoNode* TargetBox =(TGeoNode *) LASSNode->GetNodes()->FindObject("SWC2_1");
+    TargetBox->SetVisibility(0);*/
 
+    /*TGeoNode* weirddot =(TGeoNode *) LASSNode->GetNodes()->FindObject("DET7_1");
+    weirddot->SetVisibility(0);*/
+
+    //TGeoNode* polNode =(TGeoNode *) hallNode->GetNodes()->FindObject("POL3_1");
+    //polNode->SetVisibility(0);
 
 
     //cout<<"fcalNode is "<<fcalNode<<endl;
@@ -355,8 +389,8 @@ int main(int narg, char *argv[])
     gGeoManager->SetTopVolume(topVolume);
 
 
-    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
-    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
+    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
+    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
 	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
     TEveWindowSlot* slot = 0;
     slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
@@ -382,7 +416,8 @@ int main(int narg, char *argv[])
 
     // Wire GUI buttons to myproc actions
     gGuiListener.WhenNextEventFired = [myproc](){
-        std::cout<<"WOOOOOOOOOOORRRRRKKKKKKSSSSSS AAAAAA !!!!!!!!!11111oneoneone"<<std::endl;
+        //std::cout<<"WOOOOOOOOOOORRRRRKKKKKKSSSSSS AAAAAA !!!!!!!!!11111oneoneone"<<std::endl;
+        std::cout<<"Obtaining next event"<<std::endl;
         myproc->ProceedToNextEvent();
     };
 
