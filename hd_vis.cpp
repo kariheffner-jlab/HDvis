@@ -389,8 +389,8 @@ int main(int narg, char *argv[])
     gGeoManager->SetTopVolume(topVolume);
 
 
-    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
-    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
+    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
+    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
 	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
     TEveWindowSlot* slot = 0;
     slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
