@@ -276,14 +276,20 @@ int main(int narg, char *argv[])
 
     new TGeoManager("GLUEX", "GlueX Geometry");
 
-    auto geometry = hddsroot();
+    hddsroot();
     gGeoManager->DefaultColors();
 
     TEveManager::Create();
 	MakeControlTab();
     make_gui();
 
-    TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetTopVolume()->FindNode("HALL_1");
+	/*gGeoManager->cd("HALL_1");
+    TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetCurrentNode();
+	cout<<hallNode<<endl;
+    cout<<hallNode->GetName()<<endl;
+    cout<<hallNode->GetVolume()->GetName()<<endl;*/
+    //hallNode->GetVolume()->GetNodes()->Print();
+	/*
     //hallNode->Draw();
     //cout<<"hallNode is "<<hallNode<<endl;
     //cout<<hallNode->GetMotherVolume()<<endl;
@@ -314,8 +320,8 @@ int main(int narg, char *argv[])
     TGeoNode* PCO1Node = (TGeoNode*) hallNode->GetNodes()->FindObject("PCO1_1");
     PCO1Node->SetVisibility(0);
 
-    /*TGeoNode* TARMNode = (TGeoNode*) hallNode->GetNodes()->FindObject("TARM_1");
-    TARMNode->SetVisibility(0);*/
+//    TGeoNode* TARMNode = (TGeoNode*) hallNode->GetNodes()->FindObject("TARM_1");
+//    TARMNode->SetVisibility(0);
 
     TGeoNode* Mag3Node = (TGeoNode*) hallNode->GetNodes()->FindObject("MAG3_1");
 
@@ -372,11 +378,11 @@ int main(int narg, char *argv[])
     TGeoNode* CDCBcab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
     CDCBcab->SetVisibility(0);
 
-    /*TGeoNode* TargetBox =(TGeoNode *) LASSNode->GetNodes()->FindObject("SWC2_1");
-    TargetBox->SetVisibility(0);*/
-
-    /*TGeoNode* weirddot =(TGeoNode *) LASSNode->GetNodes()->FindObject("DET7_1");
-    weirddot->SetVisibility(0);*/
+//    TGeoNode* TargetBox =(TGeoNode *) LASSNode->GetNodes()->FindObject("SWC2_1");
+//    TargetBox->SetVisibility(0);
+//
+//    TGeoNode* weirddot =(TGeoNode *) LASSNode->GetNodes()->FindObject("DET7_1");
+//    weirddot->SetVisibility(0);
 
     //TGeoNode* polNode =(TGeoNode *) hallNode->GetNodes()->FindObject("POL3_1");
     //polNode->SetVisibility(0);
@@ -387,6 +393,7 @@ int main(int narg, char *argv[])
     gGeoManager->Print();
 
     gGeoManager->SetTopVolume(topVolume);
+    */
 
 
     gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
@@ -398,6 +405,7 @@ int main(int narg, char *argv[])
     TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
     sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
     sv->AddScene(gEve->GetGlobalScene());
+    sv->AddScene(gEve->GetEventScene());
 
     slot->ReplaceWindow(sv);
 
