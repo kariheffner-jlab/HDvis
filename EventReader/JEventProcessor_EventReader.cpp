@@ -274,10 +274,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         if(isFirstGoodEvent)
         {
             isFirstGoodEvent =false;
-            gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
 
-
-            TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0), 3, 10);
+            TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0));
             gEve->AddGlobalElement(enode);
             enode->ExpandIntoListTreesRecursively();
 
