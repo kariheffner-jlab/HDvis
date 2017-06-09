@@ -6,6 +6,7 @@
 #define EVESTANDALONE_TOF_H
 
 #include <TOF/DTOFPoint.h>
+#include <TOF/DTOFHit.h>
 #include <TEvePointSet.h>
 #include <TEveManager.h>
 #include <TGeoManager.h>
@@ -29,6 +30,23 @@ public:
             TOFPoint_ps->SetNextPoint(pos.X(),pos.Y(),pos.Z());
         }
         gEve->AddElement(TOFPoint_ps);
+    }
+
+    void Add_TOFHits(vector<const DTOFHit*> TOFHits)
+    {
+
+        auto globalScene = gEve->GetGlobalScene();
+        for(uint i=0;i<TOFHits.size();i++)
+        {
+            if(i==0)
+                std::cout<<"Hits"<<std::endl;
+
+            auto tofpad = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_1")->FindChild("FTON_1")->FindChild("yd13_1");
+            tofpad->SetMainColorRGB(UChar_t(255),0,0);
+            tofpad->SetMainAlpha(0);
+
+        }
+
     }
 private:
 

@@ -278,6 +278,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         vector<const DFCALShower *> FCALShowers;
         //vector<const DFCALTruthShower *> FCALTruthShowers;
 
+        vector<const DTOFHit *> TOFHits;
         vector<const DTOFPoint *> TOFPoints;
 
         loop->Get(FCALHits);
@@ -289,6 +290,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(ChargedTracks);
         loop->Get(NeutralTracks);
         loop->Get(TOFPoints);
+        loop->Get(TOFHits);
 
         //Skips the first few non-Physics events (find a better way)
         /*if (FCALHits.size() ==0 ) //&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
@@ -306,7 +308,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             //gEve->GetGlobalScene()->SetRnrChildren(kFALSE);
             auto globalScene = gEve->GetGlobalScene();
-
 
             MakeDescendantRecursiveVisible(globalScene, false);
 
@@ -349,6 +350,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             MakeDescendantRecursiveVisible(tof1, true);
             MakeElementVisible(tof1);
+            tof1->SetMainAlpha(1);
             MakeDescendantRecursiveColor(tof1,53,143,254);
             MakeDescendantRecursiveTransparancey(tof1, .7);
 
@@ -370,7 +372,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         //Clear the event...unless it is empty
         gEve->GetCurrentEvent()->DestroyElements();
-        //RESET GEOMETRY COLORS
 
         //Setup the tracking to display tracking info
         Tracking Tracks(Bfield,RootGeom);
@@ -381,6 +382,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         TOF TOFDet;
         TOFDet.Add_TOFPoints(TOFPoints);
+        TOFDet.Add_TOFHits(TOFHits);
 
         //Decalre the FCAL "module"
         FCAL FCALDet;
