@@ -269,12 +269,15 @@ int main(int narg, char *argv[])
 
 	// Create ROOT application 
 	// Instantiate an event loop object
+    new TGeoManager("GLUEX", "GlueX Geometry");
 	DApplication dana(narg, argv);
     gDana=&dana;
+    //gSystem->IgnoreSignal(kSigSegmentationViolation, true);
+    //gDana->GetRootGeom(0);
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
-    new TGeoManager("GLUEX", "GlueX Geometry");
+
 
     hddsroot();                     // Creates geometry and save it to gGeoManager
     gGeoManager->DefaultColors();
@@ -395,25 +398,25 @@ int main(int narg, char *argv[])
     gGeoManager->SetTopVolume(topVolume);
     */
 
-    gGeoManager->GetNode(0)->SetVisLeaves();
+    //gGeoManager->GetNode(0)->SetVisLeaves();
 
 
-    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
-    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
-	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
-    TEveWindowSlot* slot = 0;
-    slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+//    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
+//	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
+//    TEveWindowSlot* slot = 0;
+//    slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+//
+//    TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
+//    sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
+//    sv->AddScene(gEve->GetGlobalScene());
+//    sv->AddScene(gEve->GetEventScene());
+//
+//    slot->ReplaceWindow(sv);
+//
+//    gEve->GetViewers()->AddElement(sv);
+//
+//    gEve->GetBrowser()->GetTabRight()->SetTab(1);
 
-    TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
-    sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
-    sv->AddScene(gEve->GetGlobalScene());
-    sv->AddScene(gEve->GetEventScene());
-
-    slot->ReplaceWindow(sv);
-
-    gEve->GetViewers()->AddElement(sv);
-
-    gEve->GetBrowser()->GetTabRight()->SetTab(1);
 
     // --- Redraw ---
 
@@ -438,15 +441,13 @@ int main(int narg, char *argv[])
 
     //gEve->FullRedraw3D(kTRUE);
     //gEve->EditElement(sv);
+    //gRootLoop.RunRootAppThisThread();
+
+    gRootLoop.RunRootAppMultithreaded();
 
     // Run though all events, calling our event processor's methods
-    volatile int danaResultCode = 0;
-    auto danaThread = std::thread([&](){
-        dana.monitor_heartbeat = false;
-        dana.Run(myproc);
-    });
-
-    gRootLoop.RunRootAppThisThread();
+    dana.monitor_heartbeat = false;
+    dana.Run(myproc);
 	return dana.GetExitCode();
 
 }

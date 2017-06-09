@@ -106,6 +106,7 @@ void alice_vsd(const char* vsd_file_name=
         TEveGeoShapeExtract* gse = (TEveGeoShapeExtract*) geom->Get("Gentle");
         gentle_geom = TEveGeoShape::ImportShapeExtract(gse, 0);
         geom->Close();
+
         delete geom;
         gEve->AddGlobalElement(gentle_geom);
     }

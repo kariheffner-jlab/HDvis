@@ -189,9 +189,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
-    while (!hdvis::RootLoopCommander::InnerLoopMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
+    //while (!hdvis::RootLoopCommander::InnerLoopMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
     {
-        std::lock_guard<std::mutex> eventMutexLockGuard(hdvis::RootLoopCommander::InnerLoopMutex, std::adopt_lock);
+        static bool isFirstGoodEvent = true;
+        //std::lock_guard<std::mutex> eventMutexLockGuard(hdvis::RootLoopCommander::InnerLoopMutex);
+        auto lock = std::unique_lock<std::mutex>(hdvis::RootLoopCommander::InnerLoopMutex);
 
         for (unsigned int i = 0; i < toprint.size(); i++) {
             string name = fac_info[i].dataClassName;
@@ -231,8 +233,14 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TOFPoints);
 
         //Skips the first few non-Physics events (find a better way)
-        if (FCALHits.size() ==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
+        if (FCALHits.size() ==0 ) //&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
+        {
             return NOERROR;
+        }
+        if(isFirstGoodEvent)
+        {
+            isFirstGoodEvent =false;
+            gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
         }
 
         //Clear the event...unless it is empty

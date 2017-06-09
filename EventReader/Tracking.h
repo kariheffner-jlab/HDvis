@@ -45,7 +45,11 @@ public:
             rt->SetMass(ChargedTracks[i]->Get_BestFOM()->mass());
             //rt.SetMass(TrackCandidates[i]->mass());
 
-            rt->Swim(ChargedTracks[i]->Get_BestFOM()->position(), ChargedTracks[i]->Get_BestFOM()->momentum(), ChargedTracks[i]->Get_BestFOM()->charge());
+            auto position = ChargedTracks[i]->Get_BestFOM()->position();
+            auto momentum = ChargedTracks[i]->Get_BestFOM()->momentum();
+            auto charge = ChargedTracks[i]->Get_BestFOM()->charge();
+
+            rt->Swim(position, momentum, charge);
             //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
             DReferenceTrajectory::swim_step_t* steps =rt->swim_steps;
 
