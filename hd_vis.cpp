@@ -259,6 +259,7 @@ void make_gui()
     ((TGVerticalFrame*)toolBarFrame->GetParent())->MapWindow();
 }
 
+
 //-----------
 // main
 //-----------
@@ -286,9 +287,11 @@ int main(int narg, char *argv[])
 	MakeControlTab();
     make_gui();
 
-	/*gGeoManager->cd("HALL_1");
+
+
+    /*gGeoManager->cd("HALL_1");
     TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetCurrentNode();
-	cout<<hallNode<<endl;
+    cout<<hallNode<<endl;
     cout<<hallNode->GetName()<<endl;
     cout<<hallNode->GetVolume()->GetName()<<endl;*/
     //hallNode->GetVolume()->GetNodes()->Print();

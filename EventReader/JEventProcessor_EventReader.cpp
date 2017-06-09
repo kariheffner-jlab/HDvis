@@ -34,6 +34,39 @@ extern DApplication *gDana;
 
 extern std::mutex gEventMutex;
 
+
+
+void MakeElementVisible(TEveElement *e)
+{
+    e->SetRnrState(true);
+    for (auto i=e->BeginParents(); i!=e->EndParents(); ++i)
+    {
+        auto parent =*i;
+
+        cout<<"turn on "<<parent->GetElementName()<<endl;
+        parent->SetRnrState(true);
+        if(parent == gEve->GetGlobalScene())
+        {
+            return;
+        } else {
+            MakeElementVisible(parent);
+        }
+    }
+}
+
+void MakeDescendantRecursiveVisible(TEveElement *e, bool isVisible)
+{
+    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
+    {
+        auto child =*i;
+
+        cout<<"turn off "<<child->GetElementName()<<endl;
+        child->SetRnrState(isVisible);
+        MakeDescendantRecursiveVisible(child, isVisible);
+
+    }
+}
+
 //------------------
 // JEventProcessor_EventReader (Constructor)
 //------------------
@@ -237,10 +270,34 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         {
             return NOERROR;
         }
+
         if(isFirstGoodEvent)
         {
             isFirstGoodEvent =false;
             gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
+
+
+            TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0), 3, 10);
+            gEve->AddGlobalElement(enode);
+            enode->ExpandIntoListTreesRecursively();
+
+            //gEve->GetGlobalScene()->SetRnrChildren(kFALSE);
+            auto globalScene = gEve->GetGlobalScene();
+
+
+            MakeDescendantRecursiveVisible(globalScene, false);
+
+            auto fcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FCAL_1");
+
+
+            //fcal->SetRnrSelf(true);
+            //fcal->SetRnrChildren(true);
+            //fcal->EnableListElements(true);
+            MakeDescendantRecursiveVisible(fcal, true);
+            MakeElementVisible(fcal);
+            fcal->SetMainTransparency(2);
+
+            _rootLoopCommander.EveFullRedraw3D();
         }
 
         //Clear the event...unless it is empty
