@@ -276,7 +276,7 @@ int main(int narg, char *argv[])
 
     new TGeoManager("GLUEX", "GlueX Geometry");
 
-    hddsroot();
+    hddsroot();                     // Creates geometry and save it to gGeoManager
     gGeoManager->DefaultColors();
 
     TEveManager::Create();
@@ -395,6 +395,8 @@ int main(int narg, char *argv[])
     gGeoManager->SetTopVolume(topVolume);
     */
 
+    gGeoManager->GetNode(0)->SetVisLeaves();
+
 
     gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
     //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
@@ -437,12 +439,14 @@ int main(int narg, char *argv[])
     //gEve->FullRedraw3D(kTRUE);
     //gEve->EditElement(sv);
 
-    gRootLoop.RunRootAppMultithreaded();
-	
-	// Run though all events, calling our event processor's methods
-	dana.monitor_heartbeat = 0;
-	dana.Run(myproc);
+    // Run though all events, calling our event processor's methods
+    volatile int danaResultCode = 0;
+    auto danaThread = std::thread([&](){
+        dana.monitor_heartbeat = false;
+        dana.Run(myproc);
+    });
 
+    gRootLoop.RunRootAppThisThread();
 	return dana.GetExitCode();
 
 }
