@@ -41,7 +41,6 @@ include_directories(
         $ENV{JANA_HOME}/include
         $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/include
         EventReader
-        /home/tbritton/hdpm/.hdpm/dist/jana/0.7.8/Linux_Ubuntu16.04-x86_64-gcc5.4.0/include/
 
 )
 

@@ -43,7 +43,7 @@ void MakeElementVisible(TEveElement *e)
     {
         auto parent =*i;
 
-        cout<<"turn on "<<parent->GetElementName()<<endl;
+        //cout<<"turn on "<<parent->GetElementName()<<endl;
         parent->SetRnrState(true);
         if(parent == gEve->GetGlobalScene())
         {
@@ -60,10 +60,35 @@ void MakeDescendantRecursiveVisible(TEveElement *e, bool isVisible)
     {
         auto child =*i;
 
-        cout<<"turn off "<<child->GetElementName()<<endl;
+        //cout<<"turn off "<<child->GetElementName()<<endl;
         child->SetRnrState(isVisible);
         MakeDescendantRecursiveVisible(child, isVisible);
 
+    }
+}
+
+void MakeDescendantRecursiveColor(TEveElement *e, UChar_t r, UChar_t g, UChar_t b)
+{
+    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
+    {
+        auto child =*i;
+
+        //cout<<"color "<<child->GetElementName()<<endl;
+        child->SetMainColorRGB(r,g,b);
+
+        MakeDescendantRecursiveColor(child, r, g, b);
+    }
+}
+void MakeDescendantRecursiveTransparancey(TEveElement *e, float alpha)
+{
+    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
+    {
+        auto child =*i;
+
+        //cout<<"color "<<child->GetElementName()<<endl;
+        child->SetMainAlpha(alpha);
+
+        MakeDescendantRecursiveTransparancey(child, alpha);
     }
 }
 
@@ -266,10 +291,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TOFPoints);
 
         //Skips the first few non-Physics events (find a better way)
-        if (FCALHits.size() ==0 ) //&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
+        /*if (FCALHits.size() ==0 ) //&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
         {
             return NOERROR;
-        }
+        }*/
 
         if(isFirstGoodEvent)
         {
@@ -285,15 +310,60 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             MakeDescendantRecursiveVisible(globalScene, false);
 
+            auto target = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("TARG_1");
+            MakeDescendantRecursiveVisible(target, true);
+            MakeElementVisible(target);
+            target->SetMainColorRGB(UChar_t(255),0,0);
+            MakeDescendantRecursiveColor(target,255,0,0);
+            MakeDescendantRecursiveTransparancey(target, .40);
+
+            auto sc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("STRT_1");
+            MakeDescendantRecursiveVisible(sc, true);
+            MakeElementVisible(sc);
+            sc->SetMainColorRGB(UChar_t(0),255,255);
+            MakeDescendantRecursiveColor(sc,0,255,255);
+            MakeDescendantRecursiveTransparancey(sc,.6);
+
+            auto bcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("BCAL_1");
+            MakeDescendantRecursiveVisible(bcal, true);
+            MakeElementVisible(bcal);
+            bcal->SetMainColorRGB(UChar_t(53),143,254);
+            MakeDescendantRecursiveColor(bcal,53,143,255);
+            MakeDescendantRecursiveTransparancey(bcal, .98);
+
+
+            auto cdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("CDC_1");
+            MakeDescendantRecursiveVisible(cdc, true);
+            MakeElementVisible(cdc);
+            cdc->SetMainColorRGB(UChar_t(0),150,255);
+            MakeDescendantRecursiveColor(cdc,53,143,255);
+            MakeDescendantRecursiveTransparancey(cdc, .9);
+
+            auto fdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1");
+            MakeDescendantRecursiveVisible(fdc, true);
+            MakeElementVisible(fdc);
+            MakeDescendantRecursiveTransparancey(fdc, .9);
+
+            auto tof1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_1");
+            auto tof2 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_2");
+
+            MakeDescendantRecursiveVisible(tof1, true);
+            MakeElementVisible(tof1);
+            MakeDescendantRecursiveColor(tof1,53,143,254);
+            MakeDescendantRecursiveTransparancey(tof1, .7);
+
+            MakeDescendantRecursiveVisible(tof2, true);
+            MakeElementVisible(tof2);
+            MakeDescendantRecursiveColor(tof2,53,143,254);
+            MakeDescendantRecursiveTransparancey(tof2, .7);
+
             auto fcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FCAL_1");
 
-
-            //fcal->SetRnrSelf(true);
-            //fcal->SetRnrChildren(true);
-            //fcal->EnableListElements(true);
             MakeDescendantRecursiveVisible(fcal, true);
             MakeElementVisible(fcal);
-            fcal->SetMainTransparency(2);
+            MakeDescendantRecursiveColor(fcal,53,143,254);
+            MakeDescendantRecursiveTransparancey(fcal, .7);
+
 
             _rootLoopCommander.EveFullRedraw3D();
         }

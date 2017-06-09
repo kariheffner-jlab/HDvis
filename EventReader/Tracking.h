@@ -83,6 +83,7 @@ public:
         }
         for (int i = 0; i < Track_points.size(); i++) {
             gEve->AddElement(Track_points[i]);
+
         }
 
     }
