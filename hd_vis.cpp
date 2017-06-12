@@ -404,17 +404,17 @@ int main(int narg, char *argv[])
     //gGeoManager->GetNode(0)->SetVisLeaves();
 
 
-//    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
-//	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
-//    TEveWindowSlot* slot = 0;
-//    slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
+	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
+    TEveWindowSlot* slot = 0;
+    slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+
+    TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
+    sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
+    sv->AddScene(gEve->GetGlobalScene());
+    sv->AddScene(gEve->GetEventScene());
 //
-//    TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
-//    sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
-//    sv->AddScene(gEve->GetGlobalScene());
-//    sv->AddScene(gEve->GetEventScene());
-//
-//    slot->ReplaceWindow(sv);
+    slot->ReplaceWindow(sv);
 //
 //    gEve->GetViewers()->AddElement(sv);
 //
