@@ -343,6 +343,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto fdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1");
             MakeDescendantRecursiveVisible(fdc, true);
             MakeElementVisible(fdc);
+            fdc->SetMainColorRGB(UChar_t(0),255,255);
             MakeDescendantRecursiveTransparancey(fdc, .9);
 
             auto tof1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_1");
@@ -382,7 +383,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         TOF TOFDet;
         TOFDet.Add_TOFPoints(TOFPoints);
-        TOFDet.Add_TOFHits(TOFHits);
+        //TOFDet.Add_TOFHits(TOFHits);
 
         //Decalre the FCAL "module"
         FCAL FCALDet;
