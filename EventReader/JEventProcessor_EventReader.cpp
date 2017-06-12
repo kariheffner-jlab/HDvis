@@ -329,23 +329,27 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto bcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("BCAL_1");
             MakeDescendantRecursiveVisible(bcal, true);
             MakeElementVisible(bcal);
-            bcal->SetMainColorRGB(UChar_t(53),143,254);
-            MakeDescendantRecursiveColor(bcal,53,143,255);
-            MakeDescendantRecursiveTransparancey(bcal, .98);
+            bcal->SetMainColorRGB(UChar_t(180),220,255);
+            MakeDescendantRecursiveColor(bcal,180,220,255);
+            MakeDescendantRecursiveTransparancey(bcal, 5);
 
 
             auto cdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("CDC_1");
             MakeDescendantRecursiveVisible(cdc, true);
             MakeElementVisible(cdc);
-            cdc->SetMainColorRGB(UChar_t(0),150,255);
-            MakeDescendantRecursiveColor(cdc,53,143,255);
-            MakeDescendantRecursiveTransparancey(cdc, .9);
+            cdc->SetMainColorRGB(UChar_t(105),190,255);
+            MakeDescendantRecursiveColor(cdc,105,190,255);
+            MakeDescendantRecursiveTransparancey(cdc, 4);
 
             auto fdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1");
+            //auto fdcP1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1")->FindChild("FDP1_1");
             MakeDescendantRecursiveVisible(fdc, true);
             MakeElementVisible(fdc);
+            //MakeElementVisible(fdcP1);
             fdc->SetMainColorRGB(UChar_t(0),255,255);
-            MakeDescendantRecursiveTransparancey(fdc, .9);
+            MakeDescendantRecursiveColor(fdc,255,255,255);
+            fdc->SetMainTransparency(.8);
+            MakeDescendantRecursiveTransparancey(fdc, 4);
 
             auto tof1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_1");
             auto tof2 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_2");
