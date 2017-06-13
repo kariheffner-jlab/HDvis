@@ -46,16 +46,25 @@ namespace hdvis
 
                 //while(!gEventMutex.try_lock()) std::this_thread::yield();
 
-                std::lock_guard<std::mutex> eventMutexLockGuard(RootLoopCommander::InnerLoopMutex, std::adopt_lock);
+                //std::lock_guard<std::mutex> eventMutexLockGuard(RootLoopCommander::InnerLoopMutex);
+                auto lock = std::unique_lock<std::mutex>(RootLoopCommander::InnerLoopMutex);
 
-                gSystem->InnerLoop();
+                try {
+                    gSystem->InnerLoop();
+                }
+                catch(...)
+                {
+                    std::cout<<"InnerLoop exception is throwed"<<std::endl;
+                }
+
+
                 gApplication->StopIdleing();
                 gApplication->StartIdleing();
 
                 if(_commands.IsPendingRedraw3D())
                 {
                     _commands.ClearRedraw3D();
-                    gEve->FullRedraw3D();
+                    gEve->RegisterRedraw3D();
                 }
             }
         }

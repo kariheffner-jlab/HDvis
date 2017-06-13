@@ -259,6 +259,7 @@ void make_gui()
     ((TGVerticalFrame*)toolBarFrame->GetParent())->MapWindow();
 }
 
+
 //-----------
 // main
 //-----------
@@ -269,141 +270,39 @@ int main(int narg, char *argv[])
 
 	// Create ROOT application 
 	// Instantiate an event loop object
+    new TGeoManager("GLUEX", "GlueX Geometry");
 	DApplication dana(narg, argv);
     gDana=&dana;
+    //gSystem->IgnoreSignal(kSigSegmentationViolation, true);
+    //gDana->GetRootGeom(0);
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
-    new TGeoManager("GLUEX", "GlueX Geometry");
 
-    auto geometry = hddsroot();
+
+    hddsroot();                     // Creates geometry and save it to gGeoManager
     gGeoManager->DefaultColors();
 
     TEveManager::Create();
 	MakeControlTab();
     make_gui();
 
-    TGeoNode* hallNode = (TGeoNode *) gGeoManager->GetTopVolume()->FindNode("HALL_1");
-    //hallNode->Draw();
-    //cout<<"hallNode is "<<hallNode<<endl;
-    //cout<<hallNode->GetMotherVolume()<<endl;
-
-    TGeoNode* fcalNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FCAL_1");
-    //cout<<"fcalNode is "<<fcalNode<<endl;
-
-    TGeoNode* tofNode = (TGeoNode *) hallNode->GetNodes()->FindObject("FTOF_1");
-    //cout<<"tofNode is "<<tofNode<<endl;
-    //TGeoTranslation shift(-150,350,500);
-
-    //add independent
-    TGeoMaterial *matVacuum = new TGeoMaterial("Vacuum", 0,0,0);
-    TGeoMedium *Vacuum = new TGeoMedium("Vacuum",1, matVacuum);
-    TGeoVolume *topVolume = gGeoManager->MakeBox("TOP", Vacuum, 1000, 1000., 1000.);
-    topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(-150.501,349.986,500));
-    //topVolume->AddNode(hallNode->GetVolume(),2,new TGeoTranslation(0,0,0));
-
-    TGeoNode* Det5Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET5_1");
-    Det5Node->SetVisibility(0);
-
-    TGeoNode* Det6Node = (TGeoNode *) hallNode->GetNodes()->FindObject("DET6_1");
-    Det6Node->SetVisibility(0);
-
-    TGeoNode* PFO3Node = (TGeoNode*) hallNode->GetNodes()->FindObject("PFO3_1");
-    PFO3Node->SetVisibility(0);
-
-    TGeoNode* PCO1Node = (TGeoNode*) hallNode->GetNodes()->FindObject("PCO1_1");
-    PCO1Node->SetVisibility(0);
-
-    /*TGeoNode* TARMNode = (TGeoNode*) hallNode->GetNodes()->FindObject("TARM_1");
-    TARMNode->SetVisibility(0);*/
-
-    TGeoNode* Mag3Node = (TGeoNode*) hallNode->GetNodes()->FindObject("MAG3_1");
-
-    TGeoNode* POL1NODE=(TGeoNode*) Mag3Node->GetNodes()->FindObject("POL3_1");
-    POL1NODE->SetVisibility(0);
-
-    TGeoNode* POL2NODE=(TGeoNode*) Mag3Node->GetNodes()->FindObject("POL3_2");
-    POL2NODE->SetVisibility(0);
-
-    TGeoNode* GAPNode1=(TGeoNode*) Mag3Node->GetNodes()->FindObject("GAP3_1");
-    GAPNode1->SetVisibility(0);
-
-    TGeoNode* GAPNode2=(TGeoNode*) Mag3Node->GetNodes()->FindObject("GAP3_2");
-    GAPNode2->SetVisibility(0);
-
-    TGeoNode* PFONode1=(TGeoNode*) Mag3Node->GetNodes()->FindObject("PFO1_1");
-    PFONode1->SetVisibility(0);
-
-    TGeoNode* PCONode2=(TGeoNode*) Mag3Node->GetNodes()->FindObject("PCO2_1");
-    PCONode2->SetVisibility(0);
-
-    TGeoNode* HPONode=(TGeoNode*) Mag3Node->GetNodes()->FindObject("HPO1_1");
-    HPONode->SetVisibility(0);
-
-    TGeoNode* LASSNode = (TGeoNode*) hallNode->GetNodes()->FindObject("LASS_1");
-
-    TGeoNode* MagNode1 =(TGeoNode*) LASSNode->GetNodes()->FindObject("IYUP_1");
-    MagNode1->SetVisibility(0);
-
-    TGeoNode* MagNode2 =(TGeoNode*) LASSNode->GetNodes()->FindObject("IYOK_1");
-    MagNode2->SetVisibility(0);
-
-    TGeoNode* MagNode3 =(TGeoNode*) LASSNode->GetNodes()->FindObject("IYDN_1");
-    MagNode3->SetVisibility(0);
-
-    TGeoNode* BarrelCap =(TGeoNode*) LASSNode->GetNodes()->FindObject("BCSU_1");
-    BarrelCap->SetVisibility(0);
-
-    TGeoNode* BarrelCap2 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ4_1");
-    BarrelCap2->SetVisibility(0);
-
-    TGeoNode* BarrelCap3 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ3_1");
-    BarrelCap3->SetVisibility(0);
-
-    TGeoNode* BarrelCap4 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ2_1");
-    BarrelCap4->SetVisibility(0);
-
-    TGeoNode* BarrelCap5 =(TGeoNode*) LASSNode->GetNodes()->FindObject("FDQ1_1");
-    BarrelCap5->SetVisibility(0);
-
-    TGeoNode* BCSDNode =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("BCSD_1");
-    BCSDNode->SetVisibility(0);
-
-    TGeoNode* CDCBcab =(TGeoNode*) ((TGeoNode *) hallNode->GetNodes()->FindObject("LASS_1"))->GetNodes()->FindObject("CDCB_1");
-    CDCBcab->SetVisibility(0);
-
-    /*TGeoNode* TargetBox =(TGeoNode *) LASSNode->GetNodes()->FindObject("SWC2_1");
-    TargetBox->SetVisibility(0);*/
-
-    /*TGeoNode* weirddot =(TGeoNode *) LASSNode->GetNodes()->FindObject("DET7_1");
-    weirddot->SetVisibility(0);*/
-
-    //TGeoNode* polNode =(TGeoNode *) hallNode->GetNodes()->FindObject("POL3_1");
-    //polNode->SetVisibility(0);
 
 
-    //cout<<"fcalNode is "<<fcalNode<<endl;
-
-    gGeoManager->Print();
-
-    gGeoManager->SetTopVolume(topVolume);
-
-
-    gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0)));
-    //gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager,hallNode));
-	//gEve->AddGlobalElement(new TEveGeoTopNode(gGeoManager, fcalNode));
     TEveWindowSlot* slot = 0;
     slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
 
     TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
     sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
     sv->AddScene(gEve->GetGlobalScene());
-
+    sv->AddScene(gEve->GetEventScene());
+//
     slot->ReplaceWindow(sv);
+//
+//    gEve->GetViewers()->AddElement(sv);
+//
+//    gEve->GetBrowser()->GetTabRight()->SetTab(1);
 
-    gEve->GetViewers()->AddElement(sv);
-
-    gEve->GetBrowser()->GetTabRight()->SetTab(1);
 
     // --- Redraw ---
 
@@ -428,13 +327,13 @@ int main(int narg, char *argv[])
 
     //gEve->FullRedraw3D(kTRUE);
     //gEve->EditElement(sv);
+    //gRootLoop.RunRootAppThisThread();
 
     gRootLoop.RunRootAppMultithreaded();
-	
-	// Run though all events, calling our event processor's methods
-	dana.monitor_heartbeat = 0;
-	dana.Run(myproc);
 
+    // Run though all events, calling our event processor's methods
+    dana.monitor_heartbeat = false;
+    dana.Run(myproc);
 	return dana.GetExitCode();
 
 }

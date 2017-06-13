@@ -94,8 +94,8 @@ void calorimeters()
 
     // viewers ans scenes in second tab
     TEveCalo3D* calo3d = MakeCalo3D(data, slotRightTop);
-    MakeCalo2D(calo3d, slotLeftTop, TEveProjection::kPT_RPhi);
-    MakeCalo2D(calo3d, slotLeftBottom, TEveProjection::kPT_RhoZ);
+    //MakeCalo2D(calo3d, slotLeftTop, TEveProjection::kPT_RPhi);
+    //MakeCalo2D(calo3d, slotLeftBottom, TEveProjection::kPT_RhoZ);
     lego = MakeCaloLego(data, slotRightBottom);
 
 

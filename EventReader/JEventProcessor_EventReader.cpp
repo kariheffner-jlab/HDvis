@@ -13,6 +13,7 @@
 #include "TOF.h"
 #include <TRACKING/DTrackCandidate.h>
 #include <TEveGeoNode.h>
+#include <DANA/DStatusBits.h>
 
 
 using namespace jana;
@@ -33,6 +34,64 @@ extern string OUTPUT_FILENAME;
 extern DApplication *gDana;
 
 extern std::mutex gEventMutex;
+
+
+
+void MakeElementVisible(TEveElement *e)
+{
+    e->SetRnrState(true);
+    for (auto i=e->BeginParents(); i!=e->EndParents(); ++i)
+    {
+        auto parent =*i;
+
+        //cout<<"turn on "<<parent->GetElementName()<<endl;
+        parent->SetRnrState(true);
+        if(parent == gEve->GetGlobalScene())
+        {
+            return;
+        } else {
+            MakeElementVisible(parent);
+        }
+    }
+}
+
+void MakeDescendantRecursiveVisible(TEveElement *e, bool isVisible)
+{
+    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
+    {
+        auto child =*i;
+
+        //cout<<"turn off "<<child->GetElementName()<<endl;
+        child->SetRnrState(isVisible);
+        MakeDescendantRecursiveVisible(child, isVisible);
+
+    }
+}
+
+void MakeDescendantRecursiveColor(TEveElement *e, UChar_t r, UChar_t g, UChar_t b)
+{
+    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
+    {
+        auto child =*i;
+
+        //cout<<"color "<<child->GetElementName()<<endl;
+        child->SetMainColorRGB(r,g,b);
+
+        MakeDescendantRecursiveColor(child, r, g, b);
+    }
+}
+void MakeDescendantRecursiveTransparancey(TEveElement *e, float alpha)
+{
+    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
+    {
+        auto child =*i;
+
+        //cout<<"color "<<child->GetElementName()<<endl;
+        child->SetMainAlpha(alpha);
+
+        MakeDescendantRecursiveTransparancey(child, alpha);
+    }
+}
 
 //------------------
 // JEventProcessor_EventReader (Constructor)
@@ -189,9 +248,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
-    while (!hdvis::RootLoopCommander::InnerLoopMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
+    //while (!hdvis::RootLoopCommander::InnerLoopMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
     {
-        std::lock_guard<std::mutex> eventMutexLockGuard(hdvis::RootLoopCommander::InnerLoopMutex, std::adopt_lock);
+        static bool isFirstGoodEvent = true;
+        //std::lock_guard<std::mutex> eventMutexLockGuard(hdvis::RootLoopCommander::InnerLoopMutex);
+        auto lock = std::unique_lock<std::mutex>(hdvis::RootLoopCommander::InnerLoopMutex);
 
         for (unsigned int i = 0; i < toprint.size(); i++) {
             string name = fac_info[i].dataClassName;
@@ -207,6 +268,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             }
         }
 
+        //Skips the first few non-Physics events (find a better way)
+       /*if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))//&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
+        {
+            return NOERROR;
+        }*/
+
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DNeutralParticle*> NeutralTracks;
         vector<const DTrackCandidate *> TrackCandidates;
@@ -218,6 +285,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         vector<const DFCALShower *> FCALShowers;
         //vector<const DFCALTruthShower *> FCALTruthShowers;
 
+        vector<const DTOFHit *> TOFHits;
         vector<const DTOFPoint *> TOFPoints;
 
         loop->Get(FCALHits);
@@ -229,15 +297,89 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(ChargedTracks);
         loop->Get(NeutralTracks);
         loop->Get(TOFPoints);
+        loop->Get(TOFHits);
 
-        //Skips the first few non-Physics events (find a better way)
-        if (FCALHits.size() ==0 /*&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0*/) {
-            return NOERROR;
+
+
+        if(isFirstGoodEvent)
+        {
+            isFirstGoodEvent =false;
+
+            TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0));
+            gEve->AddGlobalElement(enode);
+            enode->ExpandIntoListTreesRecursively();
+
+            //gEve->GetGlobalScene()->SetRnrChildren(kFALSE);
+            auto globalScene = gEve->GetGlobalScene();
+
+            MakeDescendantRecursiveVisible(globalScene, false);
+
+            auto target = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("TARG_1");
+            MakeDescendantRecursiveVisible(target, true);
+            MakeElementVisible(target);
+            target->SetMainColorRGB(UChar_t(255),155,155);
+            MakeDescendantRecursiveColor(target,255,155,155);
+            MakeDescendantRecursiveTransparancey(target, .40);
+
+            auto sc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("STRT_1");
+            MakeDescendantRecursiveVisible(sc, true);
+            MakeElementVisible(sc);
+            sc->SetMainColorRGB(UChar_t(155),180,255);
+            MakeDescendantRecursiveColor(sc,155,180,255);
+            MakeDescendantRecursiveTransparancey(sc,.6);
+
+            auto bcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("BCAL_1");
+            MakeDescendantRecursiveVisible(bcal, true);
+            MakeElementVisible(bcal);
+            bcal->SetMainColorRGB(UChar_t(180),220,255);
+            MakeDescendantRecursiveColor(bcal,180,220,255);
+            MakeDescendantRecursiveTransparancey(bcal, 5);
+
+
+            auto cdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("CDC_1");
+            MakeDescendantRecursiveVisible(cdc, true);
+            MakeElementVisible(cdc);
+            cdc->SetMainColorRGB(UChar_t(200),230,255);
+            MakeDescendantRecursiveColor(cdc,200,230,255);
+            MakeDescendantRecursiveTransparancey(cdc, 4);
+
+            auto fdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1");
+            //auto fdcP1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1")->FindChild("FDP1_1");
+            MakeDescendantRecursiveVisible(fdc, true);
+            MakeElementVisible(fdc);
+            //MakeElementVisible(fdcP1);
+            fdc->SetMainColorRGB(UChar_t(170),220,255);
+            MakeDescendantRecursiveColor(fdc,170,220,255);
+            fdc->SetMainTransparency(.8);
+            MakeDescendantRecursiveTransparancey(fdc, 4);
+
+            auto tof1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_1");
+            auto tof2 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_2");
+
+            MakeDescendantRecursiveVisible(tof1, true);
+            MakeElementVisible(tof1);
+            tof1->SetMainAlpha(1);
+            MakeDescendantRecursiveColor(tof1,53,143,254);
+            MakeDescendantRecursiveTransparancey(tof1, .7);
+
+            MakeDescendantRecursiveVisible(tof2, true);
+            MakeElementVisible(tof2);
+            MakeDescendantRecursiveColor(tof2,53,143,254);
+            MakeDescendantRecursiveTransparancey(tof2, .7);
+
+            auto fcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FCAL_1");
+
+            MakeDescendantRecursiveVisible(fcal, true);
+            MakeElementVisible(fcal);
+            MakeDescendantRecursiveColor(fcal,53,143,254);
+            MakeDescendantRecursiveTransparancey(fcal, .7);
+
+
+            _rootLoopCommander.EveFullRedraw3D();
         }
 
         //Clear the event...unless it is empty
         gEve->GetCurrentEvent()->DestroyElements();
-        //RESET GEOMETRY COLORS
 
         //Setup the tracking to display tracking info
         Tracking Tracks(Bfield,RootGeom);
@@ -248,6 +390,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         TOF TOFDet;
         TOFDet.Add_TOFPoints(TOFPoints);
+        //TOFDet.Add_TOFHits(TOFHits);
 
         //Decalre the FCAL "module"
         FCAL FCALDet;
