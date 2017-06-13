@@ -57,31 +57,19 @@ public:
             show_pos.fX=float(FCALShowers[i]->getPosition().X());
             show_pos.fY=float(FCALShowers[i]->getPosition().Y());
             show_pos.fZ=float(FCALShowers[i]->getPosition().Z());//float(500 + 173.9);
-            //auto FCAL_shower=new TEveArrow(0,0,100,show_pos.fX,show_pos.fY,show_pos.fZ);
+
             double z_offset=395;  //This balances the arrow properly...touch at your own risk
 
             auto FCAL_shower=new TEveArrow(0,0,show_pos.fZ-1400+z_offset,show_pos.fX,show_pos.fY,show_pos.fZ+z_offset);
+            FCAL_shower->SetElementName(Form("FCAL Shower %i", i));
             FCAL_shower->SetTubeR(0);
-
-            /*for(int i=0; i<50; i++)
-            {
-                TRandom3 rand(0);
-                auto FCAL_shower2=new TEveArrow(0,0,show_pos.fZ-1400+300,show_pos.fX,show_pos.fY,show_pos.fZ+300);
-                FCAL_shower2->SetTubeR(0);
-                FCAL_shower2->SetMainColorRGB(255.0, float(255), 0);
-
-                FCAL_showers.push_back(FCAL_shower2);
-
-            }*/
-            //FCAL_shower->SetConeR(.1);
-            //std::cout<<i<<"|"<<FCALShowers[i]->getEnergy()<<","<<FCAL_shower->GetTubeR()<<","<<FCAL_shower->GetConeR()<<std::endl;
-            //FCAL_shower->SetConeR(FCALShowers[i]->getEnergy()/100);
 
             double redness;
             if(FCALShowers[i]->getEnergy()/2.0>1.0)
                 redness=0;
             else
                 redness=(5.0-(FCALShowers[i]->getEnergy()/2.0));
+
             //std::cout<<redness<<endl;
             //FCAL_shower->SetMainColorRGB(UChar_t(250),0,0);
             FCAL_shower->SetMainColorRGB(5.0, float(redness), 0);
