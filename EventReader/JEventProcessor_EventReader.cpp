@@ -269,10 +269,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
 
         //Skips the first few non-Physics events (find a better way)
-       /*if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))//&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
+       if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))//&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
         {
             return NOERROR;
-        }*/
+        }
 
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DNeutralParticle*> NeutralTracks;
