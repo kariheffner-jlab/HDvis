@@ -268,6 +268,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             }
         }
 
+        //Skips the first few non-Physics events (find a better way)
+       if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))//&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
+        {
+            return NOERROR;
+        }
+
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DNeutralParticle*> NeutralTracks;
         vector<const DTrackCandidate *> TrackCandidates;
@@ -293,11 +299,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TOFPoints);
         loop->Get(TOFHits);
 
-        //Skips the first few non-Physics events (find a better way)
-        if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))//&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
-        {
-            return NOERROR;
-        }
+
 
         if(isFirstGoodEvent)
         {
@@ -315,15 +317,15 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto target = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("TARG_1");
             MakeDescendantRecursiveVisible(target, true);
             MakeElementVisible(target);
-            target->SetMainColorRGB(UChar_t(255),0,0);
-            MakeDescendantRecursiveColor(target,255,0,0);
+            target->SetMainColorRGB(UChar_t(255),155,155);
+            MakeDescendantRecursiveColor(target,255,155,155);
             MakeDescendantRecursiveTransparancey(target, .40);
 
             auto sc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("STRT_1");
             MakeDescendantRecursiveVisible(sc, true);
             MakeElementVisible(sc);
-            sc->SetMainColorRGB(UChar_t(0),255,255);
-            MakeDescendantRecursiveColor(sc,0,255,255);
+            sc->SetMainColorRGB(UChar_t(155),180,255);
+            MakeDescendantRecursiveColor(sc,155,180,255);
             MakeDescendantRecursiveTransparancey(sc,.6);
 
             auto bcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("BCAL_1");
@@ -337,8 +339,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto cdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("CDC_1");
             MakeDescendantRecursiveVisible(cdc, true);
             MakeElementVisible(cdc);
-            cdc->SetMainColorRGB(UChar_t(105),190,255);
-            MakeDescendantRecursiveColor(cdc,105,190,255);
+            cdc->SetMainColorRGB(UChar_t(200),230,255);
+            MakeDescendantRecursiveColor(cdc,200,230,255);
             MakeDescendantRecursiveTransparancey(cdc, 4);
 
             auto fdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1");
@@ -346,8 +348,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             MakeDescendantRecursiveVisible(fdc, true);
             MakeElementVisible(fdc);
             //MakeElementVisible(fdcP1);
-            fdc->SetMainColorRGB(UChar_t(0),255,255);
-            MakeDescendantRecursiveColor(fdc,255,255,255);
+            fdc->SetMainColorRGB(UChar_t(170),220,255);
+            MakeDescendantRecursiveColor(fdc,170,220,255);
             fdc->SetMainTransparency(.8);
             MakeDescendantRecursiveTransparancey(fdc, 4);
 
