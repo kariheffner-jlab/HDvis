@@ -88,8 +88,10 @@ void MakeDescendantRecursiveTransparancey(TEveElement *e, float alpha)
 
         //cout<<"color "<<child->GetElementName()<<endl;
         child->SetMainAlpha(alpha);
+        //child->SetMainTransparency(alpha);
 
         MakeDescendantRecursiveTransparancey(child, alpha);
+
     }
 }
 
@@ -319,7 +321,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             MakeElementVisible(target);
             target->SetMainColorRGB(UChar_t(255),155,155);
             MakeDescendantRecursiveColor(target,255,155,155);
-            MakeDescendantRecursiveTransparancey(target, .40);
+            MakeDescendantRecursiveTransparancey(target, 0/*.40*/);
 
             auto sc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("STRT_1");
             MakeDescendantRecursiveVisible(sc, true);
@@ -333,7 +335,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             MakeElementVisible(bcal);
             bcal->SetMainColorRGB(UChar_t(180),220,255);
             MakeDescendantRecursiveColor(bcal,180,220,255);
-            MakeDescendantRecursiveTransparancey(bcal, 5);
+            MakeDescendantRecursiveTransparancey(bcal, 1);
 
 
             auto cdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("CDC_1");

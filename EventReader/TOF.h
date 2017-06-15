@@ -29,6 +29,7 @@ public:
 
             TOFPoint_ps->SetNextPoint(pos.X(),pos.Y(),pos.Z());
         }
+        TOFPoint_ps->SetPickable(1);
         gEve->AddElement(TOFPoint_ps);
     }
 

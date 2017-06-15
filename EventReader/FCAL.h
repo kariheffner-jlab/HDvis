@@ -43,6 +43,7 @@ public:
 
 
         }
+        FCAL_bs->SetPickable(1);
         gEve->AddElement(FCAL_bs);
     }
     void Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
@@ -74,7 +75,7 @@ public:
             //FCAL_shower->SetMainColorRGB(UChar_t(250),0,0);
             FCAL_shower->SetMainColorRGB(5.0, float(redness), 0);
             FCAL_shower->SetMainAlpha(.5);
-
+            FCAL_shower->SetPickable(1);
             FCAL_showers.push_back(FCAL_shower);
         }
 

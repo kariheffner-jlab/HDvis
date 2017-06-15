@@ -278,10 +278,10 @@ int main(int narg, char *argv[])
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
-
-
     hddsroot();                     // Creates geometry and save it to gGeoManager
     gGeoManager->DefaultColors();
+
+	gGeoManager->SetMaxVisNodes(100000);
 
     TEveManager::Create();
 	MakeControlTab();
