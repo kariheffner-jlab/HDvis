@@ -31,6 +31,24 @@ namespace hdvis{
 class GeometryConverter {
 public:
 
+    GeometryConverter()
+    {
+        //initialize list of accepted patterns for divisions (in ExtractVolumes)
+        _acceptedPatterns["TGeoPatternX"] =      true;
+        _acceptedPatterns["TGeoPatternY"] =      true;
+        _acceptedPatterns["TGeoPatternZ"] =      true;
+        _acceptedPatterns["TGeoPatternCylR"] =   true;
+        _acceptedPatterns["TGeoPatternCylPhi"] = true;
+        //========================
+
+        //initialize list of rejected shapes for divisions (in ExtractVolumes)
+        //this shapes are rejected because, it is not possible to divide trd2
+        //in Y axis and while only trd2 object is imported from GDML
+        //it causes a problem when TGeoTrd1 is divided in Y axis
+        _rejectedShapes["TGeoTrd1"] = true;
+        _rejectedShapes["TGeoTrd2"] = true;
+
+    }
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +263,23 @@ void ProcessShape(TGeoShape *geoShape) {
             auto materialName = volume->GetMaterial()->GetName();
             auto shapeClassName = volume->GetShape()->ClassName();
 
-            if(/*volumeName=="IYDN" || volumeName == "BCSD" ||*/ volumeName.find("xd") == 0)
+
+            //divisionvol can't be in assembly
+
+            bool isPattern;
+            auto pattFinder = volume->GetFinder();
+            //if found pattern
+            if (pattFinder) {
+                string pattClsName = pattFinder->ClassName();
+                //if pattern in accepted pattern list and not in shape rejected list
+                if ((_acceptedPatterns[pattClsName] == true) &&
+                    (_rejectedShapes[shapeClassName] != kTRUE)) {
+                    isPattern = kTRUE;
+                    cout<<"(!) Is PATTERN volume="<< volumeName <<" shape="<<shapeClassName<<" mat="<<materialName<<" pattName="<<pattClsName<<endl;
+                }
+            }
+
+            //if(/*volumeName=="IYDN" || volumeName == "BCSD" ||*/ volumeName.find("xd") == 0)
             {
                 //cout<<padding<<"volume="<< volumeName <<" shape="<<shapeClassName<<" mat="<<materialName<<endl;
                 ProcessShape(volume->GetShape());
@@ -258,17 +292,9 @@ void ProcessShape(TGeoShape *geoShape) {
                 nodPos.y = pos[1];
                 nodPos.z = pos[2];
 
-                cout<<pos[0]<<endl;
-                cout<<pos[1]<<endl;
-                cout<<pos[2]<<endl;
-                cout<<pos[3]<<endl;
-                cout<<pos[4]<<endl;
-                cout<<pos[5]<<endl;
-                cout<<pos[6]<<endl;
-                cout<<pos[7]<<endl;
-                cout<<pos[8]<<endl;
-                cout<<"    object.position.set( "<<nodPos.x<<", "<<nodPos.y<<", "<<nodPos.z<<" );\n"
-                        "        scene.add( object );"<<endl;
+
+                //cout<<"    object.position.set( "<<nodPos.x<<", "<<nodPos.y<<", "<<nodPos.z<<" );\n"
+                //        "        scene.add( object );"<<endl;
 
                 //rotation
                 //Xyz lxyz = GetXYZangles(node->GetMatrix()->GetRotationMatrix());
@@ -326,7 +352,7 @@ void ProcessShape(TGeoShape *geoShape) {
         if (pattFinder) {
             cout<<"  it is pattern"<<endl;
             isPattern = kTRUE;
-         }
+        }
 
 
         //get all nodes in volume
@@ -422,6 +448,11 @@ void ProcessShape(TGeoShape *geoShape) {
         //fGdmlE->AddChild(fStructureNode, volumeN);
 
     }
+
+    private:
+        std::map<std::string, bool> _acceptedPatterns;
+        std::map<std::string, bool> _rejectedShapes;
+
 
 };
 }
