@@ -292,7 +292,7 @@ void ExtractVolumes(TGeoVolume* volume)
         cout<<"   matname = "<<matname<<endl;
 
         string clsname(volume->GetShape()->ClassName());
-        ProcessValues(volume->GetShape())
+        //ProcessValues(volume->GetShape())
         cout<<"   clsname = "<<clsname<<endl;
 
         /*
@@ -427,8 +427,6 @@ void ExtractVolumes(TGeoVolume* volume)
 //-----------
 int main(int narg, char *argv[])
 {
-
-
 	// Create ROOT application 
 	// Instantiate an event loop object
 
@@ -441,11 +439,13 @@ int main(int narg, char *argv[])
     gGeoManager->Print();
     //gGeoManager->Export("/home/romanov/gluex/hdvis/github/halld.gdml");
     //TGDMLWrite::StartGDMLWriting(gGeoManager,"", "vg");
-    ExtractVolumes(gGeoManager->GetTopVolume());
+    //ExtractVolumes(gGeoManager->GetTopVolume());
 
-    gGeoManager->SetVisLevel(4);
-    gGeoManager->GetTopVolume()->Draw("ogle");
+    gGeoManager->SetVisLevel(40);
+    gGeoManager->Export("ha.gdml");
 
-    gApp->Run(false);
 
+    //gGeoManager->GetTopVolume()->Draw("ogle");
+
+    //gApp->Run(false);
 }
