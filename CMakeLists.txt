@@ -7,6 +7,7 @@ project(EveStandAlone C CXX)
 #   - ROOT built with CMake. Add in CMAKE_PREFIX_PATH the installation prefix for ROOT
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
+set(CMAKE_CXX_STANDARD 11)
 
 
 

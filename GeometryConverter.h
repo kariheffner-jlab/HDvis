@@ -96,16 +96,15 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
         solidN.append({"error","TGeoTrd2 is not implemented"});
         //solidN = CreateTrdN((TGeoTrd2*) geoShape);
     } else if (clsname == "TGeoTubeSeg") {
-        solidN.append({"error","TGeoTubeSeg is not implemented"});
-        //solidN = CreateTubeN((TGeoTubeSeg*) geoShape);
+        solidN = CreateTubeN((TGeoTubeSeg*) geoShape);
     } else if (clsname == "TGeoCtub") {
         solidN.append({"error","TGeoCtub is not implemented"});
         //solidN = CreateCutTubeN((TGeoCtub*) geoShape);
     } else if (clsname == "TGeoTube") {
         solidN = CreateTubeN((TGeoTube*) geoShape);
     } else if (clsname == "TGeoPcon") {
-        solidN.append({"error","TGeoPcon is not implemented"});
-        //solidN = CreatePolyconeN((TGeoPcon*) geoShape);
+        //solidN.append({"error","TGeoPcon is not implemented"});
+        solidN = CreatePolyconeN((TGeoPcon*) geoShape);
     } else if (clsname == "TGeoTorus") {
         solidN.append({"error","TGeoTorus is not implemented"});
         //solidN = CreateTorusN((TGeoTorus*) geoShape);
@@ -211,6 +210,27 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
         }
 
 
+////////////////////////////////////////////////////////////////////////////////
+/// Creates "tube" node for GDML  from  object TGeoTubeSeg
+
+        tao::json::value CreateTubeN(TGeoTubeSeg * geoShape)
+        {tao::json::value result({
+                                         {"shape", "tube"},
+                                         {"root_name", geoShape->GetName()},
+                                         {"rmin",      geoShape->GetRmin()},
+                                         {"rmax",      geoShape->GetRmax()},
+                                         {"z",          2 * geoShape->GetDz()},
+                                         {"startphi",  geoShape->GetPhi1()},
+                                         {"deltaphi",  geoShape->GetPhi2() - geoShape->GetPhi1()},
+                                         {"aunit", "deg"},
+                                         {"lunit", "cm"}
+                                 });
+
+            return result;
+        }
+
+
+
         static const UInt_t fgkProcBit    = BIT(14);    //14th bit is set when solid is processed
     static const UInt_t fgkProcBitVol = BIT(19);    //19th bit is set when volume is processed
     static const UInt_t fgkMaxNameErr = 5;          //maximum number of errors for naming
@@ -285,8 +305,41 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
         }
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// Creates "divisionvol" node for GDML
+        ////////////////////////////////////////////////////////////////////////////////
+        /// Creates "polycone" node for GDML
+
+        tao::json::value CreatePolyconeN(TGeoPcon * geoShape)
+        {
+            Int_t nZPlns = geoShape->GetNz();
+            std::vector<tao::json::value> zplanes;
+            for (Int_t it = 0; it < nZPlns; it++) {
+                //add zplane child node
+
+                zplanes.push_back(tao::json::value(
+                        {
+                                {"z", geoShape->GetZ(it)},
+                                {"rmin", geoShape->GetRmin(it)},
+                                {"rmax", geoShape->GetRmax(it)}
+                        }
+                ));
+            }
+
+            tao::json::value zplanesJson(zplanes);
+
+            auto result = tao::json::value({
+                    {"shape", "polycone"},
+                    {"startphi", geoShape->GetPhi1()},
+                    {"deltaphi", geoShape->GetDphi()},
+                    {"aunit", "deg"},
+                    {"lunit", "cm"},
+                    {"zplanes", zplanesJson}
+                                           });
+            return result;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        /// Creates "divisionvol" node for GDML
 
         tao::json::value CreateDivisionN(Double_t offset, Double_t width, Int_t number,
                                          const char * axis, const char * unit, const char * volref,
@@ -306,17 +359,18 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
                 }
             }
 
+            auto result = tao::json::value({
+                    {"gdml_name", "divisionvol"},
+                    {"axis", axis},
+                    {"number", number},
+                    {"width", width},
+                    {"offset", offset},
+                    {"unit", unit},
+                    {"volumeref", volref}
+                                    });
+            return result;
 
-            tao::json::value v({
-                        {"gdml_name", "divisionvol"},
-                        {"axis", axis},
-                        {"number", number},
-                        {"width", width},
-                        {"offset", offset},
-                        {"unit", unit},
-                        {"volumeref", volref}
-                    });
-            return v;
+
         }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -336,7 +390,7 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
             string path = parentPath + "/" + volumeName;
             _volumesByPath[volumeName] = volume;
 
-            json::value volumeJson ({
+            json::value volumeJson({
                                       {"name", volumeName},
                                       {"path", path },
                                       {"material", materialName}
@@ -355,7 +409,7 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
                 if ((_acceptedPatterns[pattClsName] == true) &&
                     (_rejectedShapes[shapeClassName] != kTRUE)) {
                     isPattern = kTRUE;
-                    cout<<"(!) Is PATTERN volume="<< volumeName <<" shape="<<shapeClassName<<" mat="<<materialName<<" pattName="<<pattClsName<<endl;
+                    //cout<<"(!) Is PATTERN volume="<< volumeName <<" shape="<<shapeClassName<<" mat="<<materialName<<" pattName="<<pattClsName<<endl;
 
                     TString axis, unit;
                     int ndiv = pattFinder->GetNdiv();
@@ -375,14 +429,14 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
 
                     //create division node
                     auto v = CreateDivisionN(offset, width, ndiv, axis.Data(), unit.Data(), nodeVolNameBak.c_str());
-                    volumeJson.append({"division", v});
-                    cout<<json::to_string(v)<<endl;
+                    volumeJson+={{"division", v}};
+                    //cout<<json::to_string(v)<<endl;
                 }
             }
 
             // Get shape parametrisation
             auto shapeJson = ProcessShape(volume->GetShape());
-            volumeJson.append({"shape", shapeJson});
+            volumeJson += {{"shape", shapeJson}};
             node->GetMatrix()->GetRotationMatrix();
 
             // Position and rotation
@@ -391,7 +445,7 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
             const Double_t * pos = node->GetMatrix()->GetTranslation();
 
             // pos[0] - x, pos[1] - y, pos[2] - z
-            volumeJson.append({"position", json::value::array({pos[0], pos[1], pos[2]})});
+            volumeJson += {{"position", json::value::array({pos[0], pos[1], pos[2]})}};
 
 
             //Deal with reflection
@@ -416,7 +470,7 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
             Xyz lxyz = GetXYZangles(node->GetMatrix()->GetRotationMatrix());
             lxyz.x -= xangle;
             lxyz.z -= zangle;
-            volumeJson.append({"rotation", json::value::array({lxyz.x, lxyz.y, lxyz.z})});
+            volumeJson += {{"rotation", json::value::array({lxyz.x, lxyz.y, lxyz.z})}};
 
             json::value childrenJson = json::empty_array;
 
@@ -428,7 +482,7 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
             //loop through all nodes
             while ((childNode = (TGeoNode *) next()))
             {
-                if(childNode && childNode->GetVolume() && !isPattern)
+                if(childNode && childNode->GetVolume())
                 {
                     auto v = ExtractVolumesNew(childNode, childNode->GetVolume(), level+1, path);
                     childrenJson.append({v});
@@ -436,7 +490,8 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
                 }
             }
 
-            volumeJson.append({"children", childrenJson});
+            //volumeJson += {{"children", childrenJson}};
+
             _jsonByPath[path] = volumeJson;
             return volumeJson;
 
@@ -569,6 +624,9 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
         //fGdmlE->AddChild(fStructureNode, volumeN);
 
     }
+
+
+        std::map<std::string, tao::json::value> &GetJsonByPath() {return _jsonByPath;};
 
     private:
         std::map<std::string, bool> _acceptedPatterns;

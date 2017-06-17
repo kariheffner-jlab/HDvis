@@ -16,6 +16,7 @@
 #include <iostream>
 #include <TRint.h>
 #include <TBrowser.h>
+#include <fstream>
 #include "TGDMLWrite.h"
 #include "GeometryConverter.h"
 
@@ -68,7 +69,22 @@ int main(int narg, char *argv[])
     hdvis::GeometryConverter converter;
     auto masterJson = converter.ExtractVolumesNew(gGeoManager->GetTopNode(), gGeoManager->GetTopVolume(), 0, string());
 
-    cout<<tao::json::to_string(masterJson)<<endl;
+    //cout<<tao::json::to_string(masterJson, 4)<<endl;
+
+    auto &jsonByPath = converter.GetJsonByPath();
+
+    //vector<tao::json::value> _values;
+    tao::json::value geometryJson;
+
+    for(auto const & item : jsonByPath) {
+        std::cout << std::setw(-40) << item.first << "," << item.second << endl;
+        //geometryJson.append(item.second);
+        geometryJson += { {item.first, item.second} };
+    }
+
+    std::ofstream out("output.json");
+    out << tao::json::to_string(geometryJson, 4);
+    out.close();
 
     //gGeoManager->SetVisLevel(4);
     //gGeoManager->GetTopVolume()->Draw("ogle");
