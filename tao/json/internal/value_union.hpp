@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "../byte.hpp"
-
 namespace tao
 {
    namespace json
@@ -37,17 +35,16 @@ namespace tao
             double d;
 
             std::string s;
-            std::vector< json::byte > x;
             std::vector< Value > a;
             std::map< std::string, Value > o;
 
             const Value* p;
          };
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

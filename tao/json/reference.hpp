@@ -44,7 +44,6 @@ namespace tao
                case type::UNSIGNED:
                case type::DOUBLE:
                case type::STRING:
-               case type::BINARY:
                   return;
                case type::ARRAY:
                   for( auto& e : v.unsafe_get_array() ) {
@@ -55,8 +54,7 @@ namespace tao
                   for( auto& e : v.unsafe_get_object() ) {
                      resolve_references( r, e.second );
                   }
-                  if( const auto* ref = v.find( "$ref" ) ) {
-                     ref = ref->skip_raw_ptr();
+                  if( const auto* ref = v.find( "$ref" )->skip_raw_ptr() ) {
                      if( ref->is_string() ) {
                         const std::string& s = ref->unsafe_get_string();
                         if( !s.empty() && s[ 0 ] == '#' ) {
@@ -101,7 +99,7 @@ namespace tao
             throw std::logic_error( "invalid value for tao::json::type" );  // LCOV_EXCL_LINE
          }
 
-      }  // namespace internal
+      }  // internal
 
       template< template< typename... > class Traits >
       void resolve_references( basic_value< Traits >& r )
@@ -109,8 +107,8 @@ namespace tao
          resolve_references( r, r );
       }
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

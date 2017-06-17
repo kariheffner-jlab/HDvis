@@ -29,7 +29,6 @@ namespace tao
             case type::UNSIGNED:
             case type::DOUBLE:
             case type::STRING:
-            case type::BINARY:
                return true;
             case type::ARRAY:
                for( auto& e : v.unsafe_get_array() ) {
@@ -70,7 +69,6 @@ namespace tao
             case type::UNSIGNED:
             case type::DOUBLE:
             case type::STRING:
-            case type::BINARY:
                return;
             case type::ARRAY:
                for( auto& e : v.unsafe_get_array() ) {
@@ -95,8 +93,8 @@ namespace tao
          throw std::logic_error( "invalid value for tao::json::type" );  // LCOV_EXCL_LINE
       }
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

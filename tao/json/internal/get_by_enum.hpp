@@ -6,7 +6,6 @@
 
 #include <cstdint>
 
-#include "../byte.hpp"
 #include "../type.hpp"
 
 #include "value_union.hpp"
@@ -87,22 +86,6 @@ namespace tao
          };
 
          template<>
-         struct get_by_enum< type::BINARY >
-         {
-            template< typename V >
-            static std::vector< byte >& get( value_union< V >& u ) noexcept
-            {
-               return u.x;
-            }
-
-            template< typename V >
-            static const std::vector< byte >& get( const value_union< V >& u ) noexcept
-            {
-               return u.x;
-            }
-         };
-
-         template<>
          struct get_by_enum< type::ARRAY >
          {
             template< typename V >
@@ -144,10 +127,10 @@ namespace tao
             }
          };
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

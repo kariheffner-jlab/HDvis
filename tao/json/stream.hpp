@@ -32,8 +32,8 @@ namespace tao
          return o;
       }
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

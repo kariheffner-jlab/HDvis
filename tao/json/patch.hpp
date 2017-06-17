@@ -102,8 +102,8 @@ namespace tao
          return std::move( value );
       }
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

@@ -42,8 +42,8 @@ namespace tao
          }
       };
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

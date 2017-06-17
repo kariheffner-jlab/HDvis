@@ -448,10 +448,10 @@ namespace tao
             }
          };
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

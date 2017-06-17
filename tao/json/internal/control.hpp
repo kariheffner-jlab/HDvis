@@ -26,9 +26,9 @@ namespace tao
          {
          };
 
-         template< bool NEG >
-         struct control< rules::number< NEG > >
-            : json_pegtl::change_state< rules::number< NEG >, number_state< NEG >, errors >
+         template<>
+         struct control< rules::number >
+            : json_pegtl::change_state< rules::number, number_state, errors >
          {
          };
 
@@ -44,10 +44,10 @@ namespace tao
          {
          };
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

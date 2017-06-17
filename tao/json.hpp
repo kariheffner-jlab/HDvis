@@ -4,62 +4,41 @@
 #ifndef TAOCPP_JSON_INCLUDE_JSON_HPP
 #define TAOCPP_JSON_INCLUDE_JSON_HPP
 
-// JSON Value
+// DOM value
 #include "json/value.hpp"
 
-// Events producers
-#include "json/events/from_stream.hpp"
-#include "json/events/from_string.hpp"
-#include "json/events/from_value.hpp"
-#include "json/events/parse_file.hpp"
+// SAX producers
+//#include "json/sax/from_stream.hpp" // includes PEGTL header/grammar
+#include "json/sax/from_string.hpp"  // includes PEGTL header/grammar
+#include "json/sax/from_value.hpp"   // DOM to SAX
+#include "json/sax/parse_file.hpp"   // includes PEGTL header/grammar
 
-// Events consumers
-#include "json/events/to_pretty_stream.hpp"
-#include "json/events/to_stream.hpp"
-#include "json/events/to_string.hpp"
-#include "json/events/to_value.hpp"
+// SAX consumers
+#include "json/sax/to_pretty_stream.hpp"
+#include "json/sax/to_stream.hpp"
+#include "json/sax/to_string.hpp"
+#include "json/sax/to_value.hpp"  // SAX to DOM
 
-// Events transformer
-#include "json/events/binary_to_base64.hpp"
-#include "json/events/binary_to_base64url.hpp"
-#include "json/events/binary_to_exception.hpp"
-#include "json/events/binary_to_hex.hpp"
-#include "json/events/non_finite_to_exception.hpp"
-#include "json/events/non_finite_to_null.hpp"
-#include "json/events/non_finite_to_string.hpp"
-#include "json/events/prefer_signed.hpp"
-#include "json/events/prefer_unsigned.hpp"
+// SAX other
+#include "json/sax/debug.hpp"
+#include "json/sax/discard.hpp"
+#include "json/sax/hash.hpp"
+#include "json/sax/tee.hpp"
+#include "json/sax/validate_event_order.hpp"
 
-// Events other
-#include "json/events/debug.hpp"
-#include "json/events/discard.hpp"
-#include "json/events/hash.hpp"
-#include "json/events/tee.hpp"
-#include "json/events/validate_event_order.hpp"
-#include "json/events/validate_keys.hpp"
+// DOM producers
+#include "json/from_string.hpp"  // includes PEGTL header/grammar
+#include "json/parse_file.hpp"   // includes PEGTL header/grammar
 
-// Value producers
-#include "json/from_stream.hpp"
-#include "json/from_string.hpp"
-#include "json/parse_file.hpp"
-
-// Value writers
+// DOM writers
 #include "json/stream.hpp"  // operator<<
 #include "json/to_stream.hpp"
 #include "json/to_string.hpp"
 
-// Value support
+// DOM support
 #include "json/patch.hpp"
 #include "json/self_contained.hpp"
 //#include "json/diff.hpp"
 #include "json/schema.hpp"
-
-// Relaxed JSON
-#include "json/jaxn.hpp"
-
-// Binary formats
-#include "json/cbor.hpp"
-#include "json/msgpack.hpp"
-#include "json/ubjson.hpp"
 
 #endif

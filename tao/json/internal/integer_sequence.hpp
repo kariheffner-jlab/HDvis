@@ -72,10 +72,10 @@ namespace tao
          template< typename... Ts >
          using index_sequence_for = make_index_sequence< sizeof...( Ts ) >;
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif  // TAOCPP_JSON_INCLUDE_INTERNAL_INTEGER_SEQUENCE_HPP

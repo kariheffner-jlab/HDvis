@@ -179,10 +179,10 @@ namespace tao
             return tokens_to_uri_fragment( p.begin(), p.end() );
          }
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

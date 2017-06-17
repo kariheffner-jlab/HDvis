@@ -29,8 +29,8 @@ namespace tao
          return o.str();
       }
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

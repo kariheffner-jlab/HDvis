@@ -114,30 +114,19 @@ namespace tao
          };
 
          template<>
-         struct action< rules::zero< false > >
+         struct action< rules::msign >
          {
-            template< typename Consumer >
-            static void apply0( Consumer& consumer )
+            static void apply0( number_state& result )
             {
-               consumer.number( std::uint64_t( 0 ) );
-            }
-         };
-
-         template<>
-         struct action< rules::zero< true > >
-         {
-            template< typename Consumer >
-            static void apply0( Consumer& consumer )
-            {
-               consumer.number( std::int64_t( 0 ) );
+               result.mneg = true;
             }
          };
 
          template<>
          struct action< rules::esign >
          {
-            template< typename Input, bool NEG >
-            static void apply( const Input& in, number_state< NEG >& result )
+            template< typename Input >
+            static void apply( const Input& in, number_state& result )
             {
                result.eneg = ( in.peek_char() == '-' );
             }
@@ -146,25 +135,18 @@ namespace tao
          template<>
          struct action< rules::idigits >
          {
-            template< typename Input, bool NEG >
-            static void apply( const Input& in, number_state< NEG >& result )
+            template< typename Input >
+            static void apply( const Input& in, number_state& result )
             {
-               const auto s = in.size();
-
-               if( s == 1 && in.peek_char() == '0' ) {
-                  return;
-               }
-
-               if( s > ( 1 << 20 ) ) {
+               if( in.size() > ( 1 << 20 ) ) {
                   throw std::runtime_error( "JSON number with 1 megabyte digits" );
                }
-
-               const auto c = std::min( s, max_mantissa_digits );
+               const auto c = std::min( in.size(), max_mantissa_digits );
                std::memcpy( result.mantissa, in.begin(), c );
-               result.exponent10 += static_cast< typename number_state< NEG >::exponent10_t >( s - c );
-               result.msize = static_cast< typename number_state< NEG >::msize_t >( c );
+               result.exponent10 += static_cast< number_state::exponent10_t >( in.size() - c );
+               result.msize = static_cast< number_state::msize_t >( c );
 
-               for( std::size_t i = c; i < s; ++i ) {
+               for( std::size_t i = c; i < in.size(); ++i ) {
                   if( in.peek_char( i ) != '0' ) {
                      result.drop = true;
                      return;
@@ -176,8 +158,8 @@ namespace tao
          template<>
          struct action< rules::fdigits >
          {
-            template< typename Input, bool NEG >
-            static void apply( const Input& in, number_state< NEG >& result )
+            template< typename Input >
+            static void apply( const Input& in, number_state& result )
             {
                result.isfp = true;
 
@@ -195,8 +177,8 @@ namespace tao
                }
                const auto c = std::min( std::size_t( e - b ), max_mantissa_digits - result.msize );
                std::memcpy( result.mantissa + result.msize, b, c );
-               result.exponent10 -= static_cast< typename number_state< NEG >::exponent10_t >( c );
-               result.msize += static_cast< typename number_state< NEG >::msize_t >( c );
+               result.exponent10 -= static_cast< number_state::exponent10_t >( c );
+               result.msize += static_cast< number_state::msize_t >( c );
 
                for( const auto* r = b + c; r < e; ++r ) {
                   if( *r != '0' ) {
@@ -210,8 +192,8 @@ namespace tao
          template<>
          struct action< rules::edigits >
          {
-            template< typename Input, bool NEG >
-            static void apply( const Input& in, number_state< NEG >& result )
+            template< typename Input >
+            static void apply( const Input& in, number_state& result )
             {
                result.isfp = true;
 
@@ -233,10 +215,10 @@ namespace tao
             }
          };
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

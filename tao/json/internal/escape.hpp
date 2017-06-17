@@ -67,10 +67,10 @@ namespace tao
             os.write( l, p - l );
          }
 
-      }  // namespace internal
+      }  // internal
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

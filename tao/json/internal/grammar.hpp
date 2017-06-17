@@ -37,6 +37,8 @@ namespace tao
 
             struct digits : plus< abnf::DIGIT > {};
 
+            struct zero : one< '0' > {};
+            struct msign : one< '-' > {};
             struct esign : one< '-', '+' > {};
 
             struct edigits : digits {};
@@ -45,19 +47,17 @@ namespace tao
 
             struct exp : seq< one< 'e', 'E' >, opt< esign >, must< edigits > > {};
             struct frac : if_must< one< '.' >, fdigits > {};
-
-            template< bool NEG >
-            struct number : seq< idigits, opt< frac >, opt< exp > > {};
+            struct int_ : sor< zero, idigits > {};
+            struct number : seq< opt< msign >, int_, opt< frac >, opt< exp > > {};
 
             struct xdigit : abnf::HEXDIG {};
-            struct escaped_unicode : list< seq< one< 'u' >, rep< 4, must< xdigit > > >, one< '\\' > > {};
-
+            struct unicode : list< seq< one< 'u' >, rep< 4, must< xdigit > > >, one< '\\' > > {};
             struct escaped_char : one< '"', '\\', '/', 'b', 'f', 'n', 'r', 't' > {};
-            struct escaped : sor< escaped_char, escaped_unicode > {};
+            struct escaped : sor< escaped_char, unicode > {};
 
             struct unescaped
             {
-               using analyze_t = json_pegtl::analysis::generic< json_pegtl::analysis::rule_type::ANY >;
+               using analyze_t = analysis::generic< analysis::rule_type::ANY >;
 
                template< typename Input >
                static bool match( Input& in )
@@ -74,7 +74,7 @@ namespace tao
                      }
                      return result;
                   }
-                  throw json_pegtl::parse_error( "invalid character in string", in );
+                  throw std::logic_error( "code should be unreachable" );  // LCOV_EXCL_LINE
                }
             };
 
@@ -86,7 +86,7 @@ namespace tao
                using content = string_content;
             };
 
-            struct key_content : string_content {};
+            struct key_content : until< at< one< '"' > >, must< chars > > {};
             struct key : seq< one< '"' >, must< key_content >, any >
             {
                using content = key_content;
@@ -114,66 +114,9 @@ namespace tao
                using content = object_content;
             };
 
-            template< bool NEG >
-            struct zero {};
-
             struct sor_value
             {
-               using analyze_t = json_pegtl::analysis::generic< json_pegtl::analysis::rule_type::SOR, string, number< false >, object, array, false_, true_, null >;
-
-               template< bool NEG,
-                         apply_mode A,
-                         rewind_mode M,
-                         template< typename... > class Action,
-                         template< typename... > class Control,
-                         typename Input,
-                         typename... States >
-               static bool match_zero( Input& in, States&&... st )
-               {
-                  if( in.size( 2 ) > 1 ) {
-                     switch( in.peek_char( 1 ) ) {
-                        case '.':
-                        case 'e':
-                        case 'E':
-                           return Control< number< NEG > >::template match< A, M, Action, Control >( in, st... );
-
-                        case '0':
-                        case '1':
-                        case '2':
-                        case '3':
-                        case '4':
-                        case '5':
-                        case '6':
-                        case '7':
-                        case '8':
-                        case '9':
-                           throw json_pegtl::parse_error( "invalid leading zero", in );
-                     }
-                  }
-                  in.bump_in_this_line();
-                  Control< zero< NEG > >::template apply0< Action >( in, st... );
-                  return true;
-               }
-
-               template< bool NEG,
-                         apply_mode A,
-                         rewind_mode M,
-                         template< typename... > class Action,
-                         template< typename... > class Control,
-                         typename Input,
-                         typename... States >
-               static bool match_number( Input& in, States&&... st )
-               {
-                  if( in.peek_char() == '0' ) {
-                     if( !match_zero< NEG, A, rewind_mode::DONTCARE, Action, Control >( in, st... ) ) {
-                        throw json_pegtl::parse_error( "incomplete number", in );
-                     }
-                     return true;
-                  }
-                  else {
-                     return Control< number< NEG > >::template match< A, M, Action, Control >( in, st... );
-                  }
-               }
+               using analyze_t = analysis::generic< analysis::rule_type::SOR, string, number, object, array, false_, true_, null >;
 
                template< apply_mode A,
                          rewind_mode M,
@@ -181,7 +124,7 @@ namespace tao
                          template< typename... > class Control,
                          typename Input,
                          typename... States >
-               static bool match_impl( Input& in, States&&... st )
+               static bool match( Input& in, States&& ... st )
                {
                   switch( in.peek_char() ) {
                      case '"': return Control< string >::template match< A, M, Action, Control >( in, st... );
@@ -190,36 +133,12 @@ namespace tao
                      case 'n': return Control< null >::template match< A, M, Action, Control >( in, st... );
                      case 't': return Control< true_ >::template match< A, M, Action, Control >( in, st... );
                      case 'f': return Control< false_ >::template match< A, M, Action, Control >( in, st... );
-
-                     case '-':
-                        in.bump_in_this_line();
-                        if( in.empty() || !match_number< true, A, rewind_mode::DONTCARE, Action, Control >( in, st... ) ) {
-                           throw json_pegtl::parse_error( "incomplete number", in );
-                        }
-                        return true;
-
-                     default:
-                        return match_number< false, A, M, Action, Control >( in, st... );
+                     default: return Control< number >::template match< A, M, Action, Control >( in, st... );
                   }
-               }
-
-               template< apply_mode A,
-                         rewind_mode M,
-                         template< typename... > class Action,
-                         template< typename... > class Control,
-                         typename Input,
-                         typename... States >
-               static bool match( Input& in, States&&... st )
-               {
-                  if( in.size( 2 ) && match_impl< A, M, Action, Control >( in, st... ) ) {
-                     in.discard();
-                     return true;
-                  }
-                  return false;
                }
             };
 
-            struct value : padr< sor_value > {};
+            struct value : padr< seq< sor_value, discard > > {};
             struct array_element : value {};
 
             struct text : seq< star< ws >, value > {};

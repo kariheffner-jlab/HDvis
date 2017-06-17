@@ -25,6 +25,9 @@
 #include "TGDMLWrite.h"
 #include "StringUtils.h"
 
+#include <tao/json.hpp>
+#include <tao/json/from_string.hpp>
+#include <tao/json/value.hpp>
 
 namespace hdvis{
 
@@ -54,53 +57,74 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 /// Chooses the object and method that should be used for processing object
 
-void ProcessShape(TGeoShape *geoShape) {
+tao::json::value ProcessShape(TGeoShape *geoShape) {
     using namespace std;
     string clsname(geoShape->ClassName());
 
-
+    tao::json::value solidN;
     //process different sh apes
     if (clsname == "TGeoBBox") {
-        CreateBoxN((TGeoBBox *) geoShape);
-    } /*else if (strcmp(clsname, "TGeoParaboloid") == 0) {
-        solidN = CreateParaboloidN((TGeoParaboloid*) geoShape);
-    } else if (strcmp(clsname, "TGeoSphere") == 0) {
-        solidN = CreateSphereN((TGeoSphere*) geoShape);
-    } else if (strcmp(clsname, "TGeoArb8") == 0) {
-        solidN = CreateArb8N((TGeoArb8*) geoShape);
-    } else if (strcmp(clsname, "TGeoConeSeg") == 0) {
-        solidN = CreateConeN((TGeoConeSeg*) geoShape);
-    } else if (strcmp(clsname, "TGeoCone") == 0) {
-        solidN = CreateConeN((TGeoCone*) geoShape);
-    } else if (strcmp(clsname, "TGeoPara") == 0) {
-        solidN = CreateParaN((TGeoPara*) geoShape);
-    } else if (strcmp(clsname, "TGeoTrap") == 0) {
-        solidN = CreateTrapN((TGeoTrap*) geoShape);
-    } else if (strcmp(clsname, "TGeoGtra") == 0) {
-        solidN = CreateTwistedTrapN((TGeoGtra*) geoShape);
-    } else if (strcmp(clsname, "TGeoTrd1") == 0) {
-        solidN = CreateTrdN((TGeoTrd1*) geoShape);
-    } else if (strcmp(clsname, "TGeoTrd2") == 0) {
-        solidN = CreateTrdN((TGeoTrd2*) geoShape);
-    } else if (strcmp(clsname, "TGeoTubeSeg") == 0) {
-        solidN = CreateTubeN((TGeoTubeSeg*) geoShape);
-    } else if (strcmp(clsname, "TGeoCtub") == 0) {
-        solidN = CreateCutTubeN((TGeoCtub*) geoShape);
-    } */else if (clsname == "TGeoTube") {
-        CreateTubeN((TGeoTube*) geoShape);
-    } /*else if (strcmp(clsname, "TGeoPcon") == 0) {
-        solidN = CreatePolyconeN((TGeoPcon*) geoShape);
-    } else if (strcmp(clsname, "TGeoTorus") == 0) {
-        solidN = CreateTorusN((TGeoTorus*) geoShape);
-    } else if (strcmp(clsname, "TGeoPgon") == 0) {
-        solidN = CreatePolyhedraN((TGeoPgon*) geoShape);
-    } else if (strcmp(clsname, "TGeoEltu") == 0) {
-        solidN = CreateEltubeN((TGeoEltu*) geoShape);
-    } else if (strcmp(clsname, "TGeoHype") == 0) {
-        solidN = CreateHypeN((TGeoHype*) geoShape);
-    } else if (strcmp(clsname, "TGeoXtru") == 0) {
-        solidN = CreateXtrusionN((TGeoXtru*) geoShape);
-    } else if (strcmp(clsname, "TGeoScaledShape") == 0) {
+        solidN = CreateBoxN((TGeoBBox *) geoShape);
+    } else if (clsname == "TGeoParaboloid") {
+        solidN.append({"error","TGeoParaboloid is not implemented"});
+        //solidN = CreateParaboloidN((TGeoParaboloid*) geoShape);
+    } else if (clsname == "TGeoSphere") {
+        solidN.append({"error","TGeoSphere is not implemented"});
+        //solidN = CreateSphereN((TGeoSphere*) geoShape);
+    } else if (clsname == "TGeoArb8") {
+        solidN.append({"error","TGeoArb8 is not implemented"});
+        //solidN = CreateArb8N((TGeoArb8*) geoShape);
+    } else if (clsname == "TGeoConeSeg") {
+        solidN.append({"error","TGeoConeSeg is not implemented"});
+        //solidN = CreateConeN((TGeoConeSeg*) geoShape);
+    } else if (clsname == "TGeoCone") {
+        solidN.append({"error","TGeoCone is not implemented"});
+        //solidN = CreateConeN((TGeoCone*) geoShape);
+    } else if (clsname == "TGeoPara") {
+        solidN.append({"error","TGeoPara is not implemented"});
+        //solidN = CreateParaN((TGeoPara*) geoShape);
+    } else if (clsname == "TGeoTrap") {
+        solidN.append({"error","TGeoTrap is not implemented"});
+        //solidN = CreateTrapN((TGeoTrap*) geoShape);
+    } else if (clsname == "TGeoGtra") {
+        solidN.append({"error","TGeoGtra is not implemented"});
+        //solidN = CreateTwistedTrapN((TGeoGtra*) geoShape);
+    } else if (clsname == "TGeoTrd1") {
+        solidN.append({"error","TGeoTrd1 is not implemented"});
+        //solidN = CreateTrdN((TGeoTrd1*) geoShape);
+    } else if (clsname == "TGeoTrd2") {
+        solidN.append({"error","TGeoTrd2 is not implemented"});
+        //solidN = CreateTrdN((TGeoTrd2*) geoShape);
+    } else if (clsname == "TGeoTubeSeg") {
+        solidN.append({"error","TGeoTubeSeg is not implemented"});
+        //solidN = CreateTubeN((TGeoTubeSeg*) geoShape);
+    } else if (clsname == "TGeoCtub") {
+        solidN.append({"error","TGeoCtub is not implemented"});
+        //solidN = CreateCutTubeN((TGeoCtub*) geoShape);
+    } else if (clsname == "TGeoTube") {
+        solidN = CreateTubeN((TGeoTube*) geoShape);
+    } else if (clsname == "TGeoPcon") {
+        solidN.append({"error","TGeoPcon is not implemented"});
+        //solidN = CreatePolyconeN((TGeoPcon*) geoShape);
+    } else if (clsname == "TGeoTorus") {
+        solidN.append({"error","TGeoTorus is not implemented"});
+        //solidN = CreateTorusN((TGeoTorus*) geoShape);
+    } else if (clsname == "TGeoPgon") {
+        solidN.append({"error","TGeoPgon is not implemented"});
+        //solidN = CreatePolyhedraN((TGeoPgon*) geoShape);
+    } else if (clsname == "TGeoEltu") {
+        solidN.append({"error","TGeoEltu is not implemented"});
+        //solidN = CreateEltubeN((TGeoEltu*) geoShape);
+    } else if (clsname == "TGeoHype") {
+        solidN.append({"error","TGeoHype is not implemented"});
+        //solidN = CreateHypeN((TGeoHype*) geoShape);
+    } else if (clsname == "TGeoXtru") {
+        solidN.append({"error","TGeoXtru is not implemented"});
+        //solidN = CreateXtrusionN((TGeoXtru*) geoShape);
+    } else if (clsname == "TGeoScaledShape") {
+        solidN.append({"error","TGeoScaledShape is not implemented"});
+
+        /*
         TGeoScaledShape * geoscale = (TGeoScaledShape *) geoShape;
         TString scaleObjClsName = geoscale->GetShape()->ClassName();
         if (scaleObjClsName == "TGeoCone") {
@@ -113,30 +137,27 @@ void ProcessShape(TGeoShape *geoShape) {
             //Name has to be propagated to geoscale level pointer
             fNameList->fLst[TString::Format("%p", geoscale)] =
                     fNameList->fLst[TString::Format("%p", geoscale->GetShape())];
-        }
-    } else if (strcmp(clsname, "TGeoCompositeShape") == 0) {
-        solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
-    } else if (strcmp(clsname, "TGeoUnion") == 0) {
-        solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
-    } else if (strcmp(clsname, "TGeoIntersection") == 0) {
-        solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
-    } else if (strcmp(clsname, "TGeoSubtraction") == 0) {
-        solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
+        }*/
+    } else if (clsname == "TGeoCompositeShape") {
+        solidN.append({"error","TGeoCompositeShape is not implemented"});
+        //solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
+    } else if (clsname == "TGeoUnion") {
+        solidN.append({"error","TGeoUnion is not implemented"});
+        //solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
+    } else if (clsname == "TGeoIntersection") {
+        solidN.append({"error","TGeoSubtraction is not implemented"});
+        //solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
+    } else if (clsname == "TGeoSubtraction") {
+        solidN.append({"error","CreateCommonBoolN is not implemented"});
+        //solidN = CreateCommonBoolN((TGeoCompositeShape*) geoShape);
     } else {
-        Info("ChooseObject", "ERROR! %s Solid CANNOT be processed, solid is NOT supported",
-             clsname);
-        solidN = NULL;
+        cerr<<"ChooseObject ERROR! %s Solid CANNOT be processed, solid is NOT supported"<<endl;
     }
-    if (solidN == NULL) {
-        if (fNameList->fLst[TString::Format("%p", geoShape)] == "") {
-            TString missingName = geoShape->GetName();
-            StringUtils::EscapeJsonString("missing_" + missingName, TString::Format("%p", geoShape));
-        } else {
-            fNameList->fLst[TString::Format("%p", geoShape)] = "missing_" + fNameList->fLst[TString::Format("%p", geoShape)];
-        }
+    if (solidN.is_unsigned()) {
+        cerr<<"solidN.is_unsigned() shape:"<<endl;
     }
 
-    return solidN;*/
+    return solidN;
 }
 
 
@@ -155,59 +176,38 @@ void ProcessShape(TGeoShape *geoShape) {
     }
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// Creates "box" node for GDML
-
-    void CreateBoxN(TGeoBBox * geoShape)
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Creates "box" node for GDML
+    tao::json::value CreateBoxN(TGeoBBox * geoShape)
     {
-        using namespace std;
-
-        //XMLNodePointer_t mainN = fGdmlE->NewChild(0, 0, "box", 0);
-
-        string lname = geoShape->GetName();
-        lname = StringUtils::EscapeJsonString(lname);
-
-        if (IsNullParam(geoShape->GetDX(), "DX", lname) ||
-            IsNullParam(geoShape->GetDY(), "DY", lname) ||
-            IsNullParam(geoShape->GetDZ(), "DZ", lname)) {
-            return;
-        }
-
-        cout<<""
-                "        object = new THREE.Mesh( new THREE.BoxGeometry( "
-                ""<<geoShape->GetDX()<<", "
-                ""<<geoShape->GetDY()<<", "
-                ""<<geoShape->GetDZ()<<", 4, 4, 4 ), material );\n"<<endl;
-
-
-
-//        cout<<"x = "<<geoShape->GetDX()<<" y = "<<geoShape->GetDY()<<" z = "<<geoShape->GetDZ()<<endl;
-
+        tao::json::value result({
+                              {"shape", "box"},
+                              {"root_name", geoShape->GetName()},
+                              {"x", geoShape->GetDX()},
+                              {"y", geoShape->GetDY()},
+                              {"z", geoShape->GetDZ()},
+                              {"lunit", "cm"}
+                      });
+        return result;
     }
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// Creates "tube" node for GDML  from  object TGeoTubeSeg
-
-        XMLNodePointer_t CreateTubeN(TGeoTube * geoShape)
+        ////////////////////////////////////////////////////////////////////////////////
+        /// Creates "tube" node for GDML  from  object TGeoTubeSeg
+        tao::json::value CreateTubeN(TGeoTube * geoShape)
         {
-//            XMLNodePointer_t mainN = fGdmlE->NewChild(0, 0, "tube", 0);
-//            TString lname = GenName(geoShape->GetName(), TString::Format("%p", geoShape));
-//            fGdmlE->NewAttr(mainN, 0, "name", lname);
-//            if (IsNullParam(geoShape->GetRmax(), "Rmax", lname) ||
-//                IsNullParam(geoShape->GetDz(), "Dz", lname)) {
-//                return NULL;
-//            }
-//
-//            fGdmlE->NewAttr(mainN, 0, "rmin", TString::Format("%.12g", geoShape->GetRmin()));
-//            fGdmlE->NewAttr(mainN, 0, "rmax", TString::Format("%.12g", geoShape->GetRmax()));
-//            fGdmlE->NewAttr(mainN, 0, "z", TString::Format("%.12g",  2 * geoShape->GetDz()));
-//            fGdmlE->NewAttr(mainN, 0, "startphi", TString::Format("%.12g", geoShape->GetPhi1()));
-//            fGdmlE->NewAttr(mainN, 0, "deltaphi", TString::Format("%.12g", geoShape->GetPhi2() - geoShape->GetPhi1()));
-//
-//            fGdmlE->NewAttr(mainN, 0, "aunit", "deg");
-//            fGdmlE->NewAttr(mainN, 0, "lunit", "cm");
-//            return mainN;
+            tao::json::value result({
+                                  {"shape", "tube"},
+                                  {"root_name", geoShape->GetName()},
+                                  {"rmin",      geoShape->GetRmin()},
+                                  {"rmax",      geoShape->GetRmax()},
+                                  {"z",          2 * geoShape->GetDz()},
+                                  {"startphi",  0},
+                                  {"deltaphi",  360},
+                                  {"aunit", "deg"},
+                                  {"lunit", "cm"}
+                          });
+            return result;
         }
 
 
@@ -249,19 +249,99 @@ void ProcessShape(TGeoShape *geoShape) {
         return lxyz;
     }
 
+        ////////////////////////////////////////////////////////////////////////////////
+        /// Method that retrieves axis and unit along which object is divided
+
+        TString GetPattAxis(Int_t divAxis, const char * pattName, TString& unit)
+        {
+            TString resaxis;
+            unit = "cm";
+            switch (divAxis) {
+                case 1:
+                    if (strcmp(pattName, "TGeoPatternX") == 0) {
+                        return "kXAxis";
+                    } else if (strcmp(pattName, "TGeoPatternCylR") == 0) {
+                        return "kRho";
+                    }
+                    break;
+                case 2:
+                    if (strcmp(pattName, "TGeoPatternY") == 0) {
+                        return "kYAxis";
+                    } else if (strcmp(pattName, "TGeoPatternCylPhi") == 0) {
+                        unit = "deg";
+                        return "kPhi";
+                    }
+                    break;
+                case 3:
+                    if (strcmp(pattName, "TGeoPatternZ") == 0) {
+                        return "kZAxis";
+                    }
+                    break;
+                default:
+                    return "kUndefined";
+                    break;
+            }
+            return "kUndefined";
+        }
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// Creates "divisionvol" node for GDML
+
+        tao::json::value CreateDivisionN(Double_t offset, Double_t width, Int_t number,
+                                         const char * axis, const char * unit, const char * volref,
+                                         bool fgG4Compatibility=false)
+        {
+            using namespace tao::json;
+
+            if (fgG4Compatibility  == kTRUE) {
+                //if eg. full length is 20 and width * number = 20,0001 problem in geant4
+                //unit is either in cm or degrees nothing else
+                width = (floor(width * 1E4)) * 1E-4;
+                if ((offset >= 0.) && (strcmp(axis, "kPhi") == 0)) {
+                    Int_t offsetI = (Int_t) offset;
+                    Double_t decimals = offset - offsetI;
+                    //put to range from 0 to 360 add decimals and then put to range 0 -> -360
+                    offset = (offsetI % 360) + decimals - 360;
+                }
+            }
+
+
+            tao::json::value v({
+                        {"gdml_name", "divisionvol"},
+                        {"axis", axis},
+                        {"number", number},
+                        {"width", width},
+                        {"offset", offset},
+                        {"unit", unit},
+                        {"volumeref", volref}
+                    });
+            return v;
+        }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Method extracting geometry structure recursively
 
-        void ExtractVolumesNew(TGeoNode *node, TGeoVolume* volume, int level=0)
+        tao::json::value ExtractVolumesNew(TGeoNode *node, TGeoVolume* volume, int level, std::string parentPath)
         {
             using namespace std;
+            using namespace tao;
+
             string padding = "";
             for(size_t i=0; i<level; i++) padding+="   ";
 
             auto volumeName = StringUtils::EscapeJsonString(volume->GetName());
             auto materialName = volume->GetMaterial()->GetName();
             auto shapeClassName = volume->GetShape()->ClassName();
+            string path = parentPath + "/" + volumeName;
+            _volumesByPath[volumeName] = volume;
+
+            json::value volumeJson ({
+                                      {"name", volumeName},
+                                      {"path", path },
+                                      {"material", materialName}
+                              });
+
 
 
             //divisionvol can't be in assembly
@@ -276,34 +356,69 @@ void ProcessShape(TGeoShape *geoShape) {
                     (_rejectedShapes[shapeClassName] != kTRUE)) {
                     isPattern = kTRUE;
                     cout<<"(!) Is PATTERN volume="<< volumeName <<" shape="<<shapeClassName<<" mat="<<materialName<<" pattName="<<pattClsName<<endl;
+
+                    TString axis, unit;
+                    int ndiv = pattFinder->GetNdiv();
+                    double width = pattFinder->GetStep();
+
+                    int divaxis = pattFinder->GetDivAxis();
+
+                    // Get xlo and xhi
+                    Double_t xlo, xhi;
+                    volume->GetShape()->GetAxisRange(divaxis, xlo, xhi);
+
+                    //compute relative start (not positional)
+                    double offset = pattFinder->GetStart() - xlo;
+                    axis = GetPattAxis(divaxis, pattClsName.c_str(), unit);
+
+                    string nodeVolNameBak = volume->GetNode(0)->GetVolume()->GetName();
+
+                    //create division node
+                    auto v = CreateDivisionN(offset, width, ndiv, axis.Data(), unit.Data(), nodeVolNameBak.c_str());
+                    volumeJson.append({"division", v});
+                    cout<<json::to_string(v)<<endl;
                 }
             }
 
-            //if(/*volumeName=="IYDN" || volumeName == "BCSD" ||*/ volumeName.find("xd") == 0)
-            {
-                //cout<<padding<<"volume="<< volumeName <<" shape="<<shapeClassName<<" mat="<<materialName<<endl;
-                ProcessShape(volume->GetShape());
-                node->GetMatrix()->GetRotationMatrix();
+            // Get shape parametrisation
+            auto shapeJson = ProcessShape(volume->GetShape());
+            volumeJson.append({"shape", shapeJson});
+            node->GetMatrix()->GetRotationMatrix();
 
-                //position
-                const Double_t * pos = node->GetMatrix()->GetTranslation();
-                Xyz nodPos;
-                nodPos.x = pos[0];
-                nodPos.y = pos[1];
-                nodPos.z = pos[2];
+            // Position and rotation
 
+            //position
+            const Double_t * pos = node->GetMatrix()->GetTranslation();
 
-                //cout<<"    object.position.set( "<<nodPos.x<<", "<<nodPos.y<<", "<<nodPos.z<<" );\n"
-                //        "        scene.add( object );"<<endl;
-
-                //rotation
-                //Xyz lxyz = GetXYZangles(node->GetMatrix()->GetRotationMatrix());
-                //cout<<"   rotation  lxyz.x="<<lxyz.x<<"  lxyz.y="<<lxyz.y<<"  lxyz.z="<<lxyz.z<<endl;
+            // pos[0] - x, pos[1] - y, pos[2] - z
+            volumeJson.append({"position", json::value::array({pos[0], pos[1], pos[2]})});
 
 
+            //Deal with reflection
+            XMLNodePointer_t scaleN = NULL;
+            Double_t lx, ly, lz;
+            Double_t xangle = 0;
+            Double_t zangle = 0;
+            lx = node->GetMatrix()->GetRotationMatrix()[0];
+            ly = node->GetMatrix()->GetRotationMatrix()[4];
+            lz = node->GetMatrix()->GetRotationMatrix()[8];
+            if (node->GetMatrix()->IsReflection() && TMath::Abs(lx) == 1 &&  TMath::Abs(ly) == 1 && TMath::Abs(lz) == 1) {
+                //experimentally found out, that rotation should be updated like this
+                if (lx == -1) {
+                    zangle = 180;
+                }
+                if (lz == -1) {
+                    xangle = 180;
+                }
             }
 
+            //rotation
+            Xyz lxyz = GetXYZangles(node->GetMatrix()->GetRotationMatrix());
+            lxyz.x -= xangle;
+            lxyz.z -= zangle;
+            volumeJson.append({"rotation", json::value::array({lxyz.x, lxyz.y, lxyz.z})});
 
+            json::value childrenJson = json::empty_array;
 
             //get all nodes in volume
             TObjArray *nodeLst = volume->GetNodes();
@@ -313,12 +428,18 @@ void ProcessShape(TGeoShape *geoShape) {
             //loop through all nodes
             while ((childNode = (TGeoNode *) next()))
             {
-                if(childNode && childNode->GetVolume())
+                if(childNode && childNode->GetVolume() && !isPattern)
                 {
-                    ExtractVolumesNew(childNode, childNode->GetVolume(), level+1);
-                }
+                    auto v = ExtractVolumesNew(childNode, childNode->GetVolume(), level+1, path);
+                    childrenJson.append({v});
 
+                }
             }
+
+            volumeJson.append({"children", childrenJson});
+            _jsonByPath[path] = volumeJson;
+            return volumeJson;
+
         }
 
 
@@ -452,6 +573,8 @@ void ProcessShape(TGeoShape *geoShape) {
     private:
         std::map<std::string, bool> _acceptedPatterns;
         std::map<std::string, bool> _rejectedShapes;
+        std::map<std::string, TGeoVolume*> _volumesByPath;
+        std::map<std::string, tao::json::value> _jsonByPath;
 
 
 };

@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "events/parse_file.hpp"
-#include "events/to_value.hpp"
+#include "sax/parse_file.hpp"
+#include "sax/to_value.hpp"
 
 namespace tao
 {
@@ -17,8 +17,8 @@ namespace tao
       template< template< typename... > class Traits >
       basic_value< Traits > parse_file( const std::string& filename )
       {
-         events::to_basic_value< Traits > consumer;
-         events::parse_file( filename, consumer );
+         sax::to_basic_value< Traits > consumer;
+         sax::parse_file( filename, consumer );
          return std::move( consumer.value );
       }
 
@@ -33,8 +33,8 @@ namespace tao
          return parse_file< traits >( filename );
       }
 
-   }  // namespace json
+   }  // json
 
-}  // namespace tao
+}  // tao
 
 #endif

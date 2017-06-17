@@ -15,6 +15,7 @@
 #include <TGTab.h>
 #include <iostream>
 #include <TRint.h>
+#include <TBrowser.h>
 #include "TGDMLWrite.h"
 #include "GeometryConverter.h"
 
@@ -49,7 +50,7 @@ int main(int narg, char *argv[])
 	// Create ROOT application 
 	// Instantiate an event loop object
 
-	gApp = new TApplication("Hahaha it works!", &narg, argv);
+	gApp = new TRint("Hahaha it works!", &narg, argv);
 
     new TGeoManager("GLUEX", "GlueX Geometry");
 
@@ -63,12 +64,18 @@ int main(int narg, char *argv[])
     gGeoManager->Print();
     //gGeoManager->Export("/home/romanov/gluex/hdvis/github/halld.gdml");
     //TGDMLWrite::StartGDMLWriting(gGeoManager,"", "vg");
+
     hdvis::GeometryConverter converter;
-    converter.ExtractVolumesNew(gGeoManager->GetTopNode(), gGeoManager->GetTopVolume());
+    auto masterJson = converter.ExtractVolumesNew(gGeoManager->GetTopNode(), gGeoManager->GetTopVolume(), 0, string());
+
+    cout<<tao::json::to_string(masterJson)<<endl;
 
     //gGeoManager->SetVisLevel(4);
     //gGeoManager->GetTopVolume()->Draw("ogle");
     //gEve->GetBrowser()->Draw();
+    gGeoManager->GetTopVolume()->Draw("gl");
+    TBrowser tb;
+    tb.Show();
 
     gApp->Run(false);
 
