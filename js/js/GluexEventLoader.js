@@ -24,14 +24,6 @@ THREE.GluexEventLoader = function () {
             //blending: THREE.AdditiveBlending,
             transparent: true,
             sizeAttenuation: false
-        }),
-         FCALHit: new THREE.PointsMaterial( {
-            color: 0x0000ff,
-            size: 4,
-            opacity:1,
-            //blending: THREE.AdditiveBlending,
-            transparent: false,
-            sizeAttenuation: false
         })
     }
 };
@@ -154,19 +146,7 @@ THREE.GluexEventLoader.prototype = {
             boxmesh.position.y=hit.y;
             boxmesh.position.z=(500 + 173.9+50*hit.E);
 
-            if(hit.t>0)
-            {
-                box.faces[0].color.setRGB(hit.t*10,0,0);
-            }
-            else
-            {
-                //boxmesh.color.setRGB(10,hit.t*10,0);
-            }
-
             scene.add(boxmesh);
-
-                //setRGB(track_color.r,track_color.g,track_color.b);
-
 
             //console.log(track_charge);
 
@@ -175,10 +155,35 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-        var testcone= new THREE.ConeGeometry(25,50,64,64,1,0,2*Math.PI);
+        this.EventData.FCAL_showers.forEach(function (shower) {
+            //console.log(hit.id);
+            var geometry = new THREE.Geometry();
+            geometry.name = "FCALShower_" + shower.id;
+
+
+            var cone=new THREE.ConeGeometry(10,20,60,60,0,0,2*Math.PI);
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.4, sizeAtten: false});
+
+            var conemesh= new THREE.Mesh(cone,material);
+            conemesh.position.x=shower.x;
+            conemesh.position.y=shower.y;
+            conemesh.position.z=shower.z+40;//+40 May not be needed.....
+            conemesh.rotation.x = -1*Math.PI/2;
+            scene.add(conemesh);
+
+            //setRGB(track_color.r,track_color.g,track_color.b);
+            //console.log(track_charge);
+
+            conemesh.name = geometry.name;
+            scope.group.add(conemesh);
+            //console.log(track.charge);
+        });
+
+        /*var testcone= new THREE.ConeGeometry(25,50,64,64,1,0,2*Math.PI);
         var conemat = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:1});
         var testmesh= new THREE.Mesh(testcone,conemat);
-        scene.add(testmesh);
+        testmesh.rotation.x = -1*Math.PI/2;
+        scene.add(testmesh);*/
 
         return this.group;
     },
