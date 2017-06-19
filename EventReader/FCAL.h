@@ -64,6 +64,10 @@ public:
 
         vector<TEveArrow*> FCAL_showers;
 
+        ofstream event_out;
+        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out<<"\"FCAL_showers\": "<<"[\n";//JSON
+
         for(uint i=0;i<FCALShowers.size();i++)
         {
             //auto FCAL_shower=new TEveJetCone(Form("FCAL Shower %d", i), "");
@@ -71,6 +75,11 @@ public:
             show_pos.fX=float(FCALShowers[i]->getPosition().X());
             show_pos.fY=float(FCALShowers[i]->getPosition().Y());
             show_pos.fZ=float(FCALShowers[i]->getPosition().Z());//float(500 + 173.9);
+
+            WriteShowerJSON(event_out,i,FCALShowers[i]->getEnergy(),FCALShowers[i]->getTime(),FCALShowers[i]->getPosition());
+            if(i!=FCALShowers.size()-1)
+                event_out<<","<<endl;
+
 
             double z_offset=395;  //This balances the arrow properly...touch at your own risk
 
@@ -96,6 +105,8 @@ public:
         {
             gEve->AddElement(FCAL_showers[i]);
         }
+        event_out<<"]"<<endl;
+        event_out.close();
     }
     void WriteHitJSON(ofstream& event_out, int id, int row,  int column, float x, float y, float E, float t, float intOverPeak)
     {
@@ -111,6 +122,20 @@ public:
                                 });
 
         event_out << tao::json::to_string(FCALHit, 4);
+
+    }
+    void WriteShowerJSON(ofstream& event_out, int id, double fEnergy, double fTime, DVector3 fPosition)
+    {
+        tao::json::value FCALShower({
+                                         {"id", id},
+                                         {"fEnergy", fEnergy},
+                                         {"fTime", fTime},
+                                         {"x", fPosition.X()},
+                                         {"y", fPosition.Y()},
+                                         {"z", fPosition.Z()}
+                                 });
+
+        event_out << tao::json::to_string(FCALShower, 4);
 
     }
 private:

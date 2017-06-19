@@ -175,7 +175,14 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
+        var testcone= new THREE.ConeGeometry(25,50,64,64,1,0,2*Math.PI);
+        var conemat = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:1});
+        var testmesh= new THREE.Mesh(testcone,conemat);
+        scene.add(testmesh);
+
         return this.group;
     },
+
+
 
 };
