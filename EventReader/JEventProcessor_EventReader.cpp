@@ -395,6 +395,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         //Will take the Charged Tracks given and visualize them
         Tracks.Add_DChargedTracks(ChargedTracks);
+        event_out.open("../js/eventw.json",ios::app);
+        event_out<<",";
+        event_out.close();
         Tracks.Add_DNeutralParticles(NeutralTracks);
 
         TOF TOFDet;

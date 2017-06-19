@@ -9,6 +9,14 @@ THREE.GluexEventLoader = function () {
             transparent: true,
             sizeAttenuation: false
         }),
+        neuTrack: new THREE.PointsMaterial( {
+            color: 0xffff00,
+            size: 4,
+            opacity:0.6,
+            //blending: THREE.AdditiveBlending,
+            transparent: true,
+            sizeAttenuation: false
+        }),
         negTrack: new THREE.PointsMaterial( {
             color: 0x00ff00,
             size: 4,
@@ -47,28 +55,13 @@ THREE.GluexEventLoader.prototype = {
 
         var scope = this;
 
-        // Iterate tracks
+        // Iterate charged_tracks
         this.EventData.charged_tracks.forEach(function (track) {
 
             var geometry = new THREE.Geometry();
             geometry.name = "track_" + track.id +"_" + track.charge;
 
             var track_charge = track.charge;
-            var track_color  = new THREE.Color();
-
-            if(track_charge === "-1")
-            {
-                track_color.r=0;
-                track_color.g=255;
-                track_color.b=0;
-            }
-            else
-            {
-                track_color.r=255;
-                track_color.g=0;
-                track_color.b=0;
-            }
-
 
             track.points.forEach(function (point) {
                 var vertex = new THREE.Vector3();
@@ -86,6 +79,29 @@ THREE.GluexEventLoader.prototype = {
             if(track_charge == "-1") {
                 trackMesh= new THREE.Points( geometry, scope.materials.negTrack );
             }
+
+            trackMesh.name = geometry.name;
+            scope.group.add(trackMesh);
+            //console.log(track.charge);
+        });
+        //iterate neutral tracks
+        this.EventData.neutral_tracks.forEach(function (track) {
+
+            var geometry = new THREE.Geometry();
+            geometry.name = "ntrack_" + track.id +"_" + track.charge;
+
+            track.points.forEach(function (point) {
+                var vertex = new THREE.Vector3();
+                vertex.x = point[0];
+                vertex.y = point[1];
+                vertex.z = point[2];
+
+                //setRGB(track_color.r,track_color.g,track_color.b);
+                geometry.vertices.push( vertex );
+            });
+
+            var trackMesh= new THREE.Points( geometry, scope.materials.neuTrack );
+            //console.log(track_charge);
 
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
