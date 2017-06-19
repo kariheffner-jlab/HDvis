@@ -401,6 +401,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         Tracks.Add_DNeutralParticles(NeutralTracks);
 
         TOF TOFDet;
+
+        event_out.open("../js/eventw.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
         TOFDet.Add_TOFPoints(TOFPoints);
         //TOFDet.Add_TOFHits(TOFHits);
 
@@ -410,10 +415,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.open("../js/eventw.json",ios::app);
         event_out<<",";
         event_out.close();
+
         FCALDet.Add_FCALHits(FCALHits);
         event_out.open("../js/eventw.json",ios::app);
         event_out<<",";
         event_out.close();
+
         FCALDet.Add_FCALShowers(FCALShowers);
 
         //Redraw the scene(s)

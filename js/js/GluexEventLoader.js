@@ -162,7 +162,7 @@ THREE.GluexEventLoader.prototype = {
 
 
             var cone=new THREE.ConeGeometry(10,20,60,60,0,0,2*Math.PI);
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.4, sizeAtten: false});
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.4});
 
             var conemesh= new THREE.Mesh(cone,material);
             conemesh.position.x=shower.x;

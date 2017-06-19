@@ -16,6 +16,10 @@ class TOF
 public:
     void Add_TOFPoints(vector<const DTOFPoint*> TOFPoints)
     {
+        ofstream event_out;
+        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out<<"\"TOF_points\": "<<"[\n";//JSON
+
         TGeoNode* hallnode= gGeoManager->GetTopVolume()->FindNode("HALL_1");
 
 
@@ -24,11 +28,19 @@ public:
 
         for(uint i=0;i<TOFPoints.size();i++)
         {
+            WritePointJSON(event_out,i,TOFPoints[i]->t,TOFPoints[i]->dE, TOFPoints[i]->tErr,TOFPoints[i]->pos);
+            if(i!=TOFPoints.size()-1)
+                event_out<<","<<endl;
+
             DVector3 pos=TOFPoints[i]->pos;
             TOFPoint_ps->SetName("TOF Points");
 
             TOFPoint_ps->SetNextPoint(pos.X(),pos.Y(),pos.Z());
         }
+
+        event_out<<"]"<<endl;
+        event_out.close();
+
         gEve->AddElement(TOFPoint_ps);
     }
 
@@ -47,6 +59,20 @@ public:
 
         }
 
+    }
+    void WritePointJSON(ofstream& event_out, int id, double t, double dE, double tErr, DVector3 fPosition)
+    {
+        tao::json::value TOFPoint({
+                                            {"id", id},
+                                            {"t", t},
+                                            {"dE", dE},
+                                            {"tErr", tErr},
+                                            {"x", fPosition.X()},
+                                            {"y", fPosition.Y()},
+                                            {"z", fPosition.Z()}
+                                    });
+
+        event_out << tao::json::to_string(TOFPoint, 4);
     }
 private:
 
