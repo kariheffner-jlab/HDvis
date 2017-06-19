@@ -334,6 +334,7 @@ tao::json::value ProcessShape(TGeoShape *geoShape) {
                     {"lunit", "cm"},
                     {"zplanes", zplanesJson}
                                            });
+
             return result;
         }
 

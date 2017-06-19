@@ -12,17 +12,25 @@ THREE.GluexEventLoader = function () {
         neuTrack: new THREE.PointsMaterial( {
             color: 0xffff00,
             size: 4,
-            opacity:0.6,
+            opacity:.6,
             //blending: THREE.AdditiveBlending,
-            transparent: true,
+            transparent: false,
             sizeAttenuation: false
         }),
         negTrack: new THREE.PointsMaterial( {
             color: 0x00ff00,
             size: 4,
-            opacity:0.6,
+            opacity:.6,
             //blending: THREE.AdditiveBlending,
             transparent: true,
+            sizeAttenuation: false
+        }),
+         FCALHit: new THREE.PointsMaterial( {
+            color: 0x0000ff,
+            size: 4,
+            opacity:1,
+            //blending: THREE.AdditiveBlending,
+            transparent: false,
             sizeAttenuation: false
         })
     }
@@ -101,12 +109,43 @@ THREE.GluexEventLoader.prototype = {
             });
 
             var trackMesh= new THREE.Points( geometry, scope.materials.neuTrack );
+            //scope.materials.neuTrack["color"]=0x0000ff;
             //console.log(track_charge);
 
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
             //console.log(track.charge);
         });
+
+        /*this.EventData.FCALHits.forEach(function (hit) {
+
+            var geometry = new THREE.Geometry();
+            geometry.name = "FCALHit_" + hit.id;
+
+            var box=new THREE.BoxBufferGeometry(2,2,hit.energy);
+            var testbox= new THREE.Mesh(box,scope.materials.FCALHit);
+            testbox.position.x=hit.x;
+            testbox.position.y=hit.y;
+            testbox.position.z=(500 + 173.9);
+            scene.add(testbox);
+
+                //setRGB(track_color.r,track_color.g,track_color.b);
+
+
+            //console.log(track_charge);
+
+            testbox.name = geometry.name;
+            scope.group.add(testbox);
+            //console.log(track.charge);
+        });*/
+
+
+        var box=new THREE.BoxBufferGeometry(2,2,10);
+        var testbox= new THREE.Mesh(box,scope.materials.FCALHit);
+        testbox.position.x=0;
+        testbox.position.y=0;
+        testbox.position.z=(500 + 173.9);
+        scene.add(testbox);
         return this.group;
     },
 
