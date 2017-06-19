@@ -117,18 +117,51 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
+
         this.EventData.FCAL_hits.forEach(function (hit) {
-            console.log(hit.id);
+            //console.log(hit.id);
             var geometry = new THREE.Geometry();
             geometry.name = "FCALHit_" + hit.id;
 
 
             var box=new THREE.BoxGeometry(2,2,hit.E*100);
-            var boxmesh= new THREE.Mesh(box,scope.materials.FCALHit);
+            var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7});
+
+            var redness=Math.abs(hit.t)*(6);
+            if (redness < 255.) {
+                //console.log("in if");
+                redness = Math.abs(hit.t) * (6);
+            }
+            else
+            {
+                redness=255;
+            }
+            redness=redness/255;
+            //console.log(redness);
+            if (hit.t >= 0.0) {
+                material.color.r = redness;
+                material.color.g = 0;
+                material.color.b = 0;
+            }
+            else {
+                material.color.r = 0;
+                material.color.g = redness;
+                material.color.b = 0;
+            }
+
+            var boxmesh= new THREE.Mesh(box,material);
             boxmesh.position.x=hit.x;
             boxmesh.position.y=hit.y;
-            boxmesh.position.z=(500 + 173.9);
+            boxmesh.position.z=(500 + 173.9+50*hit.E);
 
+            if(hit.t>0)
+            {
+                box.faces[0].color.setRGB(hit.t*10,0,0);
+            }
+            else
+            {
+                //boxmesh.color.setRGB(10,hit.t*10,0);
+            }
 
             scene.add(boxmesh);
 
