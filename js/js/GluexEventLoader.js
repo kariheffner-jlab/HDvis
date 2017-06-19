@@ -142,13 +142,6 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-
-        var box=new THREE.BoxBufferGeometry(2,2,10);
-        var testbox= new THREE.Mesh(box,scope.materials.FCALHit);
-        testbox.position.x=0;
-        testbox.position.y=0;
-        testbox.position.z=(500 + 173.9);
-        scene.add(testbox);
         return this.group;
     },
 
