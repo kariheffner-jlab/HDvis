@@ -117,27 +117,30 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-        /*this.EventData.FCALHits.forEach(function (hit) {
-
+        this.EventData.FCAL_hits.forEach(function (hit) {
+            console.log(hit.id);
             var geometry = new THREE.Geometry();
             geometry.name = "FCALHit_" + hit.id;
 
-            var box=new THREE.BoxBufferGeometry(2,2,hit.energy);
-            var testbox= new THREE.Mesh(box,scope.materials.FCALHit);
-            testbox.position.x=hit.x;
-            testbox.position.y=hit.y;
-            testbox.position.z=(500 + 173.9);
-            scene.add(testbox);
+
+            var box=new THREE.BoxGeometry(2,2,hit.E*100);
+            var boxmesh= new THREE.Mesh(box,scope.materials.FCALHit);
+            boxmesh.position.x=hit.x;
+            boxmesh.position.y=hit.y;
+            boxmesh.position.z=(500 + 173.9);
+
+
+            scene.add(boxmesh);
 
                 //setRGB(track_color.r,track_color.g,track_color.b);
 
 
             //console.log(track_charge);
 
-            testbox.name = geometry.name;
-            scope.group.add(testbox);
+            boxmesh.name = geometry.name;
+            scope.group.add(boxmesh);
             //console.log(track.charge);
-        });*/
+        });
 
 
         var box=new THREE.BoxBufferGeometry(2,2,10);

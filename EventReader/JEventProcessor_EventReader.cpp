@@ -407,6 +407,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //Decalre the FCAL "module"
         FCAL FCALDet;
         //Take the hits and visualize them
+        event_out.open("../js/eventw.json",ios::app);
+        event_out<<",";
+        event_out.close();
         FCALDet.Add_FCALHits(FCALHits);
         FCALDet.Add_FCALShowers(FCALShowers);
 

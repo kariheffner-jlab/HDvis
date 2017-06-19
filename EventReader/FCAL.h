@@ -10,12 +10,19 @@
 #include <TEveArrow.h>
 #include <TRandom3.h>
 
+#include <tao/json.hpp>
+#include <tao/json/from_string.hpp>
+#include <tao/json/value.hpp>
 class FCAL
 {
 public:
 
     void Add_FCALHits(vector<const DFCALHit *> FCALHits)
     {
+        ofstream event_out;
+        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out<<"\"FCAL_hits\": "<<"[\n";//JSON
+
         auto FCAL_bs = new TEveBoxSet("FCAL_hits");
         TEveRGBAPalette* pal = new TEveRGBAPalette(-150,150);
 
@@ -25,6 +32,11 @@ public:
 
         //h2->Reset();
         for (uint i = 0; i < FCALHits.size(); i++) {
+
+            WriteHitJSON(event_out,i,FCALHits[i]->row,FCALHits[i]->column,FCALHits[i]->x,FCALHits[i]->y,FCALHits[i]->E,FCALHits[i]->t,FCALHits[i]->intOverPeak);
+            if(i!=FCALHits.size()-1)
+                event_out<<","<<endl;
+
 
 
             FCAL_bs->AddBox(FCALHits[i]->x - 1, FCALHits[i]->y - 1, float_t(500 + 173.9), 2, 2,
@@ -43,6 +55,8 @@ public:
 
 
         }
+        event_out<<"]"<<endl;
+        event_out.close();
         gEve->AddElement(FCAL_bs);
     }
     void Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
@@ -82,6 +96,22 @@ public:
         {
             gEve->AddElement(FCAL_showers[i]);
         }
+    }
+    void WriteHitJSON(ofstream& event_out, int id, int row,  int column, float x, float y, float E, float t, float intOverPeak)
+    {
+        tao::json::value FCALHit({
+                                        {"id", id},
+                                        {"row", row},
+                                        {"column", column},
+                                        {"x", x},
+                                        {"y", y},
+                                        {"E", E},
+                                        {"t", t},
+                                        {"intOverPeak", intOverPeak}
+                                });
+
+        event_out << tao::json::to_string(FCALHit, 4);
+
     }
 private:
 
