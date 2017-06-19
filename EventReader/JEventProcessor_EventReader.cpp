@@ -14,6 +14,7 @@
 #include <TRACKING/DTrackCandidate.h>
 #include <TEveGeoNode.h>
 #include <DANA/DStatusBits.h>
+#include <fstream>
 
 
 using namespace jana;
@@ -274,6 +275,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             return NOERROR;
         }
 
+        std::ofstream event_out;
+        event_out.open("../js/eventw.json");
+        std::cout<<"opened/created eventw json "<<endl;
+        event_out<<"{\n";
+        event_out.close();
+
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DNeutralParticle*> NeutralTracks;
         vector<const DTrackCandidate *> TrackCandidates;
@@ -304,6 +311,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         if(isFirstGoodEvent)
         {
             isFirstGoodEvent =false;
+
+
 
             TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0));
             gEve->AddGlobalElement(enode);
@@ -404,7 +413,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //sleep(1);
         _rootLoopCommander.EveFullRedraw3D();
 
-
+        event_out.open("../js/eventw.json",ios::app);
+        event_out<<"}";
+        event_out.close();
     }   // <- unlock EventMutex
 
     _waitingLogic.Wait();

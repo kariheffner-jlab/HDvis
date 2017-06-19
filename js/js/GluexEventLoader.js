@@ -40,7 +40,7 @@ THREE.GluexEventLoader.prototype = {
         var scope = this;
 
         // Iterate tracks
-        this.EventData.tracks.forEach(function (track) {
+        this.EventData.charged_tracks.forEach(function (track) {
 
             var geometry = new THREE.Geometry();
             geometry.name = "track_" + track.id +"_" + track.charge;
