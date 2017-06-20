@@ -133,11 +133,13 @@
             if ( INTERSECTED !== intersects[ 0 ].object ) //you are over an object and it isn't the same one as before (otherwise do nothing)
             {
                 if ( INTERSECTED ) {
-                    INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
+                    //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
+                    INTERSECTED.material.wireframe=false;
                 }
                 INTERSECTED = intersects[ 0 ].object;  //set the intersected object
 
-                INTERSECTED.material.opacity=0;
+                //INTERSECTED.material.opacity=0;
+                INTERSECTED.material.wireframe=true;
 
             }
 
@@ -146,7 +148,8 @@
             //console.log("off of the object");
             if ( INTERSECTED ) {
                 //console.log("reset the object");
-                INTERSECTED.material.opacity = 1;
+                //INTERSECTED.material.opacity = 1;
+                INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;
         }
