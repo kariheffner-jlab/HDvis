@@ -13,6 +13,7 @@
 #include "TOF.h"
 #include "BCAL.h"
 #include "CDC.h"
+#include "FDC.h"
 #include "SC.h"
 #include <TRACKING/DTrackCandidate.h>
 #include <TEveGeoNode.h>
@@ -300,6 +301,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         vector<const DBCALHit *> BCALHits;
         vector<const DCDCHit *> CDCHits;
+        vector<const DFDCHit *> FDCHits;
         vector<const DSCHit *> SCHits;
 
         loop->Get(FCALHits);
@@ -314,6 +316,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TOFHits);
         loop->Get(BCALHits);
         loop->Get(CDCHits);
+        loop->Get(FDCHits);
         loop->Get(SCHits);
 
 
@@ -459,6 +462,14 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.close();
 
         CDCDet.Add_CDCHits(CDCHits);
+//------------------------------------------------------------------------------------------
+        FDC FDCDet;
+        //Take the hits and visualize them
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
+        FDCDet.Add_FDCHits(FDCHits);
 
 
 
