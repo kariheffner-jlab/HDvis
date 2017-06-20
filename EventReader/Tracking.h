@@ -34,7 +34,7 @@ public:
     void Add_DChargedTracks(vector<const DChargedTrack*> ChargedTracks)
     {
         ofstream event_out;
-        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"charged_tracks\": "<<"[\n";//JSON
 
         vector<TEvePointSet*> Track_points;
@@ -118,7 +118,7 @@ public:
         vector<TEvePointSet*> NeutTrack_points;
 
         ofstream event_out;
-        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"neutral_tracks\": "<<"[\n";//JSON
 
         for(int i=0;i<NeutralTracks.size()/*TrackCandidates.size()*/;i++)

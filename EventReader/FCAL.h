@@ -20,7 +20,7 @@ public:
     void Add_FCALHits(vector<const DFCALHit *> FCALHits)
     {
         ofstream event_out;
-        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"FCAL_hits\": "<<"[\n";//JSON
 
         auto FCAL_bs = new TEveBoxSet("FCAL_hits");
@@ -65,7 +65,7 @@ public:
         vector<TEveArrow*> FCAL_showers;
 
         ofstream event_out;
-        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"FCAL_showers\": "<<"[\n";//JSON
 
         for(uint i=0;i<FCALShowers.size();i++)

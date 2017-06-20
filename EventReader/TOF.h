@@ -17,7 +17,7 @@ public:
     void Add_TOFPoints(vector<const DTOFPoint*> TOFPoints)
     {
         ofstream event_out;
-        event_out.open("../js/eventw.json", ios::app);//JSON
+        event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"TOF_points\": "<<"[\n";//JSON
 
         TGeoNode* hallnode= gGeoManager->GetTopVolume()->FindNode("HALL_1");
