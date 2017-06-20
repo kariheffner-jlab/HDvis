@@ -56,7 +56,7 @@ set(SOURCE_FILES
         RootLoopCommander.h
         WaitingLogic.h
 
-        RootLoop.h RootLoopCommander.cpp GeometryConverter.h EventReader/BCAL.h)
+        RootLoop.h RootLoopCommander.cpp GeometryConverter.h EventReader/BCAL.h EventReader/CDC.h)
 set(GEO_SOURCE_FILES
         hd_vis_geo.cpp
         geometry.cpp

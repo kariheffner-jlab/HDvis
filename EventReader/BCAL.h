@@ -16,7 +16,7 @@ public:
 
         ofstream event_out;
         event_out.open("../js/event.json", ios::app);//JSON
-        event_out<<"\"TOF_hits\": "<<"[\n";//JSON
+        event_out<<"\"BCAL_hits\": "<<"[\n";//JSON
 
         for(uint i=0;i<BCALHits.size();i++)
         {
