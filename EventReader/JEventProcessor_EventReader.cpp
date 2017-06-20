@@ -288,7 +288,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         vector<const DFCALHit *> FCALHits;
         //vector<const DFDCHit *> FDCHits;
         //vector<const DFCALDigiHit *> FCALDigiHits;
-        //vector<const DFCALCluster *> FCALClusters;
+        vector<const DFCALCluster *> FCALClusters;
         vector<const DFCALShower *> FCALShowers;
         //vector<const DFCALTruthShower *> FCALTruthShowers;
 

@@ -34,7 +34,7 @@
     animate();
 
     function init() {
-        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
         camera.position.z = 500;
 
         scene = new THREE.Scene();
@@ -122,16 +122,17 @@
         camera.updateMatrixWorld();
 
         raycaster.setFromCamera( mouse, camera );
-        var intersects = raycaster.intersectObjects( scene.children );
+        var intersects = raycaster.intersectObjects( scene.children[1].children );// Make improvement
 
-        //console.log(intersects.length);
+
         if ( intersects.length > 0 ) {
-            if ( INTERSECTED !== intersects[ 0 ].object ) {
+            console.log(intersects.length);
+            /*if ( INTERSECTED !== intersects[ 0 ].object ) {
                 if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
                 INTERSECTED = intersects[ 0 ].object;
-                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                INTERSECTED.material.emissive.setHex( 0xff0000 );
-            }
+                //INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                //INTERSECTED.material.emissive.setHex( 0xff0000 );
+            }*/
         } else {
             if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
             INTERSECTED = null;

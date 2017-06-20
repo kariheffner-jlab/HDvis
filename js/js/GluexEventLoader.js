@@ -40,6 +40,7 @@ THREE.GluexEventLoader.prototype = {
 
     load: function (url, onLoad, onProgress, onError) {
 
+        this.group.name="GluexEvent";
         var scope = this;
 
         var loader = new THREE.XHRLoader();
@@ -146,7 +147,7 @@ THREE.GluexEventLoader.prototype = {
             boxmesh.position.y=hit.y;
             boxmesh.position.z=(500 + 173.9+50*hit.E);
 
-            scene.add(boxmesh);
+            //scene.add(boxmesh);
 
             //console.log(track_charge);
 
@@ -163,13 +164,14 @@ THREE.GluexEventLoader.prototype = {
 
             var cone=new THREE.ConeGeometry(10,20,60,60,0,0,2*Math.PI);
             var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:true, opacity:.4});
+            material.side = THREE.DoubleSide;
 
             var conemesh= new THREE.Mesh(cone,material);
             conemesh.position.x=shower.x;
             conemesh.position.y=shower.y;
             conemesh.position.z=shower.z+40;//+40 May not be needed.....
             conemesh.rotation.x = -1*Math.PI/2;
-            scene.add(conemesh);
+            //scene.add(conemesh);
 
             //setRGB(track_color.r,track_color.g,track_color.b);
             //console.log(track_charge);
@@ -192,7 +194,7 @@ THREE.GluexEventLoader.prototype = {
             pointmesh.position.y=point.y;
             pointmesh.position.z=point.z;//+40 May not be needed.....
 
-            scene.add(pointmesh);
+            //scene.add(pointmesh);
 
             //setRGB(track_color.r,track_color.g,track_color.b);
             //console.log(track_charge);
