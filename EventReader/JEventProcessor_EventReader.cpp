@@ -13,6 +13,7 @@
 #include "TOF.h"
 #include "BCAL.h"
 #include "CDC.h"
+#include "SC.h"
 #include <TRACKING/DTrackCandidate.h>
 #include <TEveGeoNode.h>
 #include <DANA/DStatusBits.h>
@@ -299,6 +300,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         vector<const DBCALHit *> BCALHits;
         vector<const DCDCHit *> CDCHits;
+        vector<const DSCHit *> SCHits;
 
         loop->Get(FCALHits);
         //loop->Get(FCALDigiHits);
@@ -312,6 +314,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TOFHits);
         loop->Get(BCALHits);
         loop->Get(CDCHits);
+        loop->Get(SCHits);
 
 
 
@@ -406,6 +409,14 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out<<",";
         event_out.close();
         Tracks.Add_DNeutralParticles(NeutralTracks);
+//------------------------------------------------------------------------------------------
+        StartC SCDet;
+
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
+        SCDet.Add_SCHits(SCHits);
 //------------------------------------------------------------------------------------------
         TOF TOFDet;
 
