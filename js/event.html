@@ -52,10 +52,10 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
-        if(VRbool) {
-            effect = new THREE.StereoEffect(renderer);
-            effect.setSize(window.innerWidth, window.innerHeight);
-        }
+
+        effect = new THREE.StereoEffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);
+
 
         stats = new Stats();
         document.body.appendChild(stats.dom);
