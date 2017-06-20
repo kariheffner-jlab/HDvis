@@ -179,6 +179,29 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
+        this.EventData.TOF_points.forEach(function (point) {
+            //console.log(hit.id);
+            var geometry = new THREE.Geometry();
+            geometry.name = "TOFPoint_" + point.id;
+
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8});
+            var tofpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
+
+            var pointmesh= new THREE.Mesh(tofpoint,material);
+            pointmesh.position.x=point.x;
+            pointmesh.position.y=point.y;
+            pointmesh.position.z=point.z;//+40 May not be needed.....
+
+            scene.add(pointmesh);
+
+            //setRGB(track_color.r,track_color.g,track_color.b);
+            //console.log(track_charge);
+
+            pointmesh.name = geometry.name;
+            scope.group.add(pointmesh);
+            //console.log(track.charge);
+        });
+
         /*var testcone= new THREE.ConeGeometry(25,50,64,64,1,0,2*Math.PI);
         var conemat = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:1});
         var testmesh= new THREE.Mesh(testcone,conemat);
