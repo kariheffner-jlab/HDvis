@@ -1,31 +1,5 @@
 THREE.GluexEventLoader = function () {
     this.EventData = null;
-    this.materials = {
-        posTrack: new THREE.PointsMaterial( {
-            color: 0xff0000,
-            size: 4,
-            opacity:0.6,
-            //blending: THREE.AdditiveBlending,
-            transparent: true,
-            sizeAttenuation: false
-        }),
-        neuTrack: new THREE.PointsMaterial( {
-            color: 0xffff00,
-            size: 4,
-            opacity:.6,
-            //blending: THREE.AdditiveBlending,
-            transparent: false,
-            sizeAttenuation: false
-        }),
-        negTrack: new THREE.PointsMaterial( {
-            color: 0x00ff00,
-            size: 4,
-            opacity:.6,
-            //blending: THREE.AdditiveBlending,
-            transparent: true,
-            sizeAttenuation: false
-        })
-    }
 };
 
 THREE.GluexEventLoader.prototype = {
@@ -74,11 +48,27 @@ THREE.GluexEventLoader.prototype = {
                 geometry.vertices.push( vertex );
                 });
 
-            var trackMesh= new THREE.Points( geometry, scope.materials.posTrack );
-            //console.log(track_charge);
-
-            if(track_charge == "-1") {
-                trackMesh= new THREE.Points( geometry, scope.materials.negTrack );
+            if(track_charge == "1") {
+                var material = new THREE.PointsMaterial({
+                    color: 0xff0000,
+                    size: 4,
+                    opacity: 0.6,
+                    //blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    sizeAttenuation: false
+                })
+                var trackMesh = new THREE.Points(geometry, material);
+            }//console.log(track_charge);
+            else if(track_charge == "-1") {
+                var material = new THREE.PointsMaterial({
+                    color: 0x00ff00,
+                    size: 4,
+                    opacity: 0.6,
+                    //blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    sizeAttenuation: false
+                })
+                var trackMesh= new THREE.Points( geometry, material );
             }
 
             trackMesh.name = geometry.name;
@@ -101,7 +91,15 @@ THREE.GluexEventLoader.prototype = {
                 geometry.vertices.push( vertex );
             });
 
-            var trackMesh= new THREE.Points( geometry, scope.materials.neuTrack );
+            var material = new THREE.PointsMaterial( {
+                color: 0xffff00,
+                size: 4,
+                opacity:.6,
+                //blending: THREE.AdditiveBlending,
+                transparent: true,
+                sizeAttenuation: false
+            })
+            var trackMesh= new THREE.Points( geometry, material );
             //scope.materials.neuTrack["color"]=0x0000ff;
             //console.log(track_charge);
 

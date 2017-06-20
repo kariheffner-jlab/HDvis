@@ -124,7 +124,7 @@
         raycaster.setFromCamera( mouse, camera );
         var intersects = raycaster.intersectObjects( scene.children[1].children);// Make improvement
 
-        console.log(INTERSECTED);
+        //console.log(INTERSECTED);
 
         if ( intersects.length > 0 ) {
             //console.log(intersects.length);
@@ -143,9 +143,9 @@
 
 
         }else {
-            console.log("off of the object");
+            //console.log("off of the object");
             if ( INTERSECTED ) {
-                console.log("reset the object");
+                //console.log("reset the object");
                 INTERSECTED.material.opacity = 1;
             }
             INTERSECTED = null;
