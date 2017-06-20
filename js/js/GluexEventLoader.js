@@ -162,7 +162,7 @@ THREE.GluexEventLoader.prototype = {
 
 
             var cone=new THREE.ConeGeometry(10,20,60,60,0,0,2*Math.PI);
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.4});
+            var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:true, opacity:.4});
 
             var conemesh= new THREE.Mesh(cone,material);
             conemesh.position.x=shower.x;
@@ -184,7 +184,7 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "TOFPoint_" + point.id;
 
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8});
+            var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.8});
             var tofpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
 
             var pointmesh= new THREE.Mesh(tofpoint,material);
