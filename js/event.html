@@ -19,12 +19,15 @@
 <script src="js/controls/OrbitControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
+<script src="js/effects/StereoEffect.js"></script>
 
 <script>
 
     var container, stats;
 
-    var camera, controls, scene, renderer, raycaster;
+    var camera, controls, scene, renderer, raycaster, effect;
+
+    var VRbool=false;
 
     var info;
     // start scene
@@ -48,6 +51,11 @@
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
+
+        if(VRbool) {
+            effect = new THREE.StereoEffect(renderer);
+            effect.setSize(window.innerWidth, window.innerHeight);
+        }
 
         stats = new Stats();
         document.body.appendChild(stats.dom);
@@ -155,8 +163,13 @@
         }
 
 
-        renderer.render( scene, camera );
-
+        if(VRbool)
+        {
+            effect.render( scene, camera );
+        }
+        else {
+            renderer.render(scene, camera);
+        }
     }
 
 </script>
