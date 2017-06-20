@@ -122,19 +122,32 @@
         camera.updateMatrixWorld();
 
         raycaster.setFromCamera( mouse, camera );
-        var intersects = raycaster.intersectObjects( scene.children[1].children );// Make improvement
+        var intersects = raycaster.intersectObjects( scene.children[1].children);// Make improvement
 
+        console.log(INTERSECTED);
 
         if ( intersects.length > 0 ) {
-            console.log(intersects.length);
-            /*if ( INTERSECTED !== intersects[ 0 ].object ) {
-                if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-                INTERSECTED = intersects[ 0 ].object;
-                //INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                //INTERSECTED.material.emissive.setHex( 0xff0000 );
-            }*/
-        } else {
-            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+            //console.log(intersects.length);
+            //console.log(intersects[0].name);
+
+            if ( INTERSECTED !== intersects[ 0 ].object ) //you are over an object and it isn't the same one as before (otherwise do nothing)
+            {
+                if ( INTERSECTED ) {
+                    INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
+                }
+                INTERSECTED = intersects[ 0 ].object;  //set the intersected object
+
+                INTERSECTED.material.opacity=0;
+
+            }
+
+
+        }else {
+            console.log("off of the object");
+            if ( INTERSECTED ) {
+                console.log("reset the object");
+                INTERSECTED.material.opacity = 1;
+            }
             INTERSECTED = null;
         }
 
