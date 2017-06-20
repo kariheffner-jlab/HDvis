@@ -24,10 +24,11 @@
 
     var container, stats;
 
-    var camera, controls, scene, renderer;
+    var camera, controls, scene, renderer, raycaster;
 
     var info;
     // start scene
+    var mouse = new THREE.Vector2(), INTERSECTED;
 
     init();
     animate();
@@ -51,9 +52,12 @@
         stats = new Stats();
         document.body.appendChild(stats.dom);
 
+        raycaster = new THREE.Raycaster();
+
 
         controls = new THREE.OrbitControls( camera, renderer.domElement );
 
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
 
         var alpha = 0.5;
@@ -79,6 +83,15 @@
             scene.add(objects);
         });
 
+        renderer.setClearColor( 0x000000 );
+
+    }
+
+    function onDocumentMouseMove( event ) {
+        event.preventDefault();
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        //console.log(mouse.x+","+mouse.y)
     }
 
     function onWindowResize() {
@@ -104,6 +117,26 @@
     }
 
     function render() {
+
+        camera.lookAt(scene.position);
+        camera.updateMatrixWorld();
+
+        raycaster.setFromCamera( mouse, camera );
+        var intersects = raycaster.intersectObjects( scene.children );
+
+        //console.log(intersects.length);
+        if ( intersects.length > 0 ) {
+            if ( INTERSECTED !== intersects[ 0 ].object ) {
+                if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+                INTERSECTED = intersects[ 0 ].object;
+                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                INTERSECTED.material.emissive.setHex( 0xff0000 );
+            }
+        } else {
+            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+            INTERSECTED = null;
+        }
+
 
         renderer.render( scene, camera );
 
