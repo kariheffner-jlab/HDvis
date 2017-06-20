@@ -11,6 +11,7 @@
 #include "Tracking.h"
 #include "FCAL.h"
 #include "TOF.h"
+#include "BCAL.h"
 #include <TRACKING/DTrackCandidate.h>
 #include <TEveGeoNode.h>
 #include <DANA/DStatusBits.h>
@@ -295,6 +296,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         vector<const DTOFHit *> TOFHits;
         vector<const DTOFPoint *> TOFPoints;
 
+        vector<const DBCALHit *> BCALHits;
+
         loop->Get(FCALHits);
         //loop->Get(FCALDigiHits);
         //loop->Get(FCALClusters);
@@ -305,6 +308,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(NeutralTracks);
         loop->Get(TOFPoints);
         loop->Get(TOFHits);
+        loop->Get(BCALHits);
 
 
 
@@ -399,7 +403,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out<<",";
         event_out.close();
         Tracks.Add_DNeutralParticles(NeutralTracks);
-
+//------------------------------------------------------------------------------------------
         TOF TOFDet;
 
         event_out.open("../js/event.json",ios::app);
@@ -411,7 +415,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out<<",";
         event_out.close();
         TOFDet.Add_TOFHits(TOFHits);
-
+//------------------------------------------------------------------------------------------
         //Decalre the FCAL "module"
         FCAL FCALDet;
         //Take the hits and visualize them
@@ -425,6 +429,16 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.close();
 
         FCALDet.Add_FCALShowers(FCALShowers);
+//------------------------------------------------------------------------------------------
+        BCAL BCALDet;
+        //Take the hits and visualize them
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
+        BCALDet.Add_BCALHits(BCALHits);
+
+
 
         //Redraw the scene(s)
         //sleep(1);
