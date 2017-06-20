@@ -407,7 +407,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.close();
 
         TOFDet.Add_TOFPoints(TOFPoints);
-        //TOFDet.Add_TOFHits(TOFHits);
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+        TOFDet.Add_TOFHits(TOFHits);
 
         //Decalre the FCAL "module"
         FCAL FCALDet;
