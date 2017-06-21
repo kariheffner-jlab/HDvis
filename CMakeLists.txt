@@ -47,11 +47,10 @@ include_directories(
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 
+#geometry.cpp EventReader/Tracking.h EventReader/FCAL.h
 set(SOURCE_FILES
         hd_vis.cpp
-        geometry.cpp
         EventReader/JEventProcessor_EventReader.cpp
-        EventReader/Tracking.h EventReader/FCAL.h
         EventReader/TOF.h
         RootLoopCommander.h
         WaitingLogic.h
@@ -71,15 +70,17 @@ target_link_libraries(EveGeo
 
 )
 
+#AMPTOOLS_AMPS
+#AMPTOOLS_DATAIO
+#AMPTOOLS_MCGEN
+# gelhad
 target_link_libraries(EveStandAlone
         GuiListener
 
         #sim-recon
         DANA
         TTAB
-        AMPTOOLS_AMPS
-        AMPTOOLS_DATAIO
-        AMPTOOLS_MCGEN
+
         ANALYSIS
         BCAL
         CCAL
@@ -91,7 +92,6 @@ target_link_libraries(EveStandAlone
         FCAL
         FDC
         FMWPC
-        gelhad
         HDDM
 
         hitutil
