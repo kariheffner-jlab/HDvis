@@ -90,7 +90,7 @@ public:
 
             }
 
-            WriteTrackJSON(event_out, i, charge, track_points);
+            WriteTrackJSON(event_out, name, charge, track_points);
             track_points.clear();
             //delete track_points;
 
@@ -164,7 +164,7 @@ public:
                 Track_ps->SetElementName(name.c_str());
 
             }
-            WriteTrackJSON(event_out, i, 0, track_points);
+            WriteTrackJSON(event_out, name, 0, track_points);
             track_points.clear();
 
             if(i!=NeutralTracks.size()-1)
@@ -183,12 +183,12 @@ public:
         }
 
     }
-    void WriteTrackJSON(ofstream& event_out, int id, double charge, vector<DVector3> track_points)
+    void WriteTrackJSON(ofstream& event_out, string id, double charge, vector<DVector3> track_points)
     {
 
         if(track_points.size()!=0) {
             event_out << "{" << endl;
-            event_out << "\"id\": " << id << "," << endl; //JSON
+            event_out << "\"id\": " <<"\""<<id<<"\"" << "," << endl; //JSON
             event_out << "\"charge\": " << charge << "," << endl; //JSON
             event_out << "\"points\": " << "[" << endl; //JSON
 
