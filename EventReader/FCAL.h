@@ -32,7 +32,7 @@ public:
         }
         event_out<<"]"<<endl;
         event_out.close();
-        //gEve->AddElement(FCAL_bs);
+
     }
     void Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
     {
