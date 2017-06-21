@@ -165,7 +165,7 @@ JEventProcessor_EventReader::~JEventProcessor_EventReader() {
 jerror_t JEventProcessor_EventReader::init(void) {
     // This is called once at program startup.
     // open ROOT file
-    gEve->AddElement(dummy);
+    //gEve->AddElement(dummy);
 
     return NOERROR;
 }

@@ -30,8 +30,7 @@
 #include <TEveLegoEventHandler.h>
 #include <TGLWidget.h>
 #include <TGeoNode.h>
-#include <TEveBoxSet.h>
-#include <TEveBox.h>
+
 #include <HDGEOMETRY/DMagneticFieldMap.h>
 #include <HDGEOMETRY/DRootGeom.h>
 
@@ -64,7 +63,7 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		vector<factory_info_t> fac_info;
 
 		TH2F* h2;
-		TEveBoxSet* dummy=new TEveBoxSet();
+
 		DMagneticFieldMap* Bfield;
         DRootGeom* RootGeom;
 

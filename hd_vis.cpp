@@ -278,8 +278,6 @@ int main(int narg, char *argv[])
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
-
-
     hddsroot();                     // Creates geometry and save it to gGeoManager
     gGeoManager->DefaultColors();
 
@@ -287,35 +285,15 @@ int main(int narg, char *argv[])
 	MakeControlTab();
     make_gui();
 
-
-
-    TEveWindowSlot* slot = 0;
-    slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
-
-    TEveViewer* sv = new TEveViewer("Stereo GL", "Stereoscopic view");
-    sv->SpawnGLViewer(gEve->GetEditor(), kTRUE, false);
-    sv->AddScene(gEve->GetGlobalScene());
-    sv->AddScene(gEve->GetEventScene());
-//
-    slot->ReplaceWindow(sv);
-//
-//    gEve->GetViewers()->AddElement(sv);
-//
-//    gEve->GetBrowser()->GetTabRight()->SetTab(1);
-
-
     // --- Redraw ---
-
-    //RunRootApp();
 
 	// Instantiate our event processor
     auto myproc = new JEventProcessor_EventReader(gRootLoop.Commander());
 	myproc->setRootApplication(gApp);
-    myproc->setCanvas(gEve->AddCanvasTab("FCAL histogram"));
+
 
     // Wire GUI buttons to myproc actions
     gGuiListener.WhenNextEventFired = [myproc](){
-        //std::cout<<"WOOOOOOOOOOORRRRRKKKKKKSSSSSS AAAAAA !!!!!!!!!11111oneoneone"<<std::endl;
         std::cout<<"Obtaining next event"<<std::endl;
         myproc->ProceedToNextEvent();
     };
