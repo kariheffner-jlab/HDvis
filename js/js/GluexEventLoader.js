@@ -29,7 +29,7 @@ THREE.GluexEventLoader.prototype = {
         this.EventData = JSON.parse(text);
 
         var scope = this;
-
+        scene.name="Hall";
         // Iterate charged_tracks
         this.EventData.charged_tracks.forEach(function (track) {
 
@@ -202,11 +202,29 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-        /*var testcone= new THREE.ConeGeometry(25,50,64,64,1,0,2*Math.PI);
-        var conemat = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:1});
-        var testmesh= new THREE.Mesh(testcone,conemat);
-        testmesh.rotation.x = -1*Math.PI/2;
-        scene.add(testmesh);*/
+        var box=new THREE.BoxGeometry(50,50,50);
+        var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7});
+        var boxmesh= new THREE.Mesh(box,material);
+        boxmesh.position.x=0;
+        boxmesh.position.y=0;
+        boxmesh.position.z=0;
+
+        //box.name = "TestBox";
+        boxmesh.name = "TestBox";
+        scope.group.add(boxmesh);
+
+        this.EventData.TOF_hits.forEach(function (hit) {
+            //get the object to change and change it
+            console.log("hit id:"+hit.id);
+            var object = scope.group.getObjectByName("GluexEvent").getObjectByName("TestBox");
+
+            //getObjectByName( "TestBox", true );
+
+            //console.log(object);
+
+            object.material.color.b=0;
+            object.material.color.g=0;
+        });
 
         return this.group;
     },
