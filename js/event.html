@@ -19,6 +19,7 @@
 <script src="js/controls/OrbitControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
+<script src="js/GluexGeometryLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
 
 <script>
@@ -45,6 +46,8 @@
         var light = new THREE.PointLight( 0xffffff, 1.5 );
         light.position.set( 1000, 1000, 2000 );
         scene.add( light );
+
+        scene.add(new THREE.AmbientLight(0xA0A0A0));
 
         renderer = new THREE.WebGLRenderer( { antialias: true } ); // WebGLRenderer CanvasRenderer
         renderer.setClearColor( 0xf0f0f0 );
@@ -91,6 +94,11 @@
             scene.add(objects);
         });
 
+        var geometryLoader = new THREE.GluexGeometryLoader();
+        geometryLoader.load('./geometry.json', function (objects) {
+            scene.add(objects);
+        });
+
         renderer.setClearColor( 0x000000 );
 
     }
@@ -130,7 +138,10 @@
         camera.updateMatrixWorld();
 
         raycaster.setFromCamera( mouse, camera );
-        var intersects = raycaster.intersectObjects( scene.children[1].children);// Make improvement
+        var event = scene.getObjectByName("GluexEvent");
+        if(!event) return;    // There might be no event loaded (yet... or at all)
+
+        var intersects = raycaster.intersectObjects( event.children);// Make improvement
 
         //console.log(INTERSECTED);
 
