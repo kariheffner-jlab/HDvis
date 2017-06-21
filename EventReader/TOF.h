@@ -20,28 +20,16 @@ public:
         event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"TOF_points\": "<<"[\n";//JSON
 
-        TGeoNode* hallnode= gGeoManager->GetTopVolume()->FindNode("HALL_1");
-
-
-        TEvePointSet* TOFPoint_ps=new TEvePointSet();
-        TOFPoint_ps->SetMainColorRGB(float(255.),255.,255.);
-
         for(uint i=0;i<TOFPoints.size();i++)
         {
             WritePointJSON(event_out,i,TOFPoints[i]->t,TOFPoints[i]->dE, TOFPoints[i]->tErr,TOFPoints[i]->pos);
             if(i!=TOFPoints.size()-1)
                 event_out<<","<<endl;
-
-            DVector3 pos=TOFPoints[i]->pos;
-            TOFPoint_ps->SetName("TOF Points");
-
-            TOFPoint_ps->SetNextPoint(pos.X(),pos.Y(),pos.Z());
         }
 
         event_out<<"]"<<endl;
         event_out.close();
 
-        //gEve->AddElement(TOFPoint_ps);
     }
 
     void Add_TOFHits(vector<const DTOFHit*> TOFHits)

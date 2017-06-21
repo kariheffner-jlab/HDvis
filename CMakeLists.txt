@@ -74,6 +74,8 @@ target_link_libraries(EveGeo
 #AMPTOOLS_DATAIO
 #AMPTOOLS_MCGEN
 # gelhad
+#        rt
+#hitutil
 target_link_libraries(EveStandAlone
         GuiListener
 
@@ -94,7 +96,7 @@ target_link_libraries(EveStandAlone
         FMWPC
         HDDM
 
-        hitutil
+
         KINFITTER
         PAIR_SPECTROMETER
         PID
@@ -134,7 +136,7 @@ target_link_libraries(EveStandAlone
 
         mysqlclient
         pthread
-        rt
+
 
         )
 
