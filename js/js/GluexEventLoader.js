@@ -143,7 +143,7 @@ THREE.GluexEventLoader.prototype = {
             var boxmesh= new THREE.Mesh(box,material);
             boxmesh.position.x=hit.x;
             boxmesh.position.y=hit.y;
-            boxmesh.position.z=(500 + 173.9+50*hit.E);
+            boxmesh.position.z=(600+50*hit.E);
 
             //scene.add(boxmesh);
 
