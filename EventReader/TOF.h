@@ -41,7 +41,7 @@ public:
         event_out<<"]"<<endl;
         event_out.close();
 
-        gEve->AddElement(TOFPoint_ps);
+        //gEve->AddElement(TOFPoint_ps);
     }
 
     void Add_TOFHits(vector<const DTOFHit*> TOFHits)

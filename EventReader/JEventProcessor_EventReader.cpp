@@ -325,8 +325,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         {
             isFirstGoodEvent =false;
 
-
-
+            /*
             TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0));
             gEve->AddGlobalElement(enode);
             enode->ExpandIntoListTreesRecursively();
@@ -395,13 +394,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             MakeElementVisible(fcal);
             MakeDescendantRecursiveColor(fcal,53,143,254);
             MakeDescendantRecursiveTransparancey(fcal, .7);
-
+*/
 
             _rootLoopCommander.EveFullRedraw3D();
         }
 
         //Clear the event...unless it is empty
-        gEve->GetCurrentEvent()->DestroyElements();
+        //gEve->GetCurrentEvent()->DestroyElements();
 
         //Setup the tracking to display tracking info
         Tracking Tracks(Bfield,RootGeom);
@@ -468,10 +467,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.open("../js/event.json",ios::app);
         event_out<<",";
         event_out.close();
-
+        //cout<<"ADDING FDC HITS"<<endl;
         FDCDet.Add_FDCHits(FDCHits);
-
-
 
         //Redraw the scene(s)
         //sleep(1);
@@ -482,6 +479,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.open("../js/event.json",ios::app);
         event_out<<"}";
         event_out.close();
+
+        cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
     }   // <- unlock EventMutex
 
     _waitingLogic.Wait();

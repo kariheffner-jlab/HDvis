@@ -106,7 +106,7 @@ public:
         event_out.close();
 
         for (int i = 0; i < Track_points.size(); i++) {
-            gEve->AddElement(Track_points[i]);
+           // gEve->AddElement(Track_points[i]);
 
         }
 
@@ -179,7 +179,7 @@ public:
         event_out.close();
 
         for (int i = 0; i < NeutTrack_points.size(); i++) {
-            gEve->AddElement(NeutTrack_points[i]);
+           // gEve->AddElement(NeutTrack_points[i]);
         }
 
     }

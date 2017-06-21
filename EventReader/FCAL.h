@@ -57,7 +57,7 @@ public:
         }
         event_out<<"]"<<endl;
         event_out.close();
-        gEve->AddElement(FCAL_bs);
+        //gEve->AddElement(FCAL_bs);
     }
     void Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
     {
@@ -103,7 +103,7 @@ public:
 
         for(uint i=0;i<FCAL_showers.size();i++)
         {
-            gEve->AddElement(FCAL_showers[i]);
+           // gEve->AddElement(FCAL_showers[i]);
         }
         event_out<<"]"<<endl;
         event_out.close();
