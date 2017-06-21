@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.0)
 
 project(EveStandAlone C CXX)
 
@@ -56,7 +56,7 @@ set(SOURCE_FILES
         RootLoopCommander.h
         WaitingLogic.h
 
-        RootLoop.h RootLoopCommander.cpp GeometryConverter.h)
+        RootLoop.h RootLoopCommander.cpp GeometryConverter.h EventReader/BCAL.h EventReader/CDC.h EventReader/SC.h EventReader/FDC.h)
 set(GEO_SOURCE_FILES
         hd_vis_geo.cpp
         geometry.cpp

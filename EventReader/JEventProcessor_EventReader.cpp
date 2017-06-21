@@ -11,6 +11,10 @@
 #include "Tracking.h"
 #include "FCAL.h"
 #include "TOF.h"
+#include "BCAL.h"
+#include "CDC.h"
+#include "FDC.h"
+#include "SC.h"
 #include <TRACKING/DTrackCandidate.h>
 #include <TEveGeoNode.h>
 #include <DANA/DStatusBits.h>
@@ -295,6 +299,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         vector<const DTOFHit *> TOFHits;
         vector<const DTOFPoint *> TOFPoints;
 
+        vector<const DBCALHit *> BCALHits;
+        vector<const DCDCHit *> CDCHits;
+        vector<const DFDCHit *> FDCHits;
+        vector<const DSCHit *> SCHits;
+
         loop->Get(FCALHits);
         //loop->Get(FCALDigiHits);
         //loop->Get(FCALClusters);
@@ -305,6 +314,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(NeutralTracks);
         loop->Get(TOFPoints);
         loop->Get(TOFHits);
+        loop->Get(BCALHits);
+        loop->Get(CDCHits);
+        loop->Get(FDCHits);
+        loop->Get(SCHits);
 
 
 
@@ -399,7 +412,15 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out<<",";
         event_out.close();
         Tracks.Add_DNeutralParticles(NeutralTracks);
+//------------------------------------------------------------------------------------------
+        StartC SCDet;
 
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
+        SCDet.Add_SCHits(SCHits);
+//------------------------------------------------------------------------------------------
         TOF TOFDet;
 
         event_out.open("../js/event.json",ios::app);
@@ -407,8 +428,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.close();
 
         TOFDet.Add_TOFPoints(TOFPoints);
-        //TOFDet.Add_TOFHits(TOFHits);
-
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+        TOFDet.Add_TOFHits(TOFHits);
+//------------------------------------------------------------------------------------------
         //Decalre the FCAL "module"
         FCAL FCALDet;
         //Take the hits and visualize them
@@ -422,6 +446,32 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.close();
 
         FCALDet.Add_FCALShowers(FCALShowers);
+//------------------------------------------------------------------------------------------
+        BCAL BCALDet;
+        //Take the hits and visualize them
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
+        BCALDet.Add_BCALHits(BCALHits);
+//------------------------------------------------------------------------------------------
+        CDC CDCDet;
+        //Take the hits and visualize them
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
+        CDCDet.Add_CDCHits(CDCHits);
+//------------------------------------------------------------------------------------------
+        FDC FDCDet;
+        //Take the hits and visualize them
+        event_out.open("../js/event.json",ios::app);
+        event_out<<",";
+        event_out.close();
+
+        FDCDet.Add_FDCHits(FDCHits);
+
+
 
         //Redraw the scene(s)
         //sleep(1);
