@@ -114,40 +114,37 @@ JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::RootLoopCommande
 
     gEve->AddToListTree(data, kFALSE);
 
-    TEveWindowSlot *slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
     TEveViewer *v = new TEveViewer("Viewer");
     v->SpawnGLViewer(gEve->GetEditor());
-    slot->ReplaceWindow(v);
+
     gEve->GetViewers()->AddElement(v);
-    TEveScene *s = gEve->SpawnNewScene("Scene");
-    v->AddScene(s);
 
 
-    v->SetElementName("Viewer - Lego");
-    s->SetElementName("Scene - Lego");
+
+    //v->SetElementName("Viewer - Lego");
+    //s->SetElementName("Scene - Lego");
 
 
-    TEveCaloLego *lego = new TEveCaloLego(data);
+    //TEveCaloLego *lego = new TEveCaloLego(data);
 
-    s->AddElement(lego);
+    //s->AddElement(lego);
 
     // By the default lego extends is (1x1x1). Resize it to put in 'natural'
     // coordinates, so that y extend in 2*Pi and set height of lego two times
     //  smaller than y extend to have better view in 3D perspective.
-    lego->InitMainTrans();
-    lego->RefMainTrans().SetScale(TMath::TwoPi(), TMath::TwoPi(), TMath::Pi());
+    //lego->InitMainTrans();
+    //lego->RefMainTrans().SetScale(TMath::TwoPi(), TMath::TwoPi(), TMath::Pi());
 
     // draws scales and axis on borders of window
     TGLViewer *glv = v->GetGLViewer();
     TEveCaloLegoOverlay *overlay = new TEveCaloLegoOverlay();
     glv->AddOverlayElement(overlay);
-    overlay->SetCaloLego(lego);
+    //overlay->SetCaloLego(lego);
 
     // set event handler to move from perspective to orthographic view.
     glv->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
-    glv->SetEventHandler
-            (new TEveLegoEventHandler(glv->GetGLWidget(), glv, lego));
-    gEve->AddToListTree(lego, kTRUE);
+    //glv->SetEventHandler(new TEveLegoEventHandler(glv->GetGLWidget(), glv, lego));
+    //gEve->AddToListTree(lego, kTRUE);
 
 }
 
