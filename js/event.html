@@ -33,6 +33,8 @@
     // start scene
     var mouse = new THREE.Vector2(), INTERSECTED;
 
+    keyState: new Array();
+
     init();
     animate();
 
@@ -67,6 +69,7 @@
 
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
+        document.addEventListener( 'keydown', onKeyDown, false );
 
         var alpha = 0.5;
         var gamma = 0.5;
@@ -111,6 +114,14 @@
 
     }
 
+    function onKeyDown(event) {
+
+        switch (event.keyCode) {
+
+            case 86: VRbool = !VRbool;break;
+
+         }
+    }
     //
 
     function animate() {
