@@ -105,46 +105,6 @@ JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::RootLoopCommande
     _rootLoopCommander(rootLoopCommander)
 
 {
-    h2 = new TH2F("FCAL Hits", "FCAL Hits", 100, -50, 50, 100, -50, 50);
-
-    data = new TEveCaloDataHist();
-    data->AddHistogram(h2);
-    data->RefSliceInfo(0).Setup("FCAL", 0.3, kBlue);
-
-
-    gEve->AddToListTree(data, kFALSE);
-
-    TEveViewer *v = new TEveViewer("Viewer");
-    v->SpawnGLViewer(gEve->GetEditor());
-
-    gEve->GetViewers()->AddElement(v);
-
-
-
-    //v->SetElementName("Viewer - Lego");
-    //s->SetElementName("Scene - Lego");
-
-
-    //TEveCaloLego *lego = new TEveCaloLego(data);
-
-    //s->AddElement(lego);
-
-    // By the default lego extends is (1x1x1). Resize it to put in 'natural'
-    // coordinates, so that y extend in 2*Pi and set height of lego two times
-    //  smaller than y extend to have better view in 3D perspective.
-    //lego->InitMainTrans();
-    //lego->RefMainTrans().SetScale(TMath::TwoPi(), TMath::TwoPi(), TMath::Pi());
-
-    // draws scales and axis on borders of window
-    TGLViewer *glv = v->GetGLViewer();
-    TEveCaloLegoOverlay *overlay = new TEveCaloLegoOverlay();
-    glv->AddOverlayElement(overlay);
-    //overlay->SetCaloLego(lego);
-
-    // set event handler to move from perspective to orthographic view.
-    glv->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
-    //glv->SetEventHandler(new TEveLegoEventHandler(glv->GetGLWidget(), glv, lego));
-    //gEve->AddToListTree(lego, kTRUE);
 
 }
 
@@ -160,9 +120,6 @@ JEventProcessor_EventReader::~JEventProcessor_EventReader() {
 // init
 //------------------
 jerror_t JEventProcessor_EventReader::init(void) {
-    // This is called once at program startup.
-    // open ROOT file
-    //gEve->AddElement(dummy);
 
     return NOERROR;
 }

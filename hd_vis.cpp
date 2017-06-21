@@ -273,12 +273,11 @@ int main(int narg, char *argv[])
     new TGeoManager("GLUEX", "GlueX Geometry");
 	DApplication dana(narg, argv);
     gDana=&dana;
-    //gSystem->IgnoreSignal(kSigSegmentationViolation, true);
-    //gDana->GetRootGeom(0);
+
 
 	gApp = new TApplication("Hahaha it works!", &narg, argv);
 
-    hddsroot();                     // Creates geometry and save it to gGeoManager
+   // hddsroot();                     // Creates geometry and save it to gGeoManager
     gGeoManager->DefaultColors();
 
     TEveManager::Create();

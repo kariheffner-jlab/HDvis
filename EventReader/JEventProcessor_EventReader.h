@@ -62,8 +62,6 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		}factory_info_t;
 		vector<factory_info_t> fac_info;
 
-		TH2F* h2;
-
 		DMagneticFieldMap* Bfield;
         DRootGeom* RootGeom;
 
