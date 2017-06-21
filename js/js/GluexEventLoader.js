@@ -143,7 +143,7 @@ THREE.GluexEventLoader.prototype = {
             var boxmesh= new THREE.Mesh(box,material);
             boxmesh.position.x=hit.x;
             boxmesh.position.y=hit.y;
-            boxmesh.position.z=(600+50*hit.E);
+            boxmesh.position.z=(660+50*hit.E);
 
             //scene.add(boxmesh);
 
@@ -161,18 +161,15 @@ THREE.GluexEventLoader.prototype = {
 
 
             var cone=new THREE.ConeGeometry(10,20,60,60,0,0,2*Math.PI);
-            var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:true, opacity:.4});
+            cone.userData="hi";
+            var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4});
             material.side = THREE.DoubleSide;
 
             var conemesh= new THREE.Mesh(cone,material);
             conemesh.position.x=shower.x;
             conemesh.position.y=shower.y;
-            conemesh.position.z=shower.z+40;//+40 May not be needed.....
+            conemesh.position.z=shower.z+20;//+30;//+40 May not be needed.....
             conemesh.rotation.x = -1*Math.PI/2;
-            //scene.add(conemesh);
-
-            //setRGB(track_color.r,track_color.g,track_color.b);
-            //console.log(track_charge);
 
             conemesh.name = geometry.name;
             scope.group.add(conemesh);
@@ -203,7 +200,7 @@ THREE.GluexEventLoader.prototype = {
         });
 
         var box=new THREE.BoxGeometry(50,50,50);
-        var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7});
+        var material = new THREE.MeshBasicMaterial({color:0xffffff,vertexColors: THREE.FaceColors, transparent:true, opacity:.7});
         var boxmesh= new THREE.Mesh(box,material);
         boxmesh.position.x=0;
         boxmesh.position.y=0;
@@ -215,15 +212,30 @@ THREE.GluexEventLoader.prototype = {
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
-            console.log("hit id:"+hit.id);
+            //console.log("hit id:"+hit.id);
             var object = scope.group.getObjectByName("GluexEvent").getObjectByName("TestBox");
 
             //getObjectByName( "TestBox", true );
 
             //console.log(object);
+            //console.log(object.geometry.faces.length);
 
-            object.material.color.b=0;
-            object.material.color.g=0;
+            var rcol=Math.random();
+            var gcol=Math.random();
+            var bcol=Math.random();
+
+            for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
+                if(i%2==0) {
+                    rcol=Math.random();
+                    gcol=Math.random();
+                    bcol=Math.random();
+                }
+                object.geometry.faces[ i ].color.setRGB( rcol,gcol,bcol );
+            }
+            object.geometry.colorsNeedUpdate = true
+            //object.material.color.r=Math.random();
+            //object.material.color.b=Math.random();
+            //object.material.color.g=Math.random();
         });
 
         return this.group;

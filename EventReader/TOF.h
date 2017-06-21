@@ -7,6 +7,7 @@
 
 #include <TOF/DTOFPoint.h>
 #include <TOF/DTOFHit.h>
+#include <TOF/DTOFDigiHit.h>
 #include <TEvePointSet.h>
 #include <TEveManager.h>
 #include <TGeoManager.h>

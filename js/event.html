@@ -52,7 +52,10 @@
         light.position.set( 1000, 1000, 2000 );
         scene.add( light );
 
-        scene.add(new THREE.AmbientLight(0xA0A0A0));
+        var amblight=new THREE.AmbientLight(0xA0A0A0);
+        amblight.intensity=4;
+        scene.add(amblight);
+
 
         renderer = new THREE.WebGLRenderer( { antialias: true } ); // WebGLRenderer CanvasRenderer
         renderer.setClearColor( 0xf0f0f0 );
@@ -95,15 +98,17 @@
         object.position.set( 0, 0, 0 );
         //scene.add( object );
 
+        var geometryLoader = new THREE.GluexGeometryLoader();
+        geometryLoader.load('./geometry.json', function (objects) {
+            scene.add(objects);
+        });
+
         var eventLoader = new THREE.GluexEventLoader();
         eventLoader.load('./event.json', function(objects) {
             scene.add(objects);
         });
 
-        var geometryLoader = new THREE.GluexGeometryLoader();
-        geometryLoader.load('./geometry.json', function (objects) {
-            scene.add(objects);
-        });
+
 
         renderer.setClearColor( 0x000000 );
 
