@@ -47,7 +47,7 @@ THREE.GluexHDDSLoader.prototype = {
         this.group.name="GluexGeometry";
         var scope = this;
 
-        var loader = new THREE.XHRLoader();
+        var loader = new THREE.FileLoader();
         loader.setPath(this.path);
         loader.load(url, function (text) {
             onLoad(scope.parse(text));
@@ -89,7 +89,7 @@ THREE.GluexHDDSLoader.prototype = {
         var globalPlacement = extractPlacement(xmlTofGlobal);
         this.setMeshPlacement(ftof, globalPlacement);
 
-        this.group.add(ftof);
+        return ftof;
     },
     
     buildTofPlane: function (xmlSection, planeIndex) {

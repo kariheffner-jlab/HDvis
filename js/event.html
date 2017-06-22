@@ -21,7 +21,7 @@
 <script src="js/libs/stats.min.js"></script>
 <script src="js/libs/dat.gui.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
-<script src="js/GluexGeometryLoader.js"></script>
+<script src="js/GluexHDDSLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
 <script src="js/vr/WebVR.js"></script>
 
@@ -120,16 +120,19 @@
         object.position.set( 0, 0, 0 );
         //scene.add( object );
 
-        var geometryLoader = new THREE.GluexGeometryLoader();
-        geometryLoader.load('./geometry.json', function (objects) {
-            scene.add(objects);
-        });
 
-        var eventLoader = new THREE.GluexEventLoader();
-        eventLoader.load('./event.json', function(objects) {
-            scene.add(objects);
-        });
+        var geometryLoader = new THREE.GluexHDDSLoader();
 
+        geometryLoader.load('./hdds/main_full_HDDS.xml', function (loadedGeom) {
+
+            var eventLoader = new THREE.GluexEventLoader();
+            eventLoader.setGeometry(loadedGeom);
+            eventLoader.load('./event.json', function(loadedEvent) {
+                scene.add(loadedEvent);
+            });
+
+            scene.add(loadedGeom);
+        });
 
 
         object = new THREE.AxisHelper( 100 );
@@ -174,13 +177,14 @@
             .onFinishChange(function(value) {
                 var tofDetails = function(isBoxVisible, isSectionsVisible, isModulesVisible){
                     ftof.material.visible = isBoxVisible;
-                    ftof.children.forEach(function (section) {
-                        section.material.visible = isSectionsVisible;
-                        section.children.forEach(function (module) {
-                            module.material.visible = isModulesVisible;
+                    ftof.children.forEach(function (plane) {
+                        plane.children.forEach(function (region) {
+                            region.material.visible = isSectionsVisible;
+                            region.children.forEach(function (module) {
+                                module.material.visible = isModulesVisible;
+                            });
                         });
                     });
-
                 };
                 var ftof = scene.getObjectByName("FTOF", true);
                 switch(value)

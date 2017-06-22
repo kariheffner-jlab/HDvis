@@ -11,6 +11,11 @@ THREE.GluexEventLoader.prototype = {
     geometries: {},
     refs: {},
     meshes: [],
+    geometry:null,
+
+    setGeometry: function (geometry) {
+        this.geometry = geometry;
+    },
 
     load: function (url, onLoad, onProgress, onError) {
 
@@ -221,10 +226,10 @@ THREE.GluexEventLoader.prototype = {
             if(bar-1>18)
                 block="FTOT"
 
-            var geoName="TOF_"+plane.toString()+"_"+(bar-1).toString();
+            var geoName="TOF_p" + plane + "_m"+(bar-1);
 
-            var object = scope.group.getObjectByName("GluexEvent");
-            console.log("Found object="+object);
+            var object = scope.geometry;
+            //console.log("Found object="+object);
             console.log(geoName);
 
             //object=object.getObjectByName(geoName,true);
