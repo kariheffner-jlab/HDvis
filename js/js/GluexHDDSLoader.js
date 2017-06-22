@@ -1,6 +1,9 @@
 
 parseXYZ = function (dataStr) {
-    return dataStr.split(' ').map(function (x) {return parseInt(x, 10);});
+    return dataStr
+        .split(' ')
+        .filter(function(el) {return el;})
+        .map(function (x) {return parseFloat(x);});
 };
 
 THREE.GluexHDDSLoader = function () {
@@ -16,6 +19,7 @@ THREE.GluexHDDSLoader.prototype = {
 
 
     group: new THREE.Group(),
+    toRad: Math.PI/180.0,
     defines: {},
     geometries: {},
     refs: {},
@@ -34,16 +38,26 @@ THREE.GluexHDDSLoader.prototype = {
 
     /** Function that works with loaded json */
     parse: function (text) {
+
         this.HDDS = new DOMParser().parseFromString( text, 'text/xml' );
         //var elements = this.HDDS.querySelectorAll('composition[name=');
         //var xmlTofBox = this.HDDS.querySelectorAll('section[name="ForwardTOF"] > box[name="FTOF"]')[0];
 
         var xmlTofSection = this.HDDS.querySelectorAll('section[name="ForwardTOF"]')[0];
         var xmlTofBox = xmlTofSection.querySelectorAll('box[name="FTOF"]')[0];
+        var xmlTofPosRot = xmlTofSection.querySelectorAll('composition[name="ForwardTOF"] > posXYZ')[0];
+        var tofPosRot = {
+            position: parseXYZ(xmlTofPosRot.getAttribute('X_Y_Z')),
+            rotation: parseXYZ(xmlTofPosRot.getAttribute('rot'))
+        };
 
-        var xmlTofGlobal = this.HDDS.querySelectorAll('composition[name="forwardPackage"]>posXYZ[volume="ForwardTOF"]');
-        var tofGlobalPos = parseXYZ(xmlTofGlobal.getAttribute('X_Y_Z'));
-        var tofGlobalRot = parseXYZ(xmlTofGlobal.getAttribute('X_Y_Z'));
+        var xmlTofGlobal = this.HDDS.querySelector('composition[name="forwardPackage"] > posXYZ[volume="ForwardTOF"]');
+        var tofGlobalPosRot = {
+            position: parseXYZ(xmlTofGlobal.getAttribute('X_Y_Z')),
+            rotation: parseXYZ(xmlTofGlobal.getAttribute('rot'))
+        };
+
+        tofPosRot = this.sumPositionRotation(tofGlobalPosRot, tofPosRot);
 
         // FTOF
         var tofBoxParams = parseXYZ(xmlTofBox.getAttribute('X_Y_Z'));
@@ -51,13 +65,12 @@ THREE.GluexHDDSLoader.prototype = {
         var ftofGeom = new THREE.BoxGeometry(tofBoxParams[0], tofBoxParams[1], tofBoxParams[2]);
         var ftofMaterial = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
         var ftofMesh = new THREE.Mesh(ftofGeom, ftofMaterial);
-
-
+        ftofMesh.position.set(tofPosRot.position.x, tofPosRot.position.y, tofPosRot.position.z);
+        ftofMesh.rotation.set(tofPosRot.rotation.x, tofPosRot.rotation.y, tofPosRot.rotation.z);
         ftofMesh.name = "FTOF";
         this.group.add(ftofMesh);
 
         return this.group;
-
     },
 
 
@@ -218,5 +231,39 @@ THREE.GluexHDDSLoader.prototype = {
             deltaphi *= Math.PI/180.0;
         }
         return this.tubeGeometry(rmin, rmax, z, startphi, deltaphi);
+    },
+
+
+    /**
+     * Summs position and rotation vectors. And adds z shift to position.z
+     *
+     * @param left left object with .rotation and .position vectors
+     * @param right
+     * @param zShift will be added to final pos.z
+     * @param convertToRad if true rotation will be * Math.PI/180
+     * @return {{position: {x: number, y: number, z: number}, rotation: {x: number, y: number, z: number}}}
+     */
+    sumPositionRotation: function (left, right, zShift, convertToRad) {
+        zShift = typeof zShift !== 'undefined' ? zShift : 0;
+        convertToRad = typeof convertToRad !== 'undefined' ? convertToRad : false;
+
+        // BCAL position as a superposition of BCAL and LASS objects
+        var position = {
+            x: left.position[0] + right.position[0],
+            y: left.position[1] + right.position[1],
+            z: left.position[2] + right.position[2] + zShift
+        };
+
+        // BCAL rotation as a superposition of BCAL and LASS objects
+        var toRad = convertToRad ? this.toRad: 1;
+
+        // BCAL rotation as a superposition of BCAL and LASS objects
+        var rotation = {
+            x: (left.rotation[0] + right.rotation[0])*toRad,
+            y: (left.rotation[1] + right.rotation[1])*toRad,
+            z: (left.rotation[2] + right.rotation[2])*toRad
+        };
+
+        return {position:position, rotation:rotation};
     },
 };
