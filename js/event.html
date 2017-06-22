@@ -234,13 +234,13 @@
 
     function animate() {
 
-        requestAnimationFrame( animate );
+        //requestAnimationFrame( animate );
 
         controls.update();
 
-
-        render();
-        stats.update();
+        renderer.animate( render );
+        //render();
+        //stats.update();
 
     }
 
