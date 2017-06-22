@@ -12,12 +12,14 @@
             overflow: hidden;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="dat.gui.css" />
 </head>
 <body>
 
 <script src="js/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
+<script src="js/libs/dat.gui.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
 <script src="js/GluexGeometryLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
@@ -52,10 +54,7 @@
         light.position.set( 1000, 1000, 2000 );
         scene.add( light );
 
-        var amblight=new THREE.AmbientLight(0xA0A0A0);
-        amblight.intensity=4;
-        scene.add(amblight);
-
+        scene.add(new THREE.AmbientLight(0xA0A0A0));
 
         renderer = new THREE.WebGLRenderer( { antialias: true } ); // WebGLRenderer CanvasRenderer
         renderer.setClearColor( 0xf0f0f0 );
@@ -66,6 +65,7 @@
 
         effect = new THREE.StereoEffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);
+
 
 
         stats = new Stats();
@@ -98,19 +98,88 @@
         object.position.set( 0, 0, 0 );
         //scene.add( object );
 
-        var geometryLoader = new THREE.GluexGeometryLoader();
-        geometryLoader.load('./geometry.json', function (objects) {
-            scene.add(objects);
-        });
-
         var eventLoader = new THREE.GluexEventLoader();
         eventLoader.load('./event.json', function(objects) {
             scene.add(objects);
         });
 
+        var geometryLoader = new THREE.GluexGeometryLoader();
+        geometryLoader.load('./geometry.json', function (objects) {
+            scene.add(objects);
+        });
 
+        object = new THREE.AxisHelper( 100 );
+        object.position.set( 0, 0, 300 );
+        scene.add( object );
 
         renderer.setClearColor( 0x000000 );
+
+        // ref for lumens: http://www.power-sure.com/lumens.htm
+
+        // Here is our mighty config
+        var HDVisConfig = function() {
+
+            this.ftofDetailOptions = {
+                "Box only": 'box',
+                "Sections": 'sections',
+                "Modules":  'modules'
+            };
+
+            this.ftofDetail = 'modules'; // "box", "sections", "modules"
+
+            // Thomas, here is GUI examples:
+            // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
+        };
+
+        var config = new HDVisConfig();
+
+
+        // GUI
+        var gui = new dat.GUI({load: JSON});
+        gui.remember(config);
+
+
+        gui.addFolder('CDC');
+
+        var tofGuiFolder = gui.addFolder('TOF');
+        gui.addFolder('FCAL');
+
+        tofGuiFolder
+            .add( config, 'ftofDetail', config.ftofDetailOptions )
+            .name('Detalization')
+            .onFinishChange(function(value) {
+                var tofDetails = function(isBoxVisible, isSectionsVisible, isModulesVisible){
+                    ftof.material.visible = isBoxVisible;
+                    ftof.children.forEach(function (section) {
+                        section.material.visible = isSectionsVisible;
+                        section.children.forEach(function (module) {
+                            module.material.visible = isModulesVisible;
+                        });
+                    });
+
+                };
+                var ftof = scene.getObjectByName("FTOF", true);
+                switch(value)
+                {
+                    case 'box':
+                        tofDetails(true, false, false);
+                        break;
+                    case 'sections':
+                        tofDetails(false, true, false);
+                        break;
+                    case 'modules':
+                        tofDetails(false, false, true);
+                        break;
+
+                }
+                // Fires when a controller loses focus.
+                //alert("The new value is " + value);
+            });
+
+        //gui.add( params, 'bulbPower', Object.keys( bulbLuminousPowers ) );
+        //gui.add( params, 'exposure', 0, 1 );
+        //gui.add( params, 'shadows' );
+        gui.open();
 
     }
 
@@ -198,7 +267,7 @@
             effect.render( scene, camera );
         }
         else {
-           //camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+           // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
 
             renderer.render(scene, camera);
         }
