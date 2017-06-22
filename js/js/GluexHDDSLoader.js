@@ -76,36 +76,48 @@ THREE.GluexHDDSLoader.prototype = {
 
     processFTOF: function () {
         var xmlSection = this.xmlSections['ForwardTOF'];
-        var xmlPlacement = xmlSection.querySelectorAll('composition[name="ForwardTOF"] > posXYZ')[0];
-        var placement = extractPlacement(xmlPlacement, 'X_Y_Z', 'rot');
 
+        var ftof = new THREE.Group();
+        ftof.name = "FTOF";
+        var plane0 = this.buildTofPlane(xmlSection, 0);
+        var plane1 = this.buildTofPlane(xmlSection, 1);
+        ftof.add(plane0);
+        ftof.add(plane1);
+
+        // Tof placement in the global main file
         var xmlTofGlobal = this.HDDS.querySelector('composition[name="forwardPackage"] > posXYZ[volume="ForwardTOF"]');
-        var globalPlacement = extractPlacement(xmlTofGlobal, 'X_Y_Z', 'rot');
+        var globalPlacement = extractPlacement(xmlTofGlobal);
+        this.setMeshPlacement(ftof, globalPlacement);
 
-        placement = this.sumPlacements(globalPlacement, placement);
-        // FTOF
-        var ftofGeom = this.boxFromXml(xmlSection, "FTOF");
-        var ftofMaterial = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-        var ftofMesh = new THREE.Mesh(ftofGeom, ftofMaterial);
-        this.setMeshPlacement(ftofMesh, placement);
-        ftofMesh.name = "FTOF";
+        this.group.add(ftof);
+    },
+    
+    buildTofPlane: function (xmlSection, planeIndex) {
+        var xmlPlacement = xmlSection.querySelectorAll('composition[name="ForwardTOF"] > posXYZ')[planeIndex];
+        var placement = extractPlacement(xmlPlacement);
 
-        // SEGMENT B
-        var ftob = this.buildTofRegion(xmlSection, 'FTOB', 0, 0, false);
-        //var ftoz = this.buildTofRegion(xmlSection, 'FTOZ', 0, 19, false);
-        //var ftos = this.buildTofRegion(xmlSection, 'FTOS', 0, 21, false);
-        //var fton = this.buildTofRegion(xmlSection, 'FTON', 0, 21, true);
-        //var ftoy = this.buildTofRegion(xmlSection, 'FTOY', 0, 23, false);
-        //var ftot = this.buildTofRegion(xmlSection, 'FTOT', 0, 25, false);
-        ftofMesh.add(ftob);
-        //ftofMesh.add(ftoz);
-        //ftofMesh.add(ftos);
-        //ftofMesh.add(fton);
-        //ftofMesh.add(ftoy);
-        //ftofMesh.add(ftot);
+        // Plane
+        var geometry = this.boxFromXml(xmlSection, "FTOF");
+        var material = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide, visible:false });
+        var plane = new THREE.Mesh(geometry, material);
+        this.setMeshPlacement(plane, placement);
+        plane.name = "TOF_plane" + planeIndex;
 
-        this.group.add(ftofMesh);
+        //  PUT segments and modules
+        var ftob = this.buildTofRegion(xmlSection, 'FTOB', planeIndex, 0, false);
+        var ftoz = this.buildTofRegion(xmlSection, 'FTOZ', planeIndex, 19, false);
+        var ftos = this.buildTofRegion(xmlSection, 'FTOS', planeIndex, 21, false);
+        var fton = this.buildTofRegion(xmlSection, 'FTON', planeIndex, 21, true);
+        var ftoy = this.buildTofRegion(xmlSection, 'FTOY', planeIndex, 23, false);
+        var ftot = this.buildTofRegion(xmlSection, 'FTOT', planeIndex, 25, false);
+        plane.add(ftob);
+        plane.add(ftoz);
+        plane.add(ftos);
+        plane.add(fton);
+        plane.add(ftoy);
+        plane.add(ftot);
 
+        return plane;
     },
 
     buildTofRegion: function (tofXmlSection, name, planeNum, startIndex, isRight) {
@@ -132,7 +144,7 @@ THREE.GluexHDDSLoader.prototype = {
         var region = new THREE.Mesh(
             this.boxFromXml(tofXmlSection, name),
             new THREE.MeshLambertMaterial({visible:false}));
-        region.name=name;
+        region.name='TOF' + '_plane' + planeNum + '_' + name ;
 
         // Module box that we will copy
         var moduleBox = this.boxFromXml(tofXmlSection, volumeName);
