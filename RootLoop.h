@@ -64,7 +64,7 @@ namespace hdvis
                 if(_commands.IsPendingRedraw3D())
                 {
                     _commands.ClearRedraw3D();
-                    gEve->RegisterRedraw3D();
+                    //gEve->RegisterRedraw3D();
                 }
             }
         }

@@ -105,49 +105,6 @@ JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::RootLoopCommande
     _rootLoopCommander(rootLoopCommander)
 
 {
-    h2 = new TH2F("FCAL Hits", "FCAL Hits", 100, -50, 50, 100, -50, 50);
-
-    data = new TEveCaloDataHist();
-    data->AddHistogram(h2);
-    data->RefSliceInfo(0).Setup("FCAL", 0.3, kBlue);
-
-
-    gEve->AddToListTree(data, kFALSE);
-
-    TEveWindowSlot *slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
-    TEveViewer *v = new TEveViewer("Viewer");
-    v->SpawnGLViewer(gEve->GetEditor());
-    slot->ReplaceWindow(v);
-    gEve->GetViewers()->AddElement(v);
-    TEveScene *s = gEve->SpawnNewScene("Scene");
-    v->AddScene(s);
-
-
-    v->SetElementName("Viewer - Lego");
-    s->SetElementName("Scene - Lego");
-
-
-    TEveCaloLego *lego = new TEveCaloLego(data);
-
-    s->AddElement(lego);
-
-    // By the default lego extends is (1x1x1). Resize it to put in 'natural'
-    // coordinates, so that y extend in 2*Pi and set height of lego two times
-    //  smaller than y extend to have better view in 3D perspective.
-    lego->InitMainTrans();
-    lego->RefMainTrans().SetScale(TMath::TwoPi(), TMath::TwoPi(), TMath::Pi());
-
-    // draws scales and axis on borders of window
-    TGLViewer *glv = v->GetGLViewer();
-    TEveCaloLegoOverlay *overlay = new TEveCaloLegoOverlay();
-    glv->AddOverlayElement(overlay);
-    overlay->SetCaloLego(lego);
-
-    // set event handler to move from perspective to orthographic view.
-    glv->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
-    glv->SetEventHandler
-            (new TEveLegoEventHandler(glv->GetGLWidget(), glv, lego));
-    gEve->AddToListTree(lego, kTRUE);
 
 }
 
@@ -163,9 +120,6 @@ JEventProcessor_EventReader::~JEventProcessor_EventReader() {
 // init
 //------------------
 jerror_t JEventProcessor_EventReader::init(void) {
-    // This is called once at program startup.
-    // open ROOT file
-    gEve->AddElement(dummy);
 
     return NOERROR;
 }
@@ -325,8 +279,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         {
             isFirstGoodEvent =false;
 
-
-
+            /*
             TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0));
             gEve->AddGlobalElement(enode);
             enode->ExpandIntoListTreesRecursively();
@@ -395,13 +348,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             MakeElementVisible(fcal);
             MakeDescendantRecursiveColor(fcal,53,143,254);
             MakeDescendantRecursiveTransparancey(fcal, .7);
-
+*/
 
             _rootLoopCommander.EveFullRedraw3D();
         }
 
         //Clear the event...unless it is empty
-        gEve->GetCurrentEvent()->DestroyElements();
+        //gEve->GetCurrentEvent()->DestroyElements();
 
         //Setup the tracking to display tracking info
         Tracking Tracks(Bfield,RootGeom);
@@ -468,10 +421,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.open("../js/event.json",ios::app);
         event_out<<",";
         event_out.close();
-
+        //cout<<"ADDING FDC HITS"<<endl;
         FDCDet.Add_FDCHits(FDCHits);
-
-
 
         //Redraw the scene(s)
         //sleep(1);
@@ -482,6 +433,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.open("../js/event.json",ios::app);
         event_out<<"}";
         event_out.close();
+
+        cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
     }   // <- unlock EventMutex
 
     _waitingLogic.Wait();

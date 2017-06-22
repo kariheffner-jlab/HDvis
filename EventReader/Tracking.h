@@ -37,7 +37,6 @@ public:
         event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"charged_tracks\": "<<"[\n";//JSON
 
-        vector<TEvePointSet*> Track_points;
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
 
@@ -73,24 +72,9 @@ public:
 
                 track_points.push_back(step_loc);
 
-                Track_ps->SetNextPoint(step_loc.X(), step_loc.Y(),step_loc.Z()); //FCAL alignment is 150.501,-349.986,147.406
-                //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
-
-                //if(TrackCandidates[i]->charge()==1)
-                if(ChargedTracks[i]->Get_BestFOM()->charge()==-1)
-                    Track_ps->SetMainColorRGB(0,float(250.), 0.);
-                else
-                    Track_ps->SetMainColorRGB(float(250.),0, 0.);
-
-
-                Track_ps->SetPointId(new TNamed(Form(" Track Points %i", i), ""));
-                Track_ps->SetMarkerSize(1);
-                Track_ps->SetMarkerStyle(4);
-                Track_ps->SetElementName(name.c_str());
-
             }
 
-            WriteTrackJSON(event_out, i, charge, track_points);
+            WriteTrackJSON(event_out, name, charge, track_points);
             track_points.clear();
             //delete track_points;
 
@@ -100,15 +84,10 @@ public:
                 event_out<<"}"<<endl;
 
 
-            Track_points.push_back(Track_ps);
         }
+
         event_out<<"]"<<endl;
         event_out.close();
-
-        for (int i = 0; i < Track_points.size(); i++) {
-            gEve->AddElement(Track_points[i]);
-
-        }
 
     }
 
@@ -164,7 +143,7 @@ public:
                 Track_ps->SetElementName(name.c_str());
 
             }
-            WriteTrackJSON(event_out, i, 0, track_points);
+            WriteTrackJSON(event_out, name, 0, track_points);
             track_points.clear();
 
             if(i!=NeutralTracks.size()-1)
@@ -179,16 +158,16 @@ public:
         event_out.close();
 
         for (int i = 0; i < NeutTrack_points.size(); i++) {
-            gEve->AddElement(NeutTrack_points[i]);
+           // gEve->AddElement(NeutTrack_points[i]);
         }
 
     }
-    void WriteTrackJSON(ofstream& event_out, int id, double charge, vector<DVector3> track_points)
+    void WriteTrackJSON(ofstream& event_out, string id, double charge, vector<DVector3> track_points)
     {
 
         if(track_points.size()!=0) {
             event_out << "{" << endl;
-            event_out << "\"id\": " << id << "," << endl; //JSON
+            event_out << "\"id\": " <<"\""<<id<<"\"" << "," << endl; //JSON
             event_out << "\"charge\": " << charge << "," << endl; //JSON
             event_out << "\"points\": " << "[" << endl; //JSON
 

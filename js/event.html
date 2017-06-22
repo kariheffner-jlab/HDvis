@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>three.js webgl - geometry - Subdivisions with Catmull-Clark</title>
+    <title>GlueX HDvis -- Dmitry Romanov and Thomas Britton</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
@@ -12,12 +12,14 @@
             overflow: hidden;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="dat.gui.css" />
 </head>
 <body>
 
 <script src="js/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
+<script src="js/libs/dat.gui.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
 <script src="js/GluexGeometryLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
@@ -34,12 +36,17 @@
     // start scene
     var mouse = new THREE.Vector2(), INTERSECTED;
 
+    keyState: new Array();
+
     init();
     animate();
 
     function init() {
         camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
-        camera.position.z = 500;
+        camera.position.z = 900;
+        camera.position.x=-1000;
+        camera.position.y=100;
+
 
         scene = new THREE.Scene();
 
@@ -60,6 +67,7 @@
         effect.setSize(window.innerWidth, window.innerHeight);
 
 
+
         stats = new Stats();
         document.body.appendChild(stats.dom);
 
@@ -70,6 +78,7 @@
 
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
+        document.addEventListener( 'keydown', onKeyDown, false );
 
         var alpha = 0.5;
         var gamma = 0.5;
@@ -99,7 +108,78 @@
             scene.add(objects);
         });
 
+        object = new THREE.AxisHelper( 100 );
+        object.position.set( 0, 0, 300 );
+        scene.add( object );
+
         renderer.setClearColor( 0x000000 );
+
+        // ref for lumens: http://www.power-sure.com/lumens.htm
+
+        // Here is our mighty config
+        var HDVisConfig = function() {
+
+            this.ftofDetailOptions = {
+                "Box only": 'box',
+                "Sections": 'sections',
+                "Modules":  'modules'
+            };
+
+            this.ftofDetail = 'modules'; // "box", "sections", "modules"
+
+            // Thomas, here is GUI examples:
+            // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
+        };
+
+        var config = new HDVisConfig();
+
+
+        // GUI
+        var gui = new dat.GUI({load: JSON});
+        gui.remember(config);
+
+
+        gui.addFolder('CDC');
+
+        var tofGuiFolder = gui.addFolder('TOF');
+        gui.addFolder('FCAL');
+
+        tofGuiFolder
+            .add( config, 'ftofDetail', config.ftofDetailOptions )
+            .name('Detalization')
+            .onFinishChange(function(value) {
+                var tofDetails = function(isBoxVisible, isSectionsVisible, isModulesVisible){
+                    ftof.material.visible = isBoxVisible;
+                    ftof.children.forEach(function (section) {
+                        section.material.visible = isSectionsVisible;
+                        section.children.forEach(function (module) {
+                            module.material.visible = isModulesVisible;
+                        });
+                    });
+
+                };
+                var ftof = scene.getObjectByName("FTOF", true);
+                switch(value)
+                {
+                    case 'box':
+                        tofDetails(true, false, false);
+                        break;
+                    case 'sections':
+                        tofDetails(false, true, false);
+                        break;
+                    case 'modules':
+                        tofDetails(false, false, true);
+                        break;
+
+                }
+                // Fires when a controller loses focus.
+                //alert("The new value is " + value);
+            });
+
+        //gui.add( params, 'bulbPower', Object.keys( bulbLuminousPowers ) );
+        //gui.add( params, 'exposure', 0, 1 );
+        //gui.add( params, 'shadows' );
+        gui.open();
 
     }
 
@@ -119,6 +199,14 @@
 
     }
 
+    function onKeyDown(event) {
+
+        switch (event.keyCode) {
+
+            case 86: VRbool = !VRbool;break;
+
+         }
+    }
     //
 
     function animate() {
@@ -179,6 +267,8 @@
             effect.render( scene, camera );
         }
         else {
+           // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+
             renderer.render(scene, camera);
         }
     }
