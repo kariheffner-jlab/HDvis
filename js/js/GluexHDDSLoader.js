@@ -1,9 +1,26 @@
 
 parseXYZ = function (dataStr) {
-    return dataStr
-        .split(' ')
-        .filter(function(el) {return el;})
-        .map(function (x) {return parseFloat(x);});
+    if(dataStr){
+        return dataStr
+            .split(' ')
+            .filter(function(el) {return el;})
+            .map(function (x) {return parseFloat(x);});
+    }
+    return [0,0,0];
+};
+
+extractXYZ = function(xmlElement, attributeName){
+    var values = parseXYZ(xmlElement.getAttribute(attributeName));
+    return {x:values[0], y:values[1], z:values[2]};
+};
+
+extractPlacement = function(xmlElement, posAttName, rotAttName){
+    posAttName = typeof posAttName !== 'undefined' ? posAttName : 'X_Y_Z';
+    rotAttName = typeof rotAttName !== 'undefined' ? rotAttName : 'rot';
+    return {
+        position:extractXYZ(xmlElement, posAttName),
+        rotation:extractXYZ(xmlElement, rotAttName)
+    };
 };
 
 THREE.GluexHDDSLoader = function () {
@@ -24,6 +41,7 @@ THREE.GluexHDDSLoader.prototype = {
     geometries: {},
     refs: {},
     meshes: [],
+    xmlSections: {},
 
     load: function (url, onLoad, onProgress, onError) {
         this.group.name="GluexGeometry";
@@ -42,148 +60,115 @@ THREE.GluexHDDSLoader.prototype = {
         this.HDDS = new DOMParser().parseFromString( text, 'text/xml' );
         //var elements = this.HDDS.querySelectorAll('composition[name=');
         //var xmlTofBox = this.HDDS.querySelectorAll('section[name="ForwardTOF"] > box[name="FTOF"]')[0];
-
-        var xmlTofSection = this.HDDS.querySelectorAll('section[name="ForwardTOF"]')[0];
-        var xmlTofBox = xmlTofSection.querySelectorAll('box[name="FTOF"]')[0];
-        var xmlTofPosRot = xmlTofSection.querySelectorAll('composition[name="ForwardTOF"] > posXYZ')[0];
-        var tofPosRot = {
-            position: parseXYZ(xmlTofPosRot.getAttribute('X_Y_Z')),
-            rotation: parseXYZ(xmlTofPosRot.getAttribute('rot'))
-        };
-
-        var xmlTofGlobal = this.HDDS.querySelector('composition[name="forwardPackage"] > posXYZ[volume="ForwardTOF"]');
-        var tofGlobalPosRot = {
-            position: parseXYZ(xmlTofGlobal.getAttribute('X_Y_Z')),
-            rotation: parseXYZ(xmlTofGlobal.getAttribute('rot'))
-        };
-
-        tofPosRot = this.sumPositionRotation(tofGlobalPosRot, tofPosRot);
-
-        // FTOF
-        var tofBoxParams = parseXYZ(xmlTofBox.getAttribute('X_Y_Z'));
-
-        var ftofGeom = new THREE.BoxGeometry(tofBoxParams[0], tofBoxParams[1], tofBoxParams[2]);
-        var ftofMaterial = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-        var ftofMesh = new THREE.Mesh(ftofGeom, ftofMaterial);
-        ftofMesh.position.set(tofPosRot.position.x, tofPosRot.position.y, tofPosRot.position.z);
-        ftofMesh.rotation.set(tofPosRot.rotation.x, tofPosRot.rotation.y, tofPosRot.rotation.z);
-        ftofMesh.name = "FTOF";
-        this.group.add(ftofMesh);
-
-        return this.group;
-    },
-
-
-    /** Function that works with loaded json */
-    process: function (text) {
-        var janaGeo = JSON.parse(text);
-        this.importedGeometry = janaGeo;
-
-        var toRad = Math.PI/180.0;
         var scope = this;
 
-        // FCAL
-        var fcalJson = janaGeo['/SITE/HALL/FCAL'];
-        var shape = fcalJson.shape;
-        var fcalGeom = new THREE.BoxGeometry(shape.x, shape.y, shape.z);
-        var fcalMaterial = new THREE.MeshLambertMaterial({ color: 0x436280, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-        var fcalMesh = new THREE.Mesh(fcalGeom, fcalMaterial);
-        fcalMesh.position.set(fcalJson.position[0], fcalJson.position[1], fcalJson.position[2]);
-        //fcalMesh.rotation.set(fcalJson.rotation[0], fcalJson.rotation[1], fcalJson.rotation[2]);
-        fcalMesh.name = "FCAL";
-        this.group.add(fcalMesh);
+        // Extract all <section ...> Each section is usually means one detector description
+        this.HDDS.querySelectorAll('section').forEach(function (xmlSection) {
+            scope.xmlSections[xmlSection.getAttribute('name')] = xmlSection;
+        });
 
-        // FTOF
-        var ftofJson = janaGeo['/SITE/HALL/FTOF'];
-        shape = ftofJson.shape;
-        var ftofGeom = new THREE.BoxGeometry(shape.x, shape.y, shape.z);
-        var ftofMaterial = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-        var ftofMesh = new THREE.Mesh(ftofGeom, ftofMaterial);
-        ftofMesh.position.set(ftofJson.position[0], ftofJson.position[1], ftofJson.position[2]);
-        ftofMesh.rotation.set(ftofJson.rotation[0]*toRad, ftofJson.rotation[1]*toRad, ftofJson.rotation[2]*toRad);
-        ftofMesh.name = "FTOF";
-        this.group.add(ftofMesh);
 
-        // BCAL
-        var lassJson = janaGeo['/SITE/HALL/LASS'];
-
-        var bcalJson = janaGeo['/SITE/HALL/LASS/BCAL'];
-        var bcalGeom = this.tubeGeometryHelper(bcalJson.shape);
-        var bcalMaterial = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-        var bcalMesh = new THREE.Mesh(bcalGeom, bcalMaterial);
-
-        // BCAL position as a superposition of BCAL and LASS objects
-        var pos = {
-            x: bcalJson.position[0] + lassJson.position[0],
-            y: bcalJson.position[1] + lassJson.position[1],
-            z: bcalJson.position[2] + lassJson.position[2]
-        };
-
-        // BCAL rotation as a superposition of BCAL and LASS objects
-        var rot = {
-            x: (bcalJson.rotation[0] + lassJson.rotation[0])*toRad,
-            y: (bcalJson.rotation[1] + lassJson.rotation[1])*toRad,
-            z: (bcalJson.rotation[2] + lassJson.rotation[2])*toRad
-        };
-
-        //bcalMesh.position.set(bcalJson.position[0], bcalJson.position[1], bcalJson.position[2]);
-        bcalMesh.position.set(pos.x, pos.y, pos.z);
-        bcalMesh.rotation.set(rot.x, rot.y, rot.z);
-        bcalMesh.name = "BCAL";
-        this.group.add(bcalMesh);
-
-        // CDC
-        var cdcJson = janaGeo['/SITE/HALL/LASS/CDC'];
-        shape = cdcJson.shape;
-        var cdcTubes = {
-            0: this.tubeFromPolyConeShape(shape, 0, 1),
-            1: this.tubeFromPolyConeShape(shape, 2, 3),
-            3: this.tubeFromPolyConeShape(shape, 4, 5)
-        };
-
-        for(var i=0; i<cdcTubes.length; i++) {
-            cdcTubes[i].updateMatrix();
-        }
-        var cdcGeom = new THREE.Geometry();
-        cdcGeom.matrix.setPosition()
-
-        var cdcTube2 = this.tubeFromPolyConeShape(shape, 0, 1);
-        var cdcGeom = new THREE.BoxGeometry(shape.x, shape.y, shape.z);
-        var cdcMaterial = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-        var cdcMesh = new THREE.Mesh(cdcGeom, cdcMaterial);
-        cdcMesh.position.set(cdcJson.position[0], cdcJson.position[1], cdcJson.position[2]);
-        cdcMesh.rotation.set(cdcJson.rotation[0]*toRad, cdcJson.rotation[1]*toRad, cdcJson.rotation[2]*toRad);
-        cdcMesh.name = "FTOF";
-        this.group.add(cdcMesh);
-
-        // Global shift due to... global geometry shift
-        this.group.position.set(-150.501, 349.986, 500);
+        this.group.add(this.processFTOF());
 
         return this.group;
     },
 
-    tubeFromPolyConeShape: function(shape, startZPlaneIndex, endZPlaneIndex)
-    {
-        // Note: need to handle units
-        var aunit = shape['aunit'];
-        var lunit = shape['lunit'];
 
-        name = shape['name'];
-        //console.log(type, name];
+    processFTOF: function () {
+        var xmlSection = this.xmlSections['ForwardTOF'];
 
-        var rmin = shape.zplanes[startZPlaneIndex]['rmin'];
-        var rmax = shape.zplanes[startZPlaneIndex]['rmax'];
-        var z = Math.abs(shape.zplanes[endZPlaneIndex].z - shape.zplanes[startZPlaneIndex].z);
+        var ftof = new THREE.Group();
+        ftof.name = "FTOF";
+        var plane0 = this.buildTofPlane(xmlSection, 0);
+        var plane1 = this.buildTofPlane(xmlSection, 1);
+        ftof.add(plane0);
+        ftof.add(plane1);
 
-        var startphi = shape['startphi'];
-        var deltaphi = shape['deltaphi'];
+        // Tof placement in the global main file
+        var xmlTofGlobal = this.HDDS.querySelector('composition[name="forwardPackage"] > posXYZ[volume="ForwardTOF"]');
+        var globalPlacement = extractPlacement(xmlTofGlobal);
+        this.setMeshPlacement(ftof, globalPlacement);
 
-        if ( aunit === 'deg' ) {
-            startphi *= Math.PI/180.0;
-            deltaphi *= Math.PI/180.0;
+        this.group.add(ftof);
+    },
+    
+    buildTofPlane: function (xmlSection, planeIndex) {
+        var xmlPlacement = xmlSection.querySelectorAll('composition[name="ForwardTOF"] > posXYZ')[planeIndex];
+        var placement = extractPlacement(xmlPlacement);
+
+        // Plane
+        var geometry = this.boxFromXml(xmlSection, "FTOF");
+        var material = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide, visible:false });
+        var plane = new THREE.Mesh(geometry, material);
+        this.setMeshPlacement(plane, placement);
+        plane.name = "TOF_plane" + planeIndex;
+
+        //  PUT segments and modules
+        var ftob = this.buildTofRegion(xmlSection, 'FTOB', planeIndex, 0, false);
+        var ftoz = this.buildTofRegion(xmlSection, 'FTOZ', planeIndex, 19, false);
+        var ftos = this.buildTofRegion(xmlSection, 'FTOS', planeIndex, 21, false);
+        var fton = this.buildTofRegion(xmlSection, 'FTON', planeIndex, 21, true);
+        var ftoy = this.buildTofRegion(xmlSection, 'FTOY', planeIndex, 23, false);
+        var ftot = this.buildTofRegion(xmlSection, 'FTOT', planeIndex, 25, false);
+        plane.add(ftob);
+        plane.add(ftoz);
+        plane.add(ftos);
+        plane.add(fton);
+        plane.add(ftoy);
+        plane.add(ftot);
+
+        return plane;
+    },
+
+    buildTofRegion: function (tofXmlSection, name, planeNum, startIndex, isRight) {
+
+        var xmlComposition = tofXmlSection.querySelector('composition[envelope="'+name+'"]');
+
+        // We will need this to extract region position in the future
+        // because we have region positions in xml like:
+        //    <composition name="forwardTOF" envelope="FTOF">
+        //         <posXYZ volume="forwardTOF_bottom1" X_Y_Z="0.0 -70.125 0.0" />
+        //         ....
+        // so we need this forwardTOF_bottom1 to extract its placement
+        var regionFullName = xmlComposition.getAttribute('name');
+
+        var xmlMultPosY = xmlComposition.querySelector('mposY');
+        // the xml looks like this:
+        // <mposY volume="FTOH" ncopy="2" Z_X = "0.0 0.0" Y0="-3.045" dY="6.09">
+        var volumeName = xmlMultPosY.getAttribute('volume');
+        var ncopy = parseInt(xmlMultPosY.getAttribute('ncopy'));
+        var y0 = parseFloat(xmlMultPosY.getAttribute('Y0'));
+        var dy = parseFloat(xmlMultPosY.getAttribute('dY'));
+
+        // Region bounding box
+        var region = new THREE.Mesh(
+            this.boxFromXml(tofXmlSection, name),
+            new THREE.MeshLambertMaterial({visible:false}));
+        region.name='TOF' + '_plane' + planeNum + '_' + name ;
+
+        // Module box that we will copy
+        var moduleBox = this.boxFromXml(tofXmlSection, volumeName);
+
+        // Go through repetitions and create modules
+        for(var i=0; i< ncopy; i++){
+            var material = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5});
+            var module = new THREE.Mesh(moduleBox.clone(), material);
+
+            module.name = "TOF_p" + planeNum + "_m" + (startIndex+i);
+            if(isRight) module.name += "_r";
+
+            module.position.set(0, y0 + i*dy, 0);
+
+            region.add(module);
         }
-        return this.tubeGeometry(rmin, rmax, z, startphi, deltaphi);
 
+        // get placement
+        var selector = 'posXYZ[volume="'+regionFullName+'"]';
+        var xmlPlacement = tofXmlSection.querySelector(selector);
+        var regionPlacement = extractPlacement(xmlPlacement);
+        this.setMeshPlacement(region, regionPlacement);
+
+        return region;
     },
 
     tubeGeometry: function(rmin, rmax, z, startphi, deltaphi)
@@ -210,29 +195,11 @@ THREE.GluexHDDSLoader.prototype = {
         return geometry;
     },
 
-    tubeGeometryHelper: function (solid)
-    {
-        // Note: need to handle units
-        var aunit = solid['aunit'];
-        var lunit = solid['lunit'];
-
-        name = solid['name'];
-        //console.log(type, name];
-
-        var rmin = solid['rmin'];
-        var rmax = solid['rmax'];
-        var z = solid['z'];
-
-        var startphi = solid['startphi'];
-        var deltaphi = solid['deltaphi'];
-
-        if ( aunit === 'deg' ) {
-            startphi *= Math.PI/180.0;
-            deltaphi *= Math.PI/180.0;
-        }
-        return this.tubeGeometry(rmin, rmax, z, startphi, deltaphi);
+    boxFromXml:function(xmlElement, boxName){
+        var xmlBox = xmlElement.querySelectorAll('box[name="'+boxName+'"]')[0];
+        var params = parseXYZ(xmlBox.getAttribute('X_Y_Z'));
+        return new THREE.BoxBufferGeometry(params[0], params[1], params[2]);
     },
-
 
     /**
      * Summs position and rotation vectors. And adds z shift to position.z
@@ -243,27 +210,47 @@ THREE.GluexHDDSLoader.prototype = {
      * @param convertToRad if true rotation will be * Math.PI/180
      * @return {{position: {x: number, y: number, z: number}, rotation: {x: number, y: number, z: number}}}
      */
-    sumPositionRotation: function (left, right, zShift, convertToRad) {
+    sumPlacements: function (left, right, zShift) {
         zShift = typeof zShift !== 'undefined' ? zShift : 0;
-        convertToRad = typeof convertToRad !== 'undefined' ? convertToRad : false;
 
         // BCAL position as a superposition of BCAL and LASS objects
         var position = {
-            x: left.position[0] + right.position[0],
-            y: left.position[1] + right.position[1],
-            z: left.position[2] + right.position[2] + zShift
+            x: left.position.x + right.position.x,
+            y: left.position.y + right.position.y,
+            z: left.position.z + right.position.z + zShift
         };
 
-        // BCAL rotation as a superposition of BCAL and LASS objects
-        var toRad = convertToRad ? this.toRad: 1;
-
-        // BCAL rotation as a superposition of BCAL and LASS objects
         var rotation = {
-            x: (left.rotation[0] + right.rotation[0])*toRad,
-            y: (left.rotation[1] + right.rotation[1])*toRad,
-            z: (left.rotation[2] + right.rotation[2])*toRad
+            x: left.rotation.x + right.rotation.x,
+            y: left.rotation.y + right.rotation.y,
+            z: left.rotation.z + right.rotation.z
         };
 
         return {position:position, rotation:rotation};
     },
+
+    setMeshPlacement: function (mesh, placement, convToRad) {
+        return this.setMeshPositionRotation(mesh, placement.position, placement.rotation, convToRad);
+    },
+
+    /**
+     *
+     * @param mesh
+     * @type mesh THREE.Mesh
+     * @param rotPos Something with one or both 'rotation', 'position' properties that are index iterable
+     * @param convToRad - if true rotation values will be Math.PI/180
+     */
+    setMeshPositionRotation: function (mesh, position, rotation, convToRad) {
+
+        // Convert to radians set Math.PI/180 OR 1
+        convToRad = typeof convToRad !== 'undefined' ? convToRad : true;
+        var toRad = convToRad? this.toRad : 1;
+
+        mesh.position.set(position.x, position.y, position.z);
+        mesh.rotation.set(rotation.x*toRad, rotation.y*toRad, rotation.z*toRad);
+
+
+        return mesh;
+    },
+
 };
