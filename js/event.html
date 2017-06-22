@@ -23,8 +23,12 @@
 <script src="js/GluexEventLoader.js"></script>
 <script src="js/GluexGeometryLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
+<script src="js/vr/WebVR.js"></script>
 
 <script>
+
+
+
 
     var container, stats;
 
@@ -63,16 +67,17 @@
         document.body.appendChild( renderer.domElement );
 
 
+
+
+
         effect = new THREE.StereoEffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);
-
 
 
         stats = new Stats();
         document.body.appendChild(stats.dom);
 
         raycaster = new THREE.Raycaster();
-
 
         controls = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -264,10 +269,23 @@
 
         if(VRbool)
         {
-            effect.render( scene, camera );
+            WEBVR.checkAvailability().catch( function( message ) {
+                document.body.appendChild( WEBVR.getMessageContainer( message ) );
+            } );
+            WEBVR.getVRDisplay( function ( display ) {
+                renderer.vr.setDevice( display );
+                document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
+            } );
+            if(renderer.vr)
+                renderer.vr.enabled = true;
+
+            renderer.render( scene, camera );
         }
         else {
            // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+            //renderer.vr.enabled = false;
+            if(renderer.vr)
+                renderer.vr.enabled = false;
 
             renderer.render(scene, camera);
         }
