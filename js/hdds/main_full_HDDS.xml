@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE HDDS [
+
+  <!ENTITY Regions_s SYSTEM "Regions_HDDS.xml">
+  <!ENTITY Material_s SYSTEM "Material_HDDS.xml">
+  <!ENTITY BeamLine_s SYSTEM "BeamLine_HDDS.xml">
+  <!ENTITY PairSpect_s SYSTEM "PairSpect_HDDS.xml">
+  <!ENTITY Target_s SYSTEM "Target_HDDS.xml"  >
+  <!ENTITY Solenoid_s SYSTEM "Solenoid_HDDS.xml">
+  <!ENTITY CentralDC_s SYSTEM "CentralDC_HDDS.xml">
+  <!ENTITY ForwardDC_s SYSTEM "ForwardDC_HDDS.xml">
+  <!ENTITY StartCntr_s SYSTEM "StartCntr_HDDS.xml">
+  <!ENTITY BarrelEMcal_s SYSTEM "BarrelEMcal_HDDS.xml">
+  <!ENTITY GapEMcal_s SYSTEM "GapEMcal_HDDS.xml">
+  <!ENTITY ForwardEMcal_s SYSTEM "ForwardEMcal_HDDS.xml">
+  <!ENTITY CerenkovCntr_s SYSTEM "CerenkovCntr_HDDS.xml">
+  <!ENTITY UpstreamEMveto_s SYSTEM "UpstreamEMveto_HDDS.xml">
+  <!ENTITY ComptonEMcal_s SYSTEM "ComptonEMcal_HDDS.xml">
+  <!ENTITY DIRC_s SYSTEM "DIRC_HDDS.xml">
+
+]>
+
+<HDDS specification="v1.1" xmlns="http://www.gluex.org/hdds"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.gluex.org/hdds HDDS-1_1.xsd">
+
+<!-- Include materials -->
+     &Material_s;
+
+<!-- Include magnetic fields -->
+     &Regions_s;
+
+<!-- Include spec files -->
+     &ForwardEMcal_s;
+     &BarrelEMcal_s;
+     &GapEMcal_s;
+
+    <section name        = "ForwardTOF"
+             version     = "2.1"
+             date        = "2006-11-22"
+             author      = "M. Shepherd, R.T. Jones"
+             top_volume  = "FTOF"
+             specification = "v1.0">
+
+        <!-- Origin of ForwardTOF is center of entrance plane of detector -->
+
+        <!-- upstream plane has vertical oriented bars -->
+        <!-- downstream plane has horizontal oriented bars -->
+
+        <!-- Fri Jan 16 08:14:30 EST 2009                                                 -->
+        <!-- changed order of paddle counting: 1-40 bottom to top and south to north      -->
+        <!-- the half paddles are counted separately 41,43 north halfs, 42,44 south halfs -->
+
+
+        <!-- Wed Feb 12 11:57:37 EST 2014  B. Zihlmann                                            -->
+        <!-- change the width of the innermost long paddles from 6cm to 3cm                       -->
+        <!-- e.g. the 2 long paddles closest to the center hole are split in half (lengthwise)    -->
+        <!-- CHANGE NUMBERING SCHEEME!!: paddles are counted through from the bottom up and where -->
+        <!-- they are split paddles the continue counting the north side only, the south side     -->
+        <!-- paddles are added in the end as counters                                             -->
+        <!-- 19(long wide paddles)(19) 2(long narrow paddles)(21) 2(short paddles)(23)            -->
+        <!-- 2(long narrow paddles)(25) 19(long wide paddles)(44) 2(short paddles top/south) (46) -->
+
+        <composition name="ForwardTOF">
+            <posXYZ volume="forwardTOF" X_Y_Z="0.0  0.0 3.85" rot="0 0 -90">
+                <plane value="0" />
+            </posXYZ>
+            <posXYZ volume="forwardTOF" X_Y_Z="0.0  0.0 1.27" rot="0 0 0">
+                <plane value="1" />
+            </posXYZ>
+        </composition>
+
+        <composition name="forwardTOF" envelope="FTOF">
+            <posXYZ volume="forwardTOF_bottom1" X_Y_Z="0.0 -70.125 0.0" />
+            <posXYZ volume="forwardTOF_bottom2" X_Y_Z="0.0 -9.18 0.0" />
+            <posXYZ volume="forwardTOF_north" X_Y_Z="+66.0 0.0 0.0" />
+            <posXYZ volume="forwardTOF_south" X_Y_Z="-66.0 0.0 0.0" />
+            <posXYZ volume="forwardTOF_top2" X_Y_Z="0.0 +9.18 0.0" />
+            <posXYZ volume="forwardTOF_top1" X_Y_Z="0.0 +70.125 0.0" />
+        </composition>
+
+        <!-- the attribute 'row' is synonymous with 'bar' -->
+        <composition name="forwardTOF_top1" envelope="FTOT">
+            <mposY volume="FTOC" ncopy="19" Z_X="0.0 0.0" Y0="-54.855" dY="6.09">
+                <row value="26" step="1" />
+                <column value="0" />
+            </mposY>
+        </composition>
+        <composition name="forwardTOF_top2" envelope="FTOY">
+            <mposY volume="FTOX" ncopy="2" Z_X="0.0 0.0" Y0="-1.545" dY="3.09">
+                <row value="24" step="1" />
+                <column value="0" />
+            </mposY>
+        </composition>
+        <composition name="forwardTOF_bottom1" envelope="FTOB">
+            <mposY volume="FTOC" ncopy="19" Z_X="0.0 0.0" Y0="-54.855" dY="6.09">
+                <row value="1" step="1" />
+                <column value="0" />
+            </mposY>
+        </composition>
+        <composition name="forwardTOF_bottom2" envelope="FTOZ">
+            <mposY volume="FTOX" ncopy="2" Z_X="0.0 0.0" Y0="-1.545" dY="3.09">
+                <row value="20" step="1" />
+                <column value="0" />
+            </mposY>
+        </composition>
+
+        <composition name="forwardTOF_north" envelope="FTON">
+            <mposY volume="FTOH" ncopy="2" Z_X = "0.0 0.0" Y0="-3.045" dY="6.09">
+                <row value="22" step="1" />
+                <column value="1" />
+            </mposY>
+        </composition>
+        <composition name="forwardTOF_south" envelope="FTOS">
+            <mposY volume="FTOH" ncopy="2" Z_X="0.0 0.0" Y0="-3.045" dY="6.09">
+                <row value="45" step="1" />
+                <column value="2" />
+            </mposY>
+        </composition>
+
+        <box name="FTOF" X_Y_Z="252.0 268.8 2.55" material="Air" />
+        <box name="FTOB" X_Y_Z="252.0 115.8 2.55" material="Air" />
+        <box name="FTOT" X_Y_Z="252.0 115.8 2.55" material="Air" />
+        <box name="FTOY" X_Y_Z="252.0   6.18 2.55" material="Air" />
+        <box name="FTOZ" X_Y_Z="252.0   6.18 2.55" material="Air" />
+        <box name="FTON" X_Y_Z="120.0  12.18 2.55" material="Air" />
+        <box name="FTOS" X_Y_Z="120.0  12.18 2.55" material="Air" />
+        <box name="FTOC" X_Y_Z="252.0   6.0 2.54" material="Scintillator"
+             sensitive="true" />
+        <box name="FTOH" X_Y_Z="120.0   6.0 2.54" material="Scintillator"
+             sensitive="true" />
+        <box name="FTOX" X_Y_Z="252.0   3.0 2.54" material="Scintillator"
+             sensitive="true" />
+
+        <!-- The following elements describe an early rendition of the GlueX
+             detector simulated using a fast Monte Carlo program MCFast.  They
+             are retained for future reference, do not rely on their values. -->
+
+        <parameters name="forwardTOF_pars" type="mcfast">
+            <real_array	name="xlimit"	values="-126.0 126.0" comment="x dimensions"
+                           unit="cm"	/>
+            <real_array	name="ylimit"	values="-126.0 126.0" comment="y dimensions"
+                           unit="cm"	/>
+            <real_array	name="xlimit_gap" values="-3.0  3.0" comment="beam hole x"
+                           unit="cm"	/>
+            <real_array	name="ylimit_gap" values="-3.0  3.0" comment="beam hole y"
+                           unit="cm"	/>
+            <real	name="z0"	value="620.07"	comment="z of midplane"
+                     unit="cm"	/>
+            <real	name="zlen"	value="2.54"	comment="thickness"
+                     unit="cm"	/>
+            <reference	name="material"	value="Scintillator" />
+        </parameters>
+
+        <mcfast model="AbsorberBox" template="db/absorberbox.db"
+                parameters="forwardTOF_pars">
+            <string	name="name"	value="FTOF" />
+            <string	name="shape"	value="BOX"  />
+            <int	name="type"	value="42"   />
+        </mcfast>
+
+    </section>
+
+    &CerenkovCntr_s;
+     &ForwardDC_s;
+     &CentralDC_s;
+     &StartCntr_s;
+     &Target_s;
+     &Solenoid_s;
+     &BeamLine_s;
+     &UpstreamEMveto_s;
+     &PairSpect_s;     
+     &ComptonEMcal_s;
+     &DIRC_s;
+<!-- End of include    -->
+
+
+<!-- Hall D Detector Specification : top volume
+     ******************************************
+-->
+<section name        = "HallD"
+         version     = "3.0"
+         date        = "2007-12-07"
+         author      = "R.T. Jones"
+         top_volume  = "SITE"
+         specification = "v1.0">
+
+  <box name="SITE" X_Y_Z="10000. 10000. 10000." material="Air"
+       				comment="master volume for description" />
+  <box name="HALL" X_Y_Z="1700. 1500. 3409." material="Air"
+       				comment="master volume for description">
+    <apply region="solenoidBfield" origin="150.0 -350.0 -500.0" />
+  </box>
+
+  <composition name="barrelPackage" envelope="LASS">
+    <posXYZ volume="Solenoid" X_Y_Z="0.03 0.0 0.0"/>
+    <posXYZ volume="Target" X_Y_Z="0.0 0.0 50.429"/>
+    <posXYZ volume="StartCntr" X_Y_Z="0.0 0.0 38.84"  rot="0.0 0.0 -11.25"/>
+    <posXYZ volume="CentralDC" X_Y_Z="0.0 0.0 17.68" rot="0.0 0.0 0.0" />
+    <posXYZ volume="ForwardDC" X_Y_Z="0.0 0.0 176.938" />
+    <posXYZ volume="BarrelEMcal" X_Y_Z="0.1 -0.098 16.788" rot="-0.0424 0.01633 0.0046" />
+  </composition>
+
+  <composition name="forwardPackage">
+    <!--<posXYZ volume="CerenkovCntr" X_Y_Z="0.0 0.0 466.0" /> -->
+    <!--posXYZ volume="GapEMcal" X_Y_Z="0.0 0.0 460.0" /-->
+    <!-- To simulate DIRC hits uncomment the line below -->
+    <!--posXYZ volume="DIRC" X_Y_Z="0.0 0.0 595.0" /-->
+    <posXYZ volume="ForwardTOF" X_Y_Z="0.308 0.225 605.793" rot="-0.0427 0.0461 -0.1813"/>
+    <posXYZ volume="ForwardEMcal" X_Y_Z="0.529 -0.002 624.906" rot="-0.0418 -0.07019 -0.0149" />
+    <!--posXYZ volume="ComptonEMcal" X_Y_Z="0.0 0.0 1025.3" /-->
+  </composition>
+
+  <composition name="backwardPackage">
+    <posXYZ volume="UpstreamEMveto" X_Y_Z="0.0 0.0 -86.8" />
+  </composition> 
+
+  <composition name="GlueXdetector">
+    <!--The following is the position of the entrance window of the target cell-->
+    <!--posXYZ volume="Target" X_Y_Z="0.0 0.0 48.316" /> Moved the target to the LASS volume SJT 6/2/2016 -->
+    <posXYZ volume="barrelPackage" />
+    <posXYZ volume="forwardPackage" />
+<!-- removed from standard geometry 12/11/2007 -rtj
+    <posXYZ volume="backwardPackage" />
+-->
+  </composition>
+
+  <composition name="experimentalHall" envelope="HALL">
+    <posXYZ volume="GlueXdetector" X_Y_Z="150.0 -350.0 -500.0" />
+    <posXYZ volume="PairSpectrometer" X_Y_Z="150.0 -350.0 -1390.16" />  
+    <posXYZ volume="beamPipe" X_Y_Z="0.0 0.0 -0.5" />
+    <posXYZ volume="SixWayCross" X_Y_Z="150 -350 -605.93"/>
+  </composition>
+
+  <composition name="LASSfieldVolume">
+    <posXYZ volume="experimentalHall" X_Y_Z="-150.0 350.0 500.0" />
+  </composition>
+
+  <composition name="everything" envelope="SITE">
+    <posXYZ volume="collimatorPackage" X_Y_Z="0.0 0.0 -2254.5" />
+    <posXYZ volume="LASSfieldVolume" X_Y_Z="0. 0. 0." />
+  </composition>
+
+  <!-- The following elements describe an early rendition of the GlueX
+       detector simulated using a fast Monte Carlo program MCFast.  They
+       are retained for future reference, do not rely on their values. -->
+
+  <mcfast model="detector" template="db/detector.db">
+    <string name="name" value="GLUEX" />
+    <string name="geom_id" value="CENTRAL" />
+  </mcfast>
+
+</section>
+
+</HDDS>
