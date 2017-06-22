@@ -1,9 +1,24 @@
 
 parseXYZ = function (dataStr) {
-    return dataStr
-        .split(' ')
-        .filter(function(el) {return el;})
-        .map(function (x) {return parseFloat(x);});
+    if(dataStr){
+        return dataStr
+            .split(' ')
+            .filter(function(el) {return el;})
+            .map(function (x) {return parseFloat(x);});
+    }
+    return [0,0,0];
+};
+
+extractXYZ = function(xmlElement, attributeName){
+    var values = parseXYZ(xmlElement.getAttribute(attributeName));
+    return {x:values[0], y:values[1], z:values[2]};
+};
+
+extractPlacement = function(xmlElement, posAttName, rotAttName){
+    return {
+        position:extractXYZ(xmlElement, posAttName),
+        rotation:extractXYZ(xmlElement, rotAttName)
+    };
 };
 
 THREE.GluexHDDSLoader = function () {
@@ -24,6 +39,7 @@ THREE.GluexHDDSLoader.prototype = {
     geometries: {},
     refs: {},
     meshes: [],
+    xmlSections: {},
 
     load: function (url, onLoad, onProgress, onError) {
         this.group.name="GluexGeometry";
@@ -42,31 +58,26 @@ THREE.GluexHDDSLoader.prototype = {
         this.HDDS = new DOMParser().parseFromString( text, 'text/xml' );
         //var elements = this.HDDS.querySelectorAll('composition[name=');
         //var xmlTofBox = this.HDDS.querySelectorAll('section[name="ForwardTOF"] > box[name="FTOF"]')[0];
+        var scope = this;
 
-        var xmlTofSection = this.HDDS.querySelectorAll('section[name="ForwardTOF"]')[0];
-        var xmlTofBox = xmlTofSection.querySelectorAll('box[name="FTOF"]')[0];
+        // Extract all <section ...> Each section is usually means one detector description
+        this.HDDS.querySelectorAll('section').forEach(function (xmlSection) {
+            scope.xmlSections[xmlSection.getAttribute('name')] = xmlSection;
+        });
+
+        var xmlTofSection = this.xmlSections['ForwardTOF'];
         var xmlTofPosRot = xmlTofSection.querySelectorAll('composition[name="ForwardTOF"] > posXYZ')[0];
-        var tofPosRot = {
-            position: parseXYZ(xmlTofPosRot.getAttribute('X_Y_Z')),
-            rotation: parseXYZ(xmlTofPosRot.getAttribute('rot'))
-        };
+        var tofPlacement = extractPlacement(xmlTofPosRot, 'X_Y_Z', 'rot');
 
         var xmlTofGlobal = this.HDDS.querySelector('composition[name="forwardPackage"] > posXYZ[volume="ForwardTOF"]');
-        var tofGlobalPosRot = {
-            position: parseXYZ(xmlTofGlobal.getAttribute('X_Y_Z')),
-            rotation: parseXYZ(xmlTofGlobal.getAttribute('rot'))
-        };
+        var tofGlobalPlacement = extractPlacement(xmlTofGlobal, 'X_Y_Z', 'rot');
 
-        tofPosRot = this.sumPositionRotation(tofGlobalPosRot, tofPosRot);
-
+        tofPlacement = this.sumPlacements(tofGlobalPlacement, tofPlacement);
         // FTOF
-        var tofBoxParams = parseXYZ(xmlTofBox.getAttribute('X_Y_Z'));
-
-        var ftofGeom = new THREE.BoxGeometry(tofBoxParams[0], tofBoxParams[1], tofBoxParams[2]);
+        var ftofGeom = this.boxFromXml(xmlTofSection, "FTOF");
         var ftofMaterial = new THREE.MeshLambertMaterial({ color: 0xa3bad2, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
         var ftofMesh = new THREE.Mesh(ftofGeom, ftofMaterial);
-        ftofMesh.position.set(tofPosRot.position.x, tofPosRot.position.y, tofPosRot.position.z);
-        ftofMesh.rotation.set(tofPosRot.rotation.x, tofPosRot.rotation.y, tofPosRot.rotation.z);
+        this.setMeshPlacement(ftofMesh, tofPlacement);
         ftofMesh.name = "FTOF";
         this.group.add(ftofMesh);
 
@@ -145,7 +156,7 @@ THREE.GluexHDDSLoader.prototype = {
             cdcTubes[i].updateMatrix();
         }
         var cdcGeom = new THREE.Geometry();
-        cdcGeom.matrix.setPosition()
+        cdcGeom.matrix.setPosition();
 
         var cdcTube2 = this.tubeFromPolyConeShape(shape, 0, 1);
         var cdcGeom = new THREE.BoxGeometry(shape.x, shape.y, shape.z);
@@ -233,6 +244,11 @@ THREE.GluexHDDSLoader.prototype = {
         return this.tubeGeometry(rmin, rmax, z, startphi, deltaphi);
     },
 
+    boxFromXml:function(xmlElement, boxName){
+        var xmlBox = xmlElement.querySelectorAll('box[name="'+boxName+'"]')[0];
+        var params = parseXYZ(xmlBox.getAttribute('X_Y_Z'));
+        return new THREE.BoxBufferGeometry(params[0], params[1], params[2]);
+    },
 
     /**
      * Summs position and rotation vectors. And adds z shift to position.z
@@ -243,27 +259,47 @@ THREE.GluexHDDSLoader.prototype = {
      * @param convertToRad if true rotation will be * Math.PI/180
      * @return {{position: {x: number, y: number, z: number}, rotation: {x: number, y: number, z: number}}}
      */
-    sumPositionRotation: function (left, right, zShift, convertToRad) {
+    sumPlacements: function (left, right, zShift) {
         zShift = typeof zShift !== 'undefined' ? zShift : 0;
-        convertToRad = typeof convertToRad !== 'undefined' ? convertToRad : false;
 
         // BCAL position as a superposition of BCAL and LASS objects
         var position = {
-            x: left.position[0] + right.position[0],
-            y: left.position[1] + right.position[1],
-            z: left.position[2] + right.position[2] + zShift
+            x: left.position.x + right.position.x,
+            y: left.position.y + right.position.y,
+            z: left.position.z + right.position.z + zShift
         };
 
-        // BCAL rotation as a superposition of BCAL and LASS objects
-        var toRad = convertToRad ? this.toRad: 1;
-
-        // BCAL rotation as a superposition of BCAL and LASS objects
         var rotation = {
-            x: (left.rotation[0] + right.rotation[0])*toRad,
-            y: (left.rotation[1] + right.rotation[1])*toRad,
-            z: (left.rotation[2] + right.rotation[2])*toRad
+            x: left.rotation.x + right.rotation.x,
+            y: left.rotation.y + right.rotation.y,
+            z: left.rotation.z + right.rotation.z
         };
 
         return {position:position, rotation:rotation};
     },
+
+    setMeshPlacement: function (mesh, placement, convToRad) {
+        return this.setMeshPositionRotation(mesh, placement.position, placement.rotation, convToRad);
+    },
+
+    /**
+     *
+     * @param mesh
+     * @type mesh THREE.Mesh
+     * @param rotPos Something with one or both 'rotation', 'position' properties that are index iterable
+     * @param convToRad - if true rotation values will be Math.PI/180
+     */
+    setMeshPositionRotation: function (mesh, position, rotation, convToRad) {
+
+        // Convert to radians set Math.PI/180 OR 1
+        convToRad = typeof convToRad !== 'undefined' ? convToRad : true;
+        var toRad = convToRad? this.toRad : 1;
+
+        mesh.position.set(position.x, position.y, position.z);
+        mesh.rotation.set(rotation.x*toRad, rotation.y*toRad, rotation.z*toRad);
+
+
+        return mesh;
+    },
+
 };
