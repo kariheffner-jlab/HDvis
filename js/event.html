@@ -24,6 +24,7 @@
 <script src="js/GluexGeometryLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
 <script src="js/vr/WebVR.js"></script>
+<script src="js/build/Three.js"></script>
 
 <script>
 
@@ -42,10 +43,24 @@
 
     keyState: new Array();
 
+
+    if(VRbool)
+    {
+        WEBVR.checkAvailability().catch( function( message ) {
+            document.body.appendChild( WEBVR.getMessageContainer( message ) );
+        } );
+
+    }
+
+
     init();
     animate();
 
     function init() {
+
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+
         camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
         camera.position.z = 900;
         camera.position.x=-1000;
@@ -64,7 +79,7 @@
         renderer.setClearColor( 0xf0f0f0 );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
-        document.body.appendChild( renderer.domElement );
+        container.appendChild( renderer.domElement );
 
 
 
