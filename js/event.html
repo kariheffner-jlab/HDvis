@@ -175,9 +175,12 @@
             .add( config, 'ftofDetail', config.ftofDetailOptions )
             .name('Detalization')
             .onFinishChange(function(value) {
+                var ftof = scene.getObjectByName("FTOF", true);
+
                 var tofDetails = function(isBoxVisible, isSectionsVisible, isModulesVisible){
-                    ftof.material.visible = isBoxVisible;
+
                     ftof.children.forEach(function (plane) {
+                        plane.material.visible = isBoxVisible;
                         plane.children.forEach(function (region) {
                             region.material.visible = isSectionsVisible;
                             region.children.forEach(function (module) {
@@ -186,7 +189,7 @@
                         });
                     });
                 };
-                var ftof = scene.getObjectByName("FTOF", true);
+
                 switch(value)
                 {
                     case 'box':
