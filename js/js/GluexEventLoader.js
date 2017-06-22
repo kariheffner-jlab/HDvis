@@ -215,6 +215,8 @@ THREE.GluexEventLoader.prototype = {
         boxmesh.name = "TestBox";
         scope.group.add(boxmesh);*/
 
+       var tofMesh = scope.geometry.getObjectByName("FTOF");
+
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
             //console.log("hit id:"+hit.id);
@@ -228,14 +230,14 @@ THREE.GluexEventLoader.prototype = {
 
             var geoName="TOF_p" + plane + "_m"+(bar-1);
 
-            var object = scope.geometry;
+            //var object = scope.geometry;
             //console.log("Found object="+object);
-            console.log(geoName);
+            //console.log(geoName);
 
-            //object=object.getObjectByName(geoName,true);
+            var object = tofMesh.getObjectByName(geoName,true);
             //getObjectByName( "TestBox", true );
 
-            //object.material.color.setRGB(1,0,0);
+            object.material.color.setRGB(0.7,0.1,0.7);
             //console.log(object);
 
 

@@ -70,6 +70,10 @@ THREE.GluexHDDSLoader.prototype = {
 
         this.group.add(this.processFTOF());
 
+        var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 10.0);
+        var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0x436280, transparent: true, opacity: 0.3, side: THREE.DoubleSide }));
+        fcal.position.set(0.529, -0.002, 624.906 + 22.5);
+        this.group.add(fcal);
         return this.group;
     },
 
