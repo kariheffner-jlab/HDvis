@@ -237,7 +237,7 @@ THREE.GluexEventLoader.prototype = {
             var object = tofMesh.getObjectByName(geoName,true);
             //getObjectByName( "TestBox", true );
 
-            object.material.color.setRGB(0.7,0.1,0.7);
+            object.material.color.setRGB(1,0,0);//setRGB(0.7,0.1,0.7);
             //console.log(object);
 
 
