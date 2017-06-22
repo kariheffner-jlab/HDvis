@@ -81,10 +81,13 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         container.appendChild( renderer.domElement );
 
-
-
-
-
+        if(renderer.vr)
+        {
+        WEBVR.getVRDisplay( function ( display ) {
+                renderer.vr.setDevice( display );
+                document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
+            } );
+        }
         effect = new THREE.StereoEffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);
 
@@ -235,6 +238,7 @@
 
         controls.update();
 
+
         render();
         stats.update();
 
@@ -284,13 +288,7 @@
 
         if(VRbool)
         {
-            WEBVR.checkAvailability().catch( function( message ) {
-                document.body.appendChild( WEBVR.getMessageContainer( message ) );
-            } );
-            WEBVR.getVRDisplay( function ( display ) {
-                renderer.vr.setDevice( display );
-                document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
-            } );
+            
             if(renderer.vr)
                 renderer.vr.enabled = true;
 
