@@ -17,7 +17,7 @@ THREE.GluexEventLoader.prototype = {
         this.group.name="GluexEvent";
         var scope = this;
 
-        var loader = new THREE.XHRLoader();
+        var loader = new THREE.FileLoader();//XHRLoader();
         loader.setPath(this.path);
         loader.load(url, function (text) {
             onLoad(scope.parse(text));
@@ -199,7 +199,7 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-        var box=new THREE.BoxGeometry(50,50,50);
+       /* var box=new THREE.BoxGeometry(50,50,50);
         var material = new THREE.MeshBasicMaterial({color:0xffffff,vertexColors: THREE.FaceColors, transparent:true, opacity:.7});
         var boxmesh= new THREE.Mesh(box,material);
         boxmesh.position.x=0;
@@ -208,19 +208,36 @@ THREE.GluexEventLoader.prototype = {
 
         //box.name = "TestBox";
         boxmesh.name = "TestBox";
-        scope.group.add(boxmesh);
+        scope.group.add(boxmesh);*/
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
             //console.log("hit id:"+hit.id);
-            var object = scope.group.getObjectByName("GluexEvent").getObjectByName("TestBox");
+            var plane=hit.plane;
+            var bar=hit.bar;
+            var end = hit.end;
+            var block="FTOB";
 
+            if(bar-1>18)
+                block="FTOT"
+
+            var geoName="TOF_"+plane.toString()+"_"+(bar-1).toString();
+
+            var object = scope.group.getObjectByName("GluexEvent");
+            console.log("Found object="+object);
+            console.log(geoName);
+
+            //object=object.getObjectByName(geoName,true);
             //getObjectByName( "TestBox", true );
 
+            //object.material.color.setRGB(1,0,0);
             //console.log(object);
+
+
+
             //console.log(object.geometry.faces.length);
 
-            var rcol=Math.random();
+            /*(var rcol=Math.random();
             var gcol=Math.random();
             var bcol=Math.random();
 
@@ -232,10 +249,9 @@ THREE.GluexEventLoader.prototype = {
                 }
                 object.geometry.faces[ i ].color.setRGB( rcol,gcol,bcol );
             }
-            object.geometry.colorsNeedUpdate = true
-            //object.material.color.r=Math.random();
-            //object.material.color.b=Math.random();
-            //object.material.color.g=Math.random();
+            object.geometry.colorsNeedUpdate = true*/
+
+
         });
 
         return this.group;

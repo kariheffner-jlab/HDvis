@@ -24,7 +24,6 @@
 <script src="js/GluexGeometryLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
 <script src="js/vr/WebVR.js"></script>
-<script src="js/build/Three.js"></script>
 
 <script>
 
@@ -83,7 +82,7 @@
 
         if(renderer.vr)
         {
-        WEBVR.getVRDisplay( function ( display ) {
+            WEBVR.getVRDisplay( function ( display ) {
                 renderer.vr.setDevice( display );
                 document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
             } );
@@ -121,15 +120,17 @@
         object.position.set( 0, 0, 0 );
         //scene.add( object );
 
+        var geometryLoader = new THREE.GluexGeometryLoader();
+        geometryLoader.load('./geometry.json', function (objects) {
+            scene.add(objects);
+        });
+
         var eventLoader = new THREE.GluexEventLoader();
         eventLoader.load('./event.json', function(objects) {
             scene.add(objects);
         });
 
-        var geometryLoader = new THREE.GluexGeometryLoader();
-        geometryLoader.load('./geometry.json', function (objects) {
-            scene.add(objects);
-        });
+
 
         object = new THREE.AxisHelper( 100 );
         object.position.set( 0, 0, 300 );
@@ -157,7 +158,7 @@
         var config = new HDVisConfig();
 
 
-        // GUI
+        // GUI----------------------------------------------------------------------------------------
         var gui = new dat.GUI({load: JSON});
         gui.remember(config);
 
@@ -203,7 +204,7 @@
         //gui.add( params, 'exposure', 0, 1 );
         //gui.add( params, 'shadows' );
         gui.open();
-
+//------------------------------------------------------------------------------------------------------------------------
     }
 
     function onDocumentMouseMove( event ) {
