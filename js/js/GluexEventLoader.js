@@ -234,8 +234,27 @@ THREE.GluexEventLoader.prototype = {
             //getObjectByName( "TestBox", true );
 
 
+
             if(object)
             {
+               /* var faceIndices = [ 'a', 'b', 'c', 'd','e','f' ];
+                var geom = object.geometry;
+                var fs=geom.attributes.faces;
+                for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
+                    console.log("face: "+i)
+                    f  = object.geometry.faces[ i ];
+
+                    for( var j = 0; j < 12; j++ ) {
+                        vertexIndex = f[ faceIndices[ j ] ];
+                        p = object.geometry.vertices[ vertexIndex ];
+                        color = new THREE.Color( 0xffffff );
+                        color.setHSL( ( p.y / radius + 1 ) / 2, 1.0, 0.5 );
+                        f.vertexColors[ j ] = color;
+
+                    }
+                }*/
+
+
                 if(object.material.color === TOFReferenceColor)
                 {
                     object.material.color.setRGB(1,1,0);
@@ -245,7 +264,6 @@ THREE.GluexEventLoader.prototype = {
                    object.material.color.setRGB(1,object.material.color.g/2.,0);
 
                }
-
             }
             else {
                 console.log("DIDN'T FIND " + geoName);
