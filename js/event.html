@@ -18,6 +18,7 @@
 
 <script src="js/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
+<script src="js/controls/FlyControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
 <script src="js/libs/dat.gui.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
@@ -97,6 +98,13 @@
         raycaster = new THREE.Raycaster();
 
         controls = new THREE.OrbitControls( camera, renderer.domElement );
+        /*controls = new THREE.FlyControls( camera );
+        controls.movementSpeed = 1;
+        controls.domElement = container;
+        controls.rollSpeed = Math.PI / 24;
+        controls.autoForward = false;
+        controls.dragToLook = false;*/
+
 
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
@@ -231,10 +239,14 @@
     }
 
     function onKeyDown(event) {
-
+        var MoveDelta=5
         switch (event.keyCode) {
 
-            case 86: VRbool = !VRbool;break;
+            case 86: VRbool = !VRbool;break;//v
+            case 87: camera.translateZ(-MoveDelta);break;//w
+            case 83: camera.translateZ(MoveDelta);break;//s
+            case 65: camera.translateX(-MoveDelta);break;//a
+            case 68: camera.translateX(MoveDelta);break;//d
 
          }
     }
