@@ -208,6 +208,10 @@ THREE.GluexEventLoader.prototype = {
        var tofMesh = scope.geometry.getObjectByName("FTOF");
 
        var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
+       var TOFTwoHitColor = new THREE.Color;
+       TOFTwoHitColor.setRGB(1,.66,0);
+        var TOFOneHitColor = new THREE.Color;
+        TOFOneHitColor.setRGB(1,1,0);
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
@@ -234,36 +238,63 @@ THREE.GluexEventLoader.prototype = {
             //getObjectByName( "TestBox", true );
 
 
-
             if(object)
             {
-               /* var faceIndices = [ 'a', 'b', 'c', 'd','e','f' ];
-                var geom = object.geometry;
-                var fs=geom.attributes.faces;
-                for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
-                    console.log("face: "+i)
-                    f  = object.geometry.faces[ i ];
+                if(object.geometry.type==="BufferGeometry") {
+                    object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
+                }
 
-                    for( var j = 0; j < 12; j++ ) {
-                        vertexIndex = f[ faceIndices[ j ] ];
-                        p = object.geometry.vertices[ vertexIndex ];
-                        color = new THREE.Color( 0xffffff );
-                        color.setHSL( ( p.y / radius + 1 ) / 2, 1.0, 0.5 );
-                        f.vertexColors[ j ] = color;
+                object.material.vertexColors=THREE.VertexColors;
+
+                for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
+                    var sent=0;
+                    if(end===1)
+                        sent=1;
+
+                    if(i%2===sent || (bar-1===21 || bar-1===22) ) {
+                        for( var j = 0; j < 3; j++ ) {
+
+                            color = new THREE.Color( 0xffffff );
+
+                            if(object.geometry.faces[i].vertexColors[j] === TOFReferenceColor)
+                            {
+                                console.log("first hit");
+                                color=TOFOneHitColor;
+                            }
+                            else if ( object.geometry.faces[i].vertexColors[j] === TOFOneHitColor)
+                            {
+                                console.log("second hit");
+                                color=TwoHitColor;
+
+                            }
+                            else
+                            {
+                                color.setRGB(1,0,0);
+                            }
+
+                            if(j===3) {
+                                object.geometry.faces[i].vertexColors[j] = TOFReferenceColor;
+                            }
+                            else
+                            {
+                                object.geometry.faces[i].vertexColors[j] = color;
+                            }
+                        }
 
                     }
-                }*/
 
+                }
+                object.geometry.colorsNeedUpdate = true;
 
-                if(object.material.color === TOFReferenceColor)
+                /*if(object.material.color === TOFReferenceColor)
                 {
                     object.material.color.setRGB(1,1,0);
                 }
                else
                {
-                   object.material.color.setRGB(1,object.material.color.g/2.,0);
+                   object.material.color.setRGB(1,object.material.color.g-1./2.,0);
 
-               }
+               }*/
             }
             else {
                 console.log("DIDN'T FIND " + geoName);
@@ -287,9 +318,7 @@ THREE.GluexEventLoader.prototype = {
             }
             object.geometry.colorsNeedUpdate = true*/
 
-
         });
-
         return this.group;
     },
 
