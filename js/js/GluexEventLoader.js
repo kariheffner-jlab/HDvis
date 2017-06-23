@@ -209,7 +209,7 @@ THREE.GluexEventLoader.prototype = {
 
        var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
        var TOFTwoHitColor = new THREE.Color;
-       TOFTwoHitColor.setRGB(1,.66,0);
+       TOFTwoHitColor.setRGB(1,.5,0);
         var TOFOneHitColor = new THREE.Color;
         TOFOneHitColor.setRGB(1,1,0);
 
