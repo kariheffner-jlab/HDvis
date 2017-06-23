@@ -243,12 +243,13 @@
         switch (event.keyCode) {
 
             case 86: VRbool = !VRbool;break;//v
-            case 87: camera.translateZ(-MoveDelta);break;//w
-            case 83: camera.translateZ(MoveDelta);break;//s
-            case 65: camera.translateX(-MoveDelta);break;//a
-            case 68: camera.translateX(MoveDelta);break;//d
+            case 87: camera.translateZ(-MoveDelta);camera.updateMatrixWorld();break;//w
+            case 83: camera.translateZ(MoveDelta);camera.updateMatrixWorld();break;//s
+            case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();break;//a
+            case 68: camera.translateX(MoveDelta);camera.updateMatrixWorld();break;//d
 
          }
+
     }
     //
 

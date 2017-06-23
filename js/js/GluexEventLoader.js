@@ -204,18 +204,10 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-       /* var box=new THREE.BoxGeometry(50,50,50);
-        var material = new THREE.MeshBasicMaterial({color:0xffffff,vertexColors: THREE.FaceColors, transparent:true, opacity:.7});
-        var boxmesh= new THREE.Mesh(box,material);
-        boxmesh.position.x=0;
-        boxmesh.position.y=0;
-        boxmesh.position.z=0;
-
-        //box.name = "TestBox";
-        boxmesh.name = "TestBox";
-        scope.group.add(boxmesh);*/
 
        var tofMesh = scope.geometry.getObjectByName("FTOF");
+
+       var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
@@ -223,22 +215,41 @@ THREE.GluexEventLoader.prototype = {
             var plane=hit.plane;
             var bar=hit.bar;
             var end = hit.end;
-            var block="FTOB";
 
-            if(bar-1>18)
-                block="FTOT"
+            var block="FTOB";
 
             var geoName="TOF_p" + plane + "_m"+(bar-1);
 
+            if((bar-1===21 || bar-1===22) && end===0)
+            {
+                geoName+="_r";
+            }
+
             //var object = scope.geometry;
             //console.log("Found object="+object);
+            //console.log(plane+","+bar+","+end);
             //console.log(geoName);
 
             var object = tofMesh.getObjectByName(geoName,true);
             //getObjectByName( "TestBox", true );
 
-            object.material.color.setRGB(1,0,0);//setRGB(0.7,0.1,0.7);
-            //console.log(object);
+
+            if(object)
+            {
+                if(object.material.color === TOFReferenceColor)
+                {
+                    object.material.color.setRGB(1,1,0);
+                }
+               else
+               {
+                   object.material.color.setRGB(1,object.material.color.g/2.,0);
+
+               }
+
+            }
+            else {
+                console.log("DIDN'T FIND " + geoName);
+            }//console.log(object);
 
 
 
