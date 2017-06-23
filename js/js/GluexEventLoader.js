@@ -256,12 +256,12 @@ THREE.GluexEventLoader.prototype = {
 
                             color = new THREE.Color( 0xffffff );
 
-                            if(object.geometry.faces[i].vertexColors[j] === TOFReferenceColor)
+                            if(object.geometry.faces[i].vertexColors[j] === TOFReferenceColor[j])
                             {
                                 console.log("first hit");
                                 color=TOFOneHitColor;
                             }
-                            else if ( object.geometry.faces[i].vertexColors[j] === TOFOneHitColor)
+                            else if ( object.geometry.faces[i].vertexColors[j] === TOFOneHitColor[j])
                             {
                                 console.log("second hit");
                                 color=TwoHitColor;
