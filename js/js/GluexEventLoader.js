@@ -11,13 +11,18 @@ THREE.GluexEventLoader.prototype = {
     geometries: {},
     refs: {},
     meshes: [],
+    geometry:null,
+
+    setGeometry: function (geometry) {
+        this.geometry = geometry;
+    },
 
     load: function (url, onLoad, onProgress, onError) {
 
         this.group.name="GluexEvent";
         var scope = this;
 
-        var loader = new THREE.XHRLoader();
+        var loader = new THREE.FileLoader();//XHRLoader();
         loader.setPath(this.path);
         loader.load(url, function (text) {
             onLoad(scope.parse(text));
@@ -143,7 +148,7 @@ THREE.GluexEventLoader.prototype = {
             var boxmesh= new THREE.Mesh(box,material);
             boxmesh.position.x=hit.x;
             boxmesh.position.y=hit.y;
-            boxmesh.position.z=(500 + 173.9+50*hit.E);
+            boxmesh.position.z=(660+50*hit.E);
 
             //scene.add(boxmesh);
 
@@ -161,18 +166,15 @@ THREE.GluexEventLoader.prototype = {
 
 
             var cone=new THREE.ConeGeometry(10,20,60,60,0,0,2*Math.PI);
-            var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:true, opacity:.4});
+            cone.userData="hi";
+            var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4});
             material.side = THREE.DoubleSide;
 
             var conemesh= new THREE.Mesh(cone,material);
             conemesh.position.x=shower.x;
             conemesh.position.y=shower.y;
-            conemesh.position.z=shower.z+40;//+40 May not be needed.....
+            conemesh.position.z=shower.z+20;//+30;//+40 May not be needed.....
             conemesh.rotation.x = -1*Math.PI/2;
-            //scene.add(conemesh);
-
-            //setRGB(track_color.r,track_color.g,track_color.b);
-            //console.log(track_charge);
 
             conemesh.name = geometry.name;
             scope.group.add(conemesh);
@@ -202,28 +204,90 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-        var box=new THREE.BoxGeometry(50,50,50);
-        var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7});
-        var boxmesh= new THREE.Mesh(box,material);
-        boxmesh.position.x=0;
-        boxmesh.position.y=0;
-        boxmesh.position.z=0;
 
-        //box.name = "TestBox";
-        boxmesh.name = "TestBox";
-        scope.group.add(boxmesh);
+       var tofMesh = scope.geometry.getObjectByName("FTOF");
+
+       var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
-            console.log("hit id:"+hit.id);
-            var object = scope.group.getObjectByName("GluexEvent").getObjectByName("TestBox");
+            //console.log("hit id:"+hit.id);
+            var plane=hit.plane;
+            var bar=hit.bar;
+            var end = hit.end;
 
+            var block="FTOB";
+
+            var geoName="TOF_p" + plane + "_m"+(bar-1);
+
+            if((bar-1===21 || bar-1===22) && end===0)
+            {
+                geoName+="_r";
+            }
+
+            //var object = scope.geometry;
+            //console.log("Found object="+object);
+            //console.log(plane+","+bar+","+end);
+            //console.log(geoName);
+
+            var object = tofMesh.getObjectByName(geoName,true);
             //getObjectByName( "TestBox", true );
 
-            //console.log(object);
 
-            object.material.color.b=0;
-            object.material.color.g=0;
+
+            if(object)
+            {
+               /* var faceIndices = [ 'a', 'b', 'c', 'd','e','f' ];
+                var geom = object.geometry;
+                var fs=geom.attributes.faces;
+                for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
+                    console.log("face: "+i)
+                    f  = object.geometry.faces[ i ];
+
+                    for( var j = 0; j < 12; j++ ) {
+                        vertexIndex = f[ faceIndices[ j ] ];
+                        p = object.geometry.vertices[ vertexIndex ];
+                        color = new THREE.Color( 0xffffff );
+                        color.setHSL( ( p.y / radius + 1 ) / 2, 1.0, 0.5 );
+                        f.vertexColors[ j ] = color;
+
+                    }
+                }*/
+
+
+                if(object.material.color === TOFReferenceColor)
+                {
+                    object.material.color.setRGB(1,1,0);
+                }
+               else
+               {
+                   object.material.color.setRGB(1,object.material.color.g/2.,0);
+
+               }
+            }
+            else {
+                console.log("DIDN'T FIND " + geoName);
+            }//console.log(object);
+
+
+
+            //console.log(object.geometry.faces.length);
+
+            /*(var rcol=Math.random();
+            var gcol=Math.random();
+            var bcol=Math.random();
+
+            for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
+                if(i%2==0) {
+                    rcol=Math.random();
+                    gcol=Math.random();
+                    bcol=Math.random();
+                }
+                object.geometry.faces[ i ].color.setRGB( rcol,gcol,bcol );
+            }
+            object.geometry.colorsNeedUpdate = true*/
+
+
         });
 
         return this.group;

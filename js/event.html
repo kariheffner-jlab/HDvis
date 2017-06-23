@@ -18,13 +18,18 @@
 
 <script src="js/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
+<script src="js/controls/FlyControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
 <script src="js/libs/dat.gui.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
-<script src="js/GluexGeometryLoader.js"></script>
+<script src="js/GluexHDDSLoader.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
+<script src="js/vr/WebVR.js"></script>
 
 <script>
+
+
+
 
     var container, stats;
 
@@ -38,10 +43,24 @@
 
     keyState: new Array();
 
+
+    if(VRbool)
+    {
+        WEBVR.checkAvailability().catch( function( message ) {
+            document.body.appendChild( WEBVR.getMessageContainer( message ) );
+        } );
+
+    }
+
+
     init();
     animate();
 
     function init() {
+
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+
         camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
         camera.position.z = 900;
         camera.position.x=-1000;
@@ -60,12 +79,17 @@
         renderer.setClearColor( 0xf0f0f0 );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
-        document.body.appendChild( renderer.domElement );
+        container.appendChild( renderer.domElement );
 
-
-        effect = new THREE.StereoEffect(renderer);
-        effect.setSize(window.innerWidth, window.innerHeight);
-
+        if(renderer.vr)
+        {
+            WEBVR.getVRDisplay( function ( display ) {
+                renderer.vr.setDevice( display );
+                document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
+            } );
+        }
+        //effect = new THREE.StereoEffect(renderer);
+        //effect.setSize(window.innerWidth, window.innerHeight);
 
 
         stats = new Stats();
@@ -73,8 +97,14 @@
 
         raycaster = new THREE.Raycaster();
 
-
         controls = new THREE.OrbitControls( camera, renderer.domElement );
+        /*controls = new THREE.FlyControls( camera );
+        controls.movementSpeed = 1;
+        controls.domElement = container;
+        controls.rollSpeed = Math.PI / 24;
+        controls.autoForward = false;
+        controls.dragToLook = false;*/
+
 
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
@@ -98,18 +128,23 @@
         object.position.set( 0, 0, 0 );
         //scene.add( object );
 
-        var eventLoader = new THREE.GluexEventLoader();
-        eventLoader.load('./event.json', function(objects) {
-            scene.add(objects);
+
+        var geometryLoader = new THREE.GluexHDDSLoader();
+
+        geometryLoader.load('./hdds/main_full_HDDS.xml', function (loadedGeom) {
+
+            var eventLoader = new THREE.GluexEventLoader();
+            eventLoader.setGeometry(loadedGeom);
+            eventLoader.load('./event.json', function(loadedEvent) {
+                scene.add(loadedEvent);
+            });
+
+            scene.add(loadedGeom);
         });
 
-        var geometryLoader = new THREE.GluexGeometryLoader();
-        geometryLoader.load('./geometry.json', function (objects) {
-            scene.add(objects);
-        });
 
         object = new THREE.AxisHelper( 100 );
-        object.position.set( 0, 0, 300 );
+        object.position.set( 0, 0, 0 );
         scene.add( object );
 
         renderer.setClearColor( 0x000000 );
@@ -134,7 +169,7 @@
         var config = new HDVisConfig();
 
 
-        // GUI
+        // GUI----------------------------------------------------------------------------------------
         var gui = new dat.GUI({load: JSON});
         gui.remember(config);
 
@@ -148,17 +183,21 @@
             .add( config, 'ftofDetail', config.ftofDetailOptions )
             .name('Detalization')
             .onFinishChange(function(value) {
+                var ftof = scene.getObjectByName("FTOF", true);
+
                 var tofDetails = function(isBoxVisible, isSectionsVisible, isModulesVisible){
-                    ftof.material.visible = isBoxVisible;
-                    ftof.children.forEach(function (section) {
-                        section.material.visible = isSectionsVisible;
-                        section.children.forEach(function (module) {
-                            module.material.visible = isModulesVisible;
+
+                    ftof.children.forEach(function (plane) {
+                        plane.material.visible = isBoxVisible;
+                        plane.children.forEach(function (region) {
+                            region.material.visible = isSectionsVisible;
+                            region.children.forEach(function (module) {
+                                module.material.visible = isModulesVisible;
+                            });
                         });
                     });
-
                 };
-                var ftof = scene.getObjectByName("FTOF", true);
+
                 switch(value)
                 {
                     case 'box':
@@ -180,7 +219,7 @@
         //gui.add( params, 'exposure', 0, 1 );
         //gui.add( params, 'shadows' );
         gui.open();
-
+//------------------------------------------------------------------------------------------------------------------------
     }
 
     function onDocumentMouseMove( event ) {
@@ -200,23 +239,29 @@
     }
 
     function onKeyDown(event) {
-
+        var MoveDelta=5
         switch (event.keyCode) {
 
-            case 86: VRbool = !VRbool;break;
+            case 86: VRbool = !VRbool;break;//v
+            case 87: camera.translateZ(-MoveDelta);camera.updateMatrixWorld();break;//w
+            case 83: camera.translateZ(MoveDelta);camera.updateMatrixWorld();break;//s
+            case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();break;//a
+            case 68: camera.translateX(MoveDelta);camera.updateMatrixWorld();break;//d
 
          }
+
     }
     //
 
     function animate() {
 
-        requestAnimationFrame( animate );
+        //requestAnimationFrame( animate );
 
         controls.update();
 
-        render();
-        stats.update();
+        renderer.animate( render );
+        //render();
+        //stats.update();
 
     }
 
@@ -264,10 +309,17 @@
 
         if(VRbool)
         {
-            effect.render( scene, camera );
+            
+            if(renderer.vr)
+                renderer.vr.enabled = true;
+
+            renderer.render( scene, camera );
         }
         else {
            // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+            //renderer.vr.enabled = false;
+            if(renderer.vr)
+                renderer.vr.enabled = false;
 
             renderer.render(scene, camera);
         }
