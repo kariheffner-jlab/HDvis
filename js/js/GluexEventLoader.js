@@ -208,10 +208,12 @@ THREE.GluexEventLoader.prototype = {
        var tofMesh = scope.geometry.getObjectByName("FTOF");
 
        var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
-       var TOFTwoHitColor = new THREE.Color;
-       TOFTwoHitColor.setRGB(1,.5,0);
         var TOFOneHitColor = new THREE.Color;
         TOFOneHitColor.setRGB(1,1,0);
+        var TOFTwoHitColor = new THREE.Color;
+        TOFTwoHitColor.setRGB(1,.66,0);
+        var TOFThreeHitColor = new THREE.Color;
+        TOFThreeHitColor.setRGB(1,0,0);
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
@@ -246,36 +248,57 @@ THREE.GluexEventLoader.prototype = {
 
                 object.material.vertexColors=THREE.VertexColors;
 
+                var numhits=0;
+
+                if(end===0)
+                {
+                    //console.log(object.userData.end0h);
+                    object.userData.end0h++;
+                    //console.log(object.userData.end0h);
+                    numhits=object.userData.end0h;
+                }
+                else if(end===1)
+                {
+                    //console.log(object.userData.end1h);
+                    object.userData.end1h++;
+                    //console.log(object.userData.end1h);
+                    numhits=object.userData.end1h;
+                }
+
+                color = new THREE.Color( 0xffffff );
+
+                if(numhits===1)
+                {
+                    //console.log("first hit");
+                    color=TOFOneHitColor;
+                }
+                else if(numhits===2)
+                {
+                    //console.log("second hit");
+                    color=TOFTwoHitColor;
+                }
+                else if(numhits===3)
+                {
+                    //console.log("second hit");
+                    color=TOFThreeHitColor;
+                }
+                else
+                {
+                 //   console.log("more hit");
+                    color.setRGB(1,0,0);
+                }
+
+                console.log(end+":"+object.userData.end0h+","+object.userData.end1h );
+
                 for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
                     var sent=0;
                     if(end===1)
-                        sent=1;
+                       sent=1;
 
                     if(i%2===sent || (bar-1===21 || bar-1===22) ) {
                         for( var j = 0; j < 3; j++ ) {
 
-                            color = new THREE.Color( 0xffffff );
-
-                            if(object.geometry.faces[i].vertexColors[j] === TOFReferenceColor[j])
-                            {
-                                console.log("first hit");
-                                color=TOFOneHitColor;
-                            }
-                            else if ( object.geometry.faces[i].vertexColors[j] === TOFOneHitColor[j])
-                            {
-                                console.log("second hit");
-                                color=TwoHitColor;
-
-                            }
-                            else
-                            {
-                                color.setRGB(1,0,0);
-                            }
-
-                            if(j===3) {
-                                object.geometry.faces[i].vertexColors[j] = TOFReferenceColor;
-                            }
-                            else
+                            if(j!==3)
                             {
                                 object.geometry.faces[i].vertexColors[j] = color;
                             }
