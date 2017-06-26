@@ -157,12 +157,7 @@ THREE.GluexHDDSLoader.prototype = {
         for(var i=0; i< ncopy; i++){
             var material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5});
             var module = new THREE.Mesh(moduleBox.clone(), material);
-            //var light=new THREE.PointLight( 0x00ff00, .5 );
-            //light.name="testLight"+i;
-            //light.distance=2;
-            //light.position.set(0, y0 + i*dy, 0);
-            //module.add(light);
-            //module.add(light.target);
+
             module.name = "TOF_p" + planeNum + "_m" + (startIndex+i);
             if(isRight) module.name += "_r";
 

@@ -246,6 +246,10 @@ THREE.GluexEventLoader.prototype = {
                     object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
                 }
 
+                var glowMesh = new THREEx.GeometricGlowMesh(object);
+                //object.add(glowMesh.object3d);
+
+
                 object.material.vertexColors=THREE.VertexColors;
 
                 var numhits=0;
@@ -288,7 +292,14 @@ THREE.GluexEventLoader.prototype = {
                     color.setRGB(1,0,0);
                 }
 
-                console.log(end+":"+object.userData.end0h+","+object.userData.end1h );
+               /* var inside=glowMesh.insideMesh.material.uniforms;
+                inside.glowColor.value.setRGB(color.r,color.g,color.b);
+                inside.power.value=.5;
+                var outside=glowMesh.insideMesh.material.uniforms;
+
+                outside.glowColor.value.setRGB(color.r,color.g,color.b);
+                outside.power.value=.5;
+                console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
 
                 for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
                     var sent=0;
