@@ -232,11 +232,6 @@ THREE.GluexEventLoader.prototype = {
                 geoName+="_r";
             }
 
-            //var object = scope.geometry;
-            //console.log("Found object="+object);
-            //console.log(plane+","+bar+","+end);
-            //console.log(geoName);
-
             var object = tofMesh.getObjectByName(geoName,true);
             //getObjectByName( "TestBox", true );
 
