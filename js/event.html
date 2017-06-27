@@ -39,6 +39,9 @@
 
     var camera, controls, scene, renderer, raycaster, effect;
 
+    var canvas1, context1, texture1;
+    var sprite1;
+
     var VRbool=false;
 
     var info;
@@ -152,6 +155,24 @@
         scene.add( object );
 
         renderer.setClearColor( 0x000000 );
+
+        canvas1 = document.createElement('canvas');
+        context1 = canvas1.getContext('2d');
+        context1.font = "Bold 20px Arial";
+        context1.fillStyle = "rgba(0,0,0,0.95)";
+        context1.fillText('Hello, world!', 0, 20);
+
+        texture1 = new THREE.Texture(canvas1)
+        texture1.needsUpdate = true;
+
+
+        var spriteMaterial = new THREE.SpriteMaterial( { map: texture1, useScreenCoordinates: true} );
+
+        sprite1 = new THREE.Sprite( spriteMaterial );
+        sprite1.scale.set(200,100,1.0);
+        sprite1.position.set( 50, 50, 0 );
+        scene.add( sprite1 );
+
 
         // ref for lumens: http://www.power-sure.com/lumens.htm
 
@@ -288,6 +309,8 @@
             if ( INTERSECTED !== intersects[ 0 ].object ) //you are over an object and it isn't the same one as before (otherwise do nothing)
             {
                 if ( INTERSECTED ) {
+
+
                     //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
                     INTERSECTED.material.wireframe=false;
                 }
@@ -295,6 +318,28 @@
 
                 //INTERSECTED.material.opacity=0;
                 INTERSECTED.material.wireframe=true;
+
+                if ( intersects[ 0 ].object.name )
+                {
+                    console.log("in func");
+                    context1.clearRect(0,0,640,480);
+                    var message = intersects[ 0 ].object.name;
+                    var metrics = context1.measureText(message);
+                    var width = metrics.width;
+                    context1.fillStyle = "rgba(0,0,0,0.95)"; // black border
+                    context1.fillRect( 0,0, width+8,20+8);
+                    context1.fillStyle = "rgba(255,255,255,0.95)"; // white filler
+                    context1.fillRect( 2,2, width+4,20+4 );
+                    context1.fillStyle = "rgba(0,0,0,1)"; // text color
+                    context1.fillText( message, 4,20 );
+                    texture1.needsUpdate = true;
+                }
+                else
+                {
+                    context1.clearRect(0,0,300,300);
+                    texture1.needsUpdate = true;
+                }
+
 
             }
 
@@ -307,6 +352,8 @@
                 INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;
+            context1.clearRect(0,0,300,300);
+            texture1.needsUpdate = true;
         }
 
 

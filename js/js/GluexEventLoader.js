@@ -186,7 +186,7 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "TOFPoint_" + point.id;
 
-            var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.8});
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8});
             var tofpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
 
             var pointmesh= new THREE.Mesh(tofpoint,material);
