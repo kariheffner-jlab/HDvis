@@ -15,6 +15,7 @@ var HDVisConfig = function() {
     this.positive_tracks=true;
     this.negative_tracks=true;
     this.neutral_tracks=true;
+    this.positive_track_color = [255, 0, 0]; // RGB array
     // Thomas, here is GUI examples:
     // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
 };
@@ -86,6 +87,12 @@ function makeGUI(){
             gui_TrackVis(eventobjs,0,value);
         });
 
+    Trackinggui.addColor(config, 'positive_track_color', config.positive_track_color).name('Positive Color')
+        .onChange(function(colorChosen) {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            gui_TrackColor(eventobjs,1,colorChosen);
+        });
+
         gui.open();
 }
 
@@ -98,6 +105,24 @@ function gui_TrackVis(eventobjs,Trackq,isVis) {
         if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq)
         {
             eventobjs[i].material.visible=isVis;
+        }
+    }
+}
+
+function gui_TrackColor(eventobjs,Trackq,colorChosen) {
+
+    for(var i=0;i<eventobjs.length;i++)
+    {
+
+        if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq)
+        {
+            console.log(eventobjs[i].material.color);
+           //eventobjs[i].material.color=colorChosen;
+            eventobjs[i].material.color.setRGB(colorChosen[0]/255.,colorChosen[1]/255.,colorChosen[2]/255.);
+       /*     eventobjs[i].material.color.g=color.g;
+            eventobjs[i].material.color.b=color.b;*/
+            eventobjs[i].geometry.colorsNeedUpdate = true;
+            console.log(eventobjs[i].material.color);
         }
     }
 }
