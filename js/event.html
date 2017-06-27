@@ -83,7 +83,7 @@
         scene.add(new THREE.AmbientLight(0xA0A0A0));
 
         renderer = new THREE.WebGLRenderer( { antialias: true } ); // WebGLRenderer CanvasRenderer
-        renderer.setClearColor( 0xf0f0f0 );
+        renderer.setClearColor( 0xff0f0 );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
         container.appendChild( renderer.domElement );
@@ -162,15 +162,16 @@
         context1.fillStyle = "rgba(0,0,0,0.95)";
         context1.fillText('Hello, world!', 0, 20);
 
-        texture1 = new THREE.Texture(canvas1)
+        texture1 = new THREE.Texture(canvas1);
+        texture1.minFilter=THREE.LinearFilter;
         texture1.needsUpdate = true;
 
 
-        var spriteMaterial = new THREE.SpriteMaterial( { map: texture1, useScreenCoordinates: true} );
+        var spriteMaterial = new THREE.SpriteMaterial( { map: texture1} );
 
         sprite1 = new THREE.Sprite( spriteMaterial );
-        sprite1.scale.set(200,100,1.0);
-        sprite1.position.set( 50, 50, 0 );
+        sprite1.scale.set(512,128,1.0);
+        sprite1.position.set( mouse.x, mouse.y, 0 );
         scene.add( sprite1 );
 
 
@@ -263,7 +264,7 @@
     }
 
     function onKeyDown(event) {
-        var MoveDelta=5
+        var MoveDelta=5;
         switch (event.keyCode) {
 
             case 86: VRbool = !VRbool;break;//v
@@ -321,8 +322,8 @@
 
                 if ( intersects[ 0 ].object.name )
                 {
-                    console.log("in func");
-                    context1.clearRect(0,0,640,480);
+
+                    context1.clearRect(0,0,1024,512);
                     var message = intersects[ 0 ].object.name;
                     var metrics = context1.measureText(message);
                     var width = metrics.width;
