@@ -188,7 +188,9 @@
 
             this.ftofDetail = 'modules'; // "box", "sections", "modules"
 
-            this.trackingDetail=true;
+            this.positive_tracks=true;
+            this.negative_tracks=true;
+            this.neutral_tracks=true;
             // Thomas, here is GUI examples:
             // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
         };
@@ -243,25 +245,41 @@
 
        var Trackinggui= gui.addFolder('Tracking');
 
-       Trackinggui.add(config, 'trackingDetail', config.trackingDetail).name('Show Positive Tracks')
-           .onFinishChange(function(isVis) {
-               var eventobjs = scene.getObjectByName("GluexEvent").children;
+        Trackinggui.add(config, 'positive_tracks', config.positive_tracks).name('Show Positive Tracks')
+            .onFinishChange(function(value) {
+                var eventobjs = scene.getObjectByName("GluexEvent").children;
+                gui_TrackVis(eventobjs,1,value);
+            });
 
-               for(var i=0;i<eventobjs.length;i++)
-               {
+        Trackinggui.add(config, 'negative_tracks', config.negative_tracks).name('Show Negative Tracks')
+            .onFinishChange(function(value) {
+                var eventobjs = scene.getObjectByName("GluexEvent").children;
+                gui_TrackVis(eventobjs,-1,value);
+            });
 
-                   if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===1)
-                   {
-                       eventobjs[i].material.visible=isVis;
-                   }
-               }
-           });
+        Trackinggui.add(config, 'neutral_tracks', config.neutral_tracks).name('Show Neutral Tracks')
+            .onFinishChange(function(value) {
+                var eventobjs = scene.getObjectByName("GluexEvent").children;
+                gui_TrackVis(eventobjs,0,value);
+            });
 
         //gui.add( params, 'bulbPower', Object.keys( bulbLuminousPowers ) );
         //gui.add( params, 'exposure', 0, 1 );
         //gui.add( params, 'shadows' );
         gui.open();
 //------------------------------------------------------------------------------------------------------------------------
+    }
+
+    function gui_TrackVis(eventobjs,Trackq,isVis) {
+
+        for(var i=0;i<eventobjs.length;i++)
+        {
+
+            if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq)
+            {
+                eventobjs[i].material.visible=isVis;
+            }
+        }
     }
 
     function onDocumentMouseMove( event ) {

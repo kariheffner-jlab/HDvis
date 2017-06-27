@@ -85,7 +85,7 @@ THREE.GluexEventLoader.prototype = {
         this.EventData.neutral_tracks.forEach(function (track) {
 
             var geometry = new THREE.Geometry();
-            geometry.name = "ntrack_" + track.id +"_" + track.charge;
+            geometry.name = "track_" + track.id +"_" + track.charge;
 
             track.points.forEach(function (point) {
                 var vertex = new THREE.Vector3();
