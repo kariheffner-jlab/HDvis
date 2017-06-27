@@ -131,13 +131,9 @@ function gui_TrackColor(eventobjs,Trackq,colorChosen) {
 
         if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq)
         {
-            console.log(eventobjs[i].material.color);
-           //eventobjs[i].material.color=colorChosen;
             eventobjs[i].material.color.setRGB(colorChosen[0]/255.,colorChosen[1]/255.,colorChosen[2]/255.);
-       /*     eventobjs[i].material.color.g=color.g;
-            eventobjs[i].material.color.b=color.b;*/
             eventobjs[i].geometry.colorsNeedUpdate = true;
-            console.log(eventobjs[i].material.color);
+
         }
     }
 }
