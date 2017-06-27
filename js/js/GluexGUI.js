@@ -16,6 +16,9 @@ var HDVisConfig = function() {
     this.negative_tracks=true;
     this.neutral_tracks=true;
     this.positive_track_color = [255, 0, 0]; // RGB array
+    this.negative_track_color = [0, 255, 0]; // RGB array
+    this.neutral_track_color = [255, 255, 0]; // RGB array
+
     // Thomas, here is GUI examples:
     // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
 };
@@ -91,6 +94,18 @@ function makeGUI(){
         .onChange(function(colorChosen) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackColor(eventobjs,1,colorChosen);
+        });
+
+    Trackinggui.addColor(config, 'negative_track_color', config.negative_track_color).name('Negative Color')
+        .onChange(function(colorChosen) {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            gui_TrackColor(eventobjs,-1,colorChosen);
+        });
+
+    Trackinggui.addColor(config, 'neutral_track_color', config.neutral_track_color).name('Neutral Color')
+        .onChange(function(colorChosen) {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            gui_TrackColor(eventobjs,0,colorChosen);
         });
 
         gui.open();
