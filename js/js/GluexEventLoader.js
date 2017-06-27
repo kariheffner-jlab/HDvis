@@ -76,6 +76,7 @@ THREE.GluexEventLoader.prototype = {
                 var trackMesh= new THREE.Points( geometry, material );
             }
 
+            trackMesh.userData={charge:track_charge};
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
             //console.log(track.charge);
@@ -107,7 +108,7 @@ THREE.GluexEventLoader.prototype = {
             var trackMesh= new THREE.Points( geometry, material );
             //scope.materials.neuTrack["color"]=0x0000ff;
             //console.log(track_charge);
-
+            trackMesh.userData={charge:0};
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
             //console.log(track.charge);

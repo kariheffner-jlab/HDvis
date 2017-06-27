@@ -188,6 +188,7 @@
 
             this.ftofDetail = 'modules'; // "box", "sections", "modules"
 
+            this.trackingDetail=true;
             // Thomas, here is GUI examples:
             // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
         };
@@ -239,6 +240,22 @@
                 // Fires when a controller loses focus.
                 //alert("The new value is " + value);
             });
+
+       var Trackinggui= gui.addFolder('Tracking');
+
+       Trackinggui.add(config, 'trackingDetail', config.trackingDetail).name('Show Positive Tracks')
+           .onFinishChange(function(isVis) {
+               var eventobjs = scene.getObjectByName("GluexEvent").children;
+
+               for(var i=0;i<eventobjs.length;i++)
+               {
+
+                   if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===1)
+                   {
+                       eventobjs[i].material.visible=isVis;
+                   }
+               }
+           });
 
         //gui.add( params, 'bulbPower', Object.keys( bulbLuminousPowers ) );
         //gui.add( params, 'exposure', 0, 1 );
@@ -297,10 +314,11 @@
 
         raycaster.setFromCamera( mouse, camera );
         var event = scene.getObjectByName("GluexEvent");
+        var evgeometry = scene.getObjectByName("GluexGeometry");
         if(!event) return;    // There might be no event loaded (yet... or at all)
 
         var intersects = raycaster.intersectObjects( event.children);// Make improvement
-
+        //intersects+=raycaster.intersectObjects( evgeometry.children);
         //console.log(INTERSECTED);
 
         if ( intersects.length > 0 ) {
