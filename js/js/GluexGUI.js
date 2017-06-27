@@ -4,6 +4,7 @@
 
 var HDVisConfig = function() {
 
+
     this.ftofDetailOptions = {
         "Box only": 'box',
         "Sections": 'sections',
@@ -18,6 +19,7 @@ var HDVisConfig = function() {
     this.positive_track_color = [255, 0, 0]; // RGB array
     this.negative_track_color = [0, 255, 0]; // RGB array
     this.neutral_track_color = [255, 255, 0]; // RGB array
+    this.bkg_color = 0x000000;
 
     // Thomas, here is GUI examples:
     // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -29,6 +31,11 @@ function makeGUI(){
     var gui = new dat.GUI({load: JSON});
     gui.remember(config);
 
+    gui.addColor(config, 'bkg_color', config.bkg_color).name('Bkg Color')
+        .onChange(function(chosenColor) {
+            renderer.setClearColor(chosenColor);
+            //  renderer.clearColor.setRGB(chosenColor[0]/255.,chosenColor[1]/255.,chosenColor[2]/255.);
+        });
 
     gui.addFolder('CDC');
 
@@ -136,4 +143,5 @@ function gui_TrackColor(eventobjs,Trackq,colorChosen) {
 
         }
     }
+
 }
