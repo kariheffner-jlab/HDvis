@@ -40,6 +40,9 @@
 
     var camera, controls, scene, renderer, raycaster, effect;
 
+    var camera_facing = new THREE.Vector3( 0, 0, -1 );
+    var orbit_point=new THREE.Vector3();
+
     var canvas1, context1, texture1;
     var sprite1;
 
@@ -106,6 +109,9 @@
         raycaster = new THREE.Raycaster();
 
         controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+
+        //controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);
         /*controls = new THREE.FlyControls( camera );
         controls.movementSpeed = 1;
         controls.domElement = container;
@@ -131,11 +137,6 @@
             opacity: 0.5,
             transparent: true
         } );
-
-        object = new THREE.Mesh( new THREE.SphereGeometry( 75, 20, 10 ), meshMaterial );
-        object.position.set( 0, 0, 0 );
-        //scene.add( object );
-
 
         var geometryLoader = new THREE.GluexHDDSLoader();
 
@@ -233,6 +234,12 @@
 
         //camera.lookAt(scene.position);
         camera.updateMatrixWorld();
+
+        camera.getWorldDirection( camera_facing );
+
+        orbit_point=camera.position.clone().add(camera_facing);
+        controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);
+        console.log(controls.target);
 
         raycaster.setFromCamera( mouse, camera );
         var event = scene.getObjectByName("GluexEvent");
