@@ -239,7 +239,6 @@
 
         orbit_point=camera.position.clone().add(camera_facing);
         controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);
-        console.log(controls.target);
 
         raycaster.setFromCamera( mouse, camera );
         var event = scene.getObjectByName("GluexEvent");
