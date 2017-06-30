@@ -297,22 +297,52 @@ THREE.GluexEventLoader.prototype = {
                 outside.power.value=.5;
                 console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
 
+                var face_sent1=-1;
+                var face_sent2=-1;
+                console.log(end);
+                if(end===1) {
+                    face_sent1 = 2;
+                    face_sent2 = 3;
+                }else
+                {
+
+                    face_sent1 = 0;
+                    //face_sent2 = 0;
+                }
+
+                var half_length=false;
+
+                if(bar - 1 === 21 || bar - 1 === 22)
+                    half_length=true;
+
                 for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
-                    var sent=0;
-                    if(end===1)
-                       sent=1;
 
-                    if(i%2===sent || (bar-1===21 || bar-1===22) ) {
-                        for( var j = 0; j < 3; j++ ) {
 
-                            if(j!==3)
-                            {
-                                object.geometry.faces[i].vertexColors[j] = color;
+                    if((i===face_sent1 || i===face_sent2) && !half_length) {
+                        for (var vjs = 0; vjs < 3; vjs++) {
+
+                            if (vjs !== 3) {
+                                //var sidecolor = new THREE.Color(0x00ff00);
+                                object.geometry.faces[i].vertexColors[vjs] = color;//sidecolor;
                             }
                         }
 
                     }
+                    else {
+                        var sent = 0;
+                        if (end === 1)
+                            sent = 1;
 
+                        if (i % 2 === sent || half_length) {
+                            for (var vj = 0; vj < 3; vj++) {
+
+                                if (vj !== 3) {
+                                    object.geometry.faces[i].vertexColors[vj] = color;
+                                }
+                            }
+
+                        }
+                    }
                 }
                 object.geometry.colorsNeedUpdate = true;
 
