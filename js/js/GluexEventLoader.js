@@ -299,7 +299,7 @@ THREE.GluexEventLoader.prototype = {
 
                 var face_sent1=-1;
                 var face_sent2=-1;
-                console.log(end);
+
                 if(end===1) {
                     face_sent1 = 2;
                     face_sent2 = 3;
