@@ -48,6 +48,7 @@
 
     var VRbool=false;
 
+    var ViewerConfig;
     var info;
     // start scene
     var mouse = new THREE.Vector2(), INTERSECTED;
@@ -182,7 +183,7 @@
         // Here is our mighty config
 
         // GUI----------------------------------------------------------------------------------------
-        makeGUI();
+        ViewerConfig=makeGUI();
     }
 
 
@@ -239,7 +240,7 @@
 
         camera.getWorldDirection( camera_facing );
 
-        orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));
+        orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
         controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);
 
         raycaster.setFromCamera( mouse, camera );

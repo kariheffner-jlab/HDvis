@@ -104,7 +104,7 @@ THREE.GluexEventLoader.prototype = {
                 //blending: THREE.AdditiveBlending,
                 transparent: true,
                 sizeAttenuation: false
-            })
+            });
             var trackMesh= new THREE.Points( geometry, material );
             //scope.materials.neuTrack["color"]=0x0000ff;
             //console.log(track_charge);
@@ -114,14 +114,14 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-
+        var FCAL_EScale=ViewerConfig.FCAL_EScale;
         this.EventData.FCAL_hits.forEach(function (hit) {
             //console.log(hit.id);
             var geometry = new THREE.Geometry();
             geometry.name = "FCALHit_" + hit.id;
 
 
-            var box=new THREE.BoxGeometry(2,2,hit.E*100);
+            var box=new THREE.BoxGeometry(2,2,hit.E*FCAL_EScale);
             var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7});
 
             var redness=Math.abs(hit.t)*(6);
@@ -149,8 +149,9 @@ THREE.GluexEventLoader.prototype = {
             var boxmesh= new THREE.Mesh(box,material);
             boxmesh.position.x=hit.x;
             boxmesh.position.y=hit.y;
-            boxmesh.position.z=(660+50*hit.E);
+            boxmesh.position.z=(660+(FCAL_EScale/2)*hit.E);
 
+            boxmesh.userData={E:hit.E}
             //scene.add(boxmesh);
 
             //console.log(track_charge);

@@ -21,6 +21,8 @@ var HDVisConfig = function() {
     this.neutral_track_color = [255, 255, 0]; // RGB array
     this.bkg_color = 0x000000;
 
+    this.FCAL_EScale = 100.;
+
     // Thomas, here is GUI examples:
     // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
 };
@@ -40,7 +42,19 @@ function makeGUI(){
     gui.addFolder('CDC');
 
     var tofGuiFolder = gui.addFolder('TOF');
-    gui.addFolder('FCAL');
+
+    var fcalGuiFolder= gui.addFolder('FCAL');
+    fcalGuiFolder.add(config, 'FCAL_EScale', 1, 1000).name("Energy Scale").onChange(function(value) { this.FCAL_EScale=value;
+        var eventobjs = scene.getObjectByName("GluexEvent").children;
+        for(var i=0;i<eventobjs.length;i++) {
+            if (eventobjs[i].name.split('_')[0] === "FCALHit") {
+                eventobjs[i].position.z=(660+(this.FCAL_EScale/2)*eventobjs[i].userData.E);
+                eventobjs[i].scale.z=this.FCAL_EScale/100;
+                eventobjs[i].geometry.elementsNeedUpdate=true;
+                eventobjs[i].geometry.verticesNeedUpdate=true;
+            }
+        }
+    });
 
     tofGuiFolder
         .add( config, 'ftofDetail', config.ftofDetailOptions )
@@ -116,6 +130,7 @@ function makeGUI(){
         });
 
         gui.open();
+        return config;
 }
 
 
