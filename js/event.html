@@ -29,6 +29,7 @@
 <script src="js/threex.geometricglowmesh.js"></script>
 <script src="js/threex.dilategeometry.js"></script>
 <script src="js/threex.atmospherematerial.js"></script>
+<script src="js/cameras/CombinedCamera.js"></script>
 
 
 <script>
@@ -38,7 +39,7 @@
 
     var container, stats;
 
-    var camera, controls, scene, renderer, raycaster, effect;
+    var camera,ortho_camera, controls, scene, renderer, raycaster, effect;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -73,10 +74,15 @@
         container = document.createElement( 'div' );
         document.body.appendChild( container );
 
+        //camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 5000, 0, 5000 );
+        //camera.toPerspective();
+        // camera.toOrthographic();
         camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
         camera.position.z = 900;
         camera.position.x=-1000;
         camera.position.y=100;
+
+
 
 
         scene = new THREE.Scene();
@@ -110,16 +116,6 @@
         raycaster = new THREE.Raycaster();
 
         controls = new THREE.OrbitControls( camera, renderer.domElement );
-
-
-        //controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);
-        /*controls = new THREE.FlyControls( camera );
-        controls.movementSpeed = 1;
-        controls.domElement = container;
-        controls.rollSpeed = Math.PI / 24;
-        controls.autoForward = false;
-        controls.dragToLook = false;*/
-
 
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
@@ -236,6 +232,7 @@
     function render() {
 
         //camera.lookAt(scene.position);
+        //ortho_camera.updateMatrixWorld();
         camera.updateMatrixWorld();
 
         camera.getWorldDirection( camera_facing );
@@ -277,7 +274,7 @@
                     var message = intersects[ 0 ].object.name;
                     for(var i=0;i<userDataList.length;i++)
                     {
-                        message+=", ";
+                        message+=",";
                         message+=userDataList[i]+":";
                         message+=intersects[ 0 ].object.userData[userDataList[i]];
                     }
@@ -321,6 +318,7 @@
                 renderer.vr.enabled = true;
 
             renderer.render( scene, camera );
+
         }
         else {
            // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
@@ -329,6 +327,7 @@
                 renderer.vr.enabled = false;
 
             renderer.render(scene, camera);
+
         }
     }
 
