@@ -273,7 +273,14 @@
                 {
 
                     context1.clearRect(0,0,1024,512);
+                    var userDataList=Object.keys(intersects[ 0 ].object.userData);
                     var message = intersects[ 0 ].object.name;
+                    for(var i=0;i<userDataList.length;i++)
+                    {
+                        message+=", ";
+                        message+=userDataList[i]+":";
+                        message+=intersects[ 0 ].object.userData[userDataList[i]];
+                    }
                     var metrics = context1.measureText(message);
                     var width = metrics.width;
                     context1.fillStyle = "rgba(0,0,0,0.95)"; // black border

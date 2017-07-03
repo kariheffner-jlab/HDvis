@@ -120,7 +120,6 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "FCALHit_" + hit.id;
 
-
             var box=new THREE.BoxGeometry(2,2,hit.E*FCAL_EScale);
             var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7});
 
@@ -151,10 +150,12 @@ THREE.GluexEventLoader.prototype = {
             boxmesh.position.y=hit.y;
             boxmesh.position.z=(655+(FCAL_EScale/2)*hit.E);//660
 
-            boxmesh.userData={E:hit.E}
+            boxmesh.userData={E:hit.E,column:hit.column,row:hit.row,x:hit.x,y:hit.y,intOverPeak:hit.intOverPeak,t:hit.t};
+            //userDataList=Object.keys(boxmesh.userData);
+            //console.log(userDataList.length);
             //scene.add(boxmesh);
-
-            //console.log(track_charge);
+            //console.log(userDataList[0]);
+            //console.log(boxmesh.userData[userDataList[0]]);
 
             boxmesh.name = geometry.name;
             scope.group.add(boxmesh);
