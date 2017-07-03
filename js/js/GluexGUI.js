@@ -22,6 +22,7 @@ var HDVisConfig = function() {
     this.bkg_color = 0x000000;
 
     this.FCAL_EScale = 100.;
+    this.TrackingChiSq_NDF_cut = 100.;
 
     // Thomas, here is GUI examples:
     // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -111,6 +112,30 @@ function makeGUI(){
             gui_TrackVis(eventobjs,0,value);
         });
 
+    Trackinggui.add(config, 'TrackingChiSq_NDF_cut', 0, 100).name("ChiSq/NDF cut").onChange(function(value) { this.TrackingChiSq_NDF_cut=value;
+        var eventobjs = scene.getObjectByName("GluexEvent").children;
+        for(var i=0;i<eventobjs.length;i++) {
+            if(eventobjs[i].name.split('_')[0]==="track")
+            {
+                var tracks_chi=eventobjs[i].userData["TrackChiSq_NDF"];
+                if(this.TrackingChiSq_NDF_cut !== 0)
+                {
+                    if(tracks_chi>this.TrackingChiSq_NDF_cut)
+                    {
+                        eventobjs[i].material.visible = false;
+                    }
+                    else
+                    {
+                        eventobjs[i].material.visible = true;
+                    }
+                }
+                else {
+                    eventobjs[i].material.visible = true;
+                }
+            }
+        }
+    });
+
     Trackinggui.addColor(config, 'positive_track_color', config.positive_track_color).name('Positive Color')
         .onChange(function(colorChosen) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
@@ -138,7 +163,6 @@ function gui_TrackVis(eventobjs,Trackq,isVis) {
 
     for(var i=0;i<eventobjs.length;i++)
     {
-
         if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq)
         {
             eventobjs[i].material.visible=isVis;

@@ -39,7 +39,7 @@ THREE.GluexEventLoader.prototype = {
         this.EventData.charged_tracks.forEach(function (track) {
 
             var geometry = new THREE.Geometry();
-            geometry.name = "track_" + track.id +"_" + track.charge;
+            geometry.name = "track_" + track.id ;//+"_" + track.charge;
 
             var track_charge = track.charge;
 
@@ -76,7 +76,7 @@ THREE.GluexEventLoader.prototype = {
                 var trackMesh= new THREE.Points( geometry, material );
             }
 
-            trackMesh.userData={charge:track_charge};
+            trackMesh.userData={charge:track_charge, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
             //console.log(track.charge);
@@ -85,7 +85,7 @@ THREE.GluexEventLoader.prototype = {
         this.EventData.neutral_tracks.forEach(function (track) {
 
             var geometry = new THREE.Geometry();
-            geometry.name = "track_" + track.id +"_" + track.charge;
+            geometry.name = "track_" + track.id;// +"_"; + track.charge;
 
             track.points.forEach(function (point) {
                 var vertex = new THREE.Vector3();
@@ -108,7 +108,7 @@ THREE.GluexEventLoader.prototype = {
             var trackMesh= new THREE.Points( geometry, material );
             //scope.materials.neuTrack["color"]=0x0000ff;
             //console.log(track_charge);
-            trackMesh.userData={charge:0};
+            trackMesh.userData={charge:0, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
             //console.log(track.charge);

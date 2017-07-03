@@ -40,18 +40,20 @@ public:
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
 
-            string PID_name=ParticleType(ChargedTracks[i]->Get_BestFOM()->PID());
+            string PID_name=ParticleType(ChargedTracks[i]->Get_BestTrackingFOM()->PID());
             string name=PID_name + Form(" Track Points %i", i);
             //cout<<name<<endl;
             rt->Reset();
-            auto Track_ps = new TEvePointSet();
+            //auto Track_ps = new TEvePointSet();
 
-            rt->SetMass(ChargedTracks[i]->Get_BestFOM()->mass());
+            rt->SetMass(ChargedTracks[i]->Get_BestTrackingFOM()->mass());
             //rt.SetMass(TrackCandidates[i]->mass());
+            auto PID=ChargedTracks[i]->Get_BestTrackingFOM()->PID();
+            auto position = ChargedTracks[i]->Get_BestTrackingFOM()->position();
+            auto momentum = ChargedTracks[i]->Get_BestTrackingFOM()->momentum();
+            auto charge = ChargedTracks[i]->Get_BestTrackingFOM()->charge();
 
-            auto position = ChargedTracks[i]->Get_BestFOM()->position();
-            auto momentum = ChargedTracks[i]->Get_BestFOM()->momentum();
-            auto charge = ChargedTracks[i]->Get_BestFOM()->charge();
+            double TrackChiSq_NDF=ChargedTracks[i]->Get_Hypothesis(PID)->dChiSq_Track/double(ChargedTracks[i]->Get_Hypothesis(PID)->dNDF_Track);
 
             rt->Swim(position, momentum, charge);
             //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
@@ -74,7 +76,7 @@ public:
 
             }
 
-            WriteTrackJSON(event_out, name, charge, track_points);
+            WriteTrackJSON(event_out, name, momentum,charge,TrackChiSq_NDF, track_points);
             track_points.clear();
             //delete track_points;
 
@@ -112,8 +114,8 @@ public:
 
             rt->SetMass(NeutralTracks[i]->Get_BestFOM()->mass());
             //rt.SetMass(TrackCandidates[i]->mass());
-
-            rt->Swim(NeutralTracks[i]->Get_BestFOM()->position(), NeutralTracks[i]->Get_BestFOM()->momentum(), NeutralTracks[i]->Get_BestFOM()->charge());
+            auto momentum=NeutralTracks[i]->Get_BestFOM()->momentum();
+            rt->Swim(NeutralTracks[i]->Get_BestFOM()->position(), momentum, NeutralTracks[i]->Get_BestFOM()->charge());
             //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
             DReferenceTrajectory::swim_step_t* steps =rt->swim_steps;
 
@@ -143,7 +145,7 @@ public:
                 Track_ps->SetElementName(name.c_str());
 
             }
-            WriteTrackJSON(event_out, name, 0, track_points);
+            WriteTrackJSON(event_out, name,momentum, 0,-1, track_points);
             track_points.clear();
 
             if(i!=NeutralTracks.size()-1)
@@ -162,13 +164,15 @@ public:
         }
 
     }
-    void WriteTrackJSON(ofstream& event_out, string id, double charge, vector<DVector3> track_points)
+    void WriteTrackJSON(ofstream& event_out, string id, TVector3 momentum, double charge, double TrackChiSq_NDF, vector<DVector3> track_points)
     {
 
         if(track_points.size()!=0) {
             event_out << "{" << endl;
             event_out << "\"id\": " <<"\""<<id<<"\"" << "," << endl; //JSON
             event_out << "\"charge\": " << charge << "," << endl; //JSON
+            event_out << "\"TrackChiSq_NDF\": " << TrackChiSq_NDF << "," << endl; //JSON
+            event_out << "\"momentum\": " <<momentum.Mag()<<","<<endl;//<< "[" << momentum.X() << "," << momentum.Y() << "," << momentum.Z() << "],"<<endl; //JSON
             event_out << "\"points\": " << "[" << endl; //JSON
 
             for (int j = 0; j<track_points.size(); j++) {
