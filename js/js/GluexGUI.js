@@ -126,11 +126,14 @@ function makeGUI(){
                     }
                     else
                     {
-                        eventobjs[i].material.visible = true;
+                        if((config.positive_tracks===true && eventobjs[i].userData.charge===1) || (config.negative_tracks===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0)) {
+                            eventobjs[i].material.visible = true;
+                        }
                     }
                 }
                 else {
-                    eventobjs[i].material.visible = true;
+                    if((config.positive_tracks===true && eventobjs[i].userData.charge===1) || (config.negative_tracks===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0))
+                    {eventobjs[i].material.visible = true;}
                 }
             }
         }
