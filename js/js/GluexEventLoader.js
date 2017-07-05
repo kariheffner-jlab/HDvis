@@ -79,6 +79,9 @@ THREE.GluexEventLoader.prototype = {
             trackMesh.userData={charge:track_charge, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
+
+            var trackLineMesh=new THREE.Line(geometry,material);
+            scope.group.add(trackLineMesh);
             //console.log(track.charge);
         });
         //iterate neutral tracks
@@ -105,12 +108,16 @@ THREE.GluexEventLoader.prototype = {
                 transparent: true,
                 sizeAttenuation: false
             });
+
             var trackMesh= new THREE.Points( geometry, material );
             //scope.materials.neuTrack["color"]=0x0000ff;
             //console.log(track_charge);
             trackMesh.userData={charge:0, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
+
+            var trackLineMesh=new THREE.Line(geometry,material);
+            scope.group.add(trackLineMesh);
             //console.log(track.charge);
         });
 
