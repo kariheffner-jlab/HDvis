@@ -52,10 +52,10 @@ set(SOURCE_FILES
         hd_vis.cpp
         EventReader/JEventProcessor_EventReader.cpp
         EventReader/TOF.h
-        RootLoopCommander.h
+        ApplicationContext.h
         WaitingLogic.h
 
-        RootLoop.h RootLoopCommander.cpp GeometryConverter.h EventReader/BCAL.h EventReader/CDC.h EventReader/SC.h EventReader/FDC.h)
+        ControlLoop.h ApplicationContext.cpp GeometryConverter.h EventReader/BCAL.h EventReader/CDC.h EventReader/SC.h EventReader/FDC.h)
 set(GEO_SOURCE_FILES
         hd_vis_geo.cpp
         geometry.cpp

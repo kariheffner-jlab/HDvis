@@ -22,6 +22,7 @@ public:
 
     void ProceedToNextEvent(){_mustProceedToNextEvent = true;}
     void SetAutoPlay(bool value){_isAutoplay = value;}
+    bool IsAutoPlay() { return _isAutoplay; }
 
     void Wait()
     {
@@ -34,7 +35,7 @@ public:
         // go to semi infinite loop
         while(!_mustQuit)
         {
-            this_thread::sleep_for(milliseconds(1));
+            std::this_thread::sleep_for(milliseconds(1));
 
             if(_isAutoplay)
             {

@@ -6,7 +6,6 @@
 //
 
 #include <thread>
-#include <TEveEventManager.h>
 #include "JEventProcessor_EventReader.h"
 #include "Tracking.h"
 #include "FCAL.h"
@@ -16,7 +15,6 @@
 #include "FDC.h"
 #include "SC.h"
 #include <TRACKING/DTrackCandidate.h>
-#include <TEveGeoNode.h>
 #include <DANA/DStatusBits.h>
 #include <fstream>
 
@@ -33,76 +31,16 @@ extern string OUTPUT_FILENAME;
 #define ansi_normal        ansi_escape<<"[0m"
 
 // Routine used to create our JEventProcessor
-#include <TEveManager.h>
+
 #include <mutex>
 
 extern DApplication *gDana;
 
-extern std::mutex gEventMutex;
-
-
-
-void MakeElementVisible(TEveElement *e)
-{
-    e->SetRnrState(true);
-    for (auto i=e->BeginParents(); i!=e->EndParents(); ++i)
-    {
-        auto parent =*i;
-
-        //cout<<"turn on "<<parent->GetElementName()<<endl;
-        parent->SetRnrState(true);
-        if(parent == gEve->GetGlobalScene())
-        {
-            return;
-        } else {
-            MakeElementVisible(parent);
-        }
-    }
-}
-
-void MakeDescendantRecursiveVisible(TEveElement *e, bool isVisible)
-{
-    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
-    {
-        auto child =*i;
-
-        //cout<<"turn off "<<child->GetElementName()<<endl;
-        child->SetRnrState(isVisible);
-        MakeDescendantRecursiveVisible(child, isVisible);
-
-    }
-}
-
-void MakeDescendantRecursiveColor(TEveElement *e, UChar_t r, UChar_t g, UChar_t b)
-{
-    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
-    {
-        auto child =*i;
-
-        //cout<<"color "<<child->GetElementName()<<endl;
-        child->SetMainColorRGB(r,g,b);
-
-        MakeDescendantRecursiveColor(child, r, g, b);
-    }
-}
-void MakeDescendantRecursiveTransparancey(TEveElement *e, float alpha)
-{
-    for (auto i=e->BeginChildren(); i!=e->EndChildren(); ++i)
-    {
-        auto child =*i;
-
-        //cout<<"color "<<child->GetElementName()<<endl;
-        child->SetMainAlpha(alpha);
-
-        MakeDescendantRecursiveTransparancey(child, alpha);
-    }
-}
-
 //------------------
 // JEventProcessor_EventReader (Constructor)
 //------------------
-JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::RootLoopCommander &rootLoopCommander):
-    _rootLoopCommander(rootLoopCommander)
+JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::ApplicationContext &context):
+    _context(context)
 
 {
 
@@ -207,11 +145,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
-    //while (!hdvis::RootLoopCommander::InnerLoopMutex.try_lock()) std::this_thread::yield();  // <- (!!!) leave ; there!
+
     {
         static bool isFirstGoodEvent = true;
-        //std::lock_guard<std::mutex> eventMutexLockGuard(hdvis::RootLoopCommander::InnerLoopMutex);
-        auto lock = std::unique_lock<std::mutex>(hdvis::RootLoopCommander::InnerLoopMutex);
+        auto lock = std::unique_lock<std::mutex>(hdvis::ApplicationContext::InnerLoopMutex);
 
         for (unsigned int i = 0; i < toprint.size(); i++) {
             string name = fac_info[i].dataClassName;
@@ -273,88 +210,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(FDCHits);
         loop->Get(SCHits);
 
-
-
-        if(isFirstGoodEvent)
-        {
-            isFirstGoodEvent =false;
-
-            /*
-            TEveGeoTopNode* enode = new TEveGeoTopNode(gGeoManager, gGeoManager->GetNode(0));
-            gEve->AddGlobalElement(enode);
-            enode->ExpandIntoListTreesRecursively();
-
-            //gEve->GetGlobalScene()->SetRnrChildren(kFALSE);
-            auto globalScene = gEve->GetGlobalScene();
-
-            MakeDescendantRecursiveVisible(globalScene, false);
-
-            auto target = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("TARG_1");
-            MakeDescendantRecursiveVisible(target, true);
-            MakeElementVisible(target);
-            target->SetMainColorRGB(UChar_t(255),155,155);
-            MakeDescendantRecursiveColor(target,255,155,155);
-            MakeDescendantRecursiveTransparancey(target, .40);
-
-            auto sc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("STRT_1");
-            MakeDescendantRecursiveVisible(sc, true);
-            MakeElementVisible(sc);
-            sc->SetMainColorRGB(UChar_t(155),180,255);
-            MakeDescendantRecursiveColor(sc,155,180,255);
-            MakeDescendantRecursiveTransparancey(sc,.6);
-
-            auto bcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("BCAL_1");
-            MakeDescendantRecursiveVisible(bcal, true);
-            MakeElementVisible(bcal);
-            bcal->SetMainColorRGB(UChar_t(180),220,255);
-            MakeDescendantRecursiveColor(bcal,180,220,255);
-            MakeDescendantRecursiveTransparancey(bcal, 5);
-
-
-            auto cdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("CDC_1");
-            MakeDescendantRecursiveVisible(cdc, true);
-            MakeElementVisible(cdc);
-            cdc->SetMainColorRGB(UChar_t(200),230,255);
-            MakeDescendantRecursiveColor(cdc,200,230,255);
-            MakeDescendantRecursiveTransparancey(cdc, 4);
-
-            auto fdc = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1");
-            //auto fdcP1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("LASS_1")->FindChild("FDC_1")->FindChild("FDP1_1");
-            MakeDescendantRecursiveVisible(fdc, true);
-            MakeElementVisible(fdc);
-            //MakeElementVisible(fdcP1);
-            fdc->SetMainColorRGB(UChar_t(170),220,255);
-            MakeDescendantRecursiveColor(fdc,170,220,255);
-            fdc->SetMainTransparency(.8);
-            MakeDescendantRecursiveTransparancey(fdc, 4);
-
-            auto tof1 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_1");
-            auto tof2 = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FTOF_2");
-
-            MakeDescendantRecursiveVisible(tof1, true);
-            MakeElementVisible(tof1);
-            tof1->SetMainAlpha(1);
-            MakeDescendantRecursiveColor(tof1,53,143,254);
-            MakeDescendantRecursiveTransparancey(tof1, .7);
-
-            MakeDescendantRecursiveVisible(tof2, true);
-            MakeElementVisible(tof2);
-            MakeDescendantRecursiveColor(tof2,53,143,254);
-            MakeDescendantRecursiveTransparancey(tof2, .7);
-
-            auto fcal = globalScene->FindChild("SITE_1")->FindChild("HALL_1")->FindChild("FCAL_1");
-
-            MakeDescendantRecursiveVisible(fcal, true);
-            MakeElementVisible(fcal);
-            MakeDescendantRecursiveColor(fcal,53,143,254);
-            MakeDescendantRecursiveTransparancey(fcal, .7);
-*/
-
-            _rootLoopCommander.EveFullRedraw3D();
-        }
-
-        //Clear the event...unless it is empty
-        //gEve->GetCurrentEvent()->DestroyElements();
 
         //Setup the tracking to display tracking info
         Tracking Tracks(Bfield,RootGeom);
@@ -424,11 +279,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //cout<<"ADDING FDC HITS"<<endl;
         FDCDet.Add_FDCHits(FDCHits);
 
-        //Redraw the scene(s)
-        //sleep(1);
-        //gEve->FullRedraw3D();
-        //sleep(1);
-        _rootLoopCommander.EveFullRedraw3D();
+
 
         event_out.open("../js/event.json",ios::app);
         event_out<<"}";
@@ -437,12 +288,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
     }   // <- unlock EventMutex
 
-    _waitingLogic.Wait();
+
+    _context.JanaWaitingLogic().Wait();
 
 
-    //gEve->EveFullRedraw3D();
-    /*int x;
-    cin>>x;*/
     return NOERROR;
 }
 

@@ -9,32 +9,11 @@
 #define _JEventProcessor_EventReader_
 
 #include <JANA/JEventProcessor.h>
-#include <TApplication.h>
-#include <TEvePointSet.h>
-#include <TFile.h>
-#include <TTree.h>
-#include <TH2F.h>
-#include <TCanvas.h>
-
-#include <TGLViewer.h>
-#include <TCanvas.h>
-#include <TEveViewer.h>
-#include <TEveGedEditor.h>
-#include <TEveScene.h>
-#include <TEveCaloLegoEditor.h>
-#include <TEveCaloLegoOverlay.h>
-#include <TEveCaloLegoGL.h>
-#include <TEveBrowser.h>
-#include <TEveTrans.h>
-#include <TEveCaloLegoOverlay.h>
-#include <TEveLegoEventHandler.h>
-#include <TGLWidget.h>
-#include <TGeoNode.h>
 
 #include <HDGEOMETRY/DMagneticFieldMap.h>
 #include <HDGEOMETRY/DRootGeom.h>
 
-#include <RootLoopCommander.h>
+#include <ApplicationContext.h>
 
 #include "WaitingLogic.h"
 
@@ -43,18 +22,9 @@ extern bool ACTIVATE_ALL;
 
 class JEventProcessor_EventReader:public jana::JEventProcessor{
 	public:
-		JEventProcessor_EventReader(hdvis::RootLoopCommander &rootLoopCommander);
+		JEventProcessor_EventReader(hdvis::ApplicationContext &context);
 		~JEventProcessor_EventReader();
 		const char* className(void){return "JEventProcessor_EventReader";}
-		void setRootApplication(TApplication *app)
-		{
-			mApplication = app;
-		}
-
-		void setCanvas(TCanvas *cnv)
-		{
-			canvas = cnv;
-		}
 
 		typedef struct{
 			string dataClassName;
@@ -65,8 +35,7 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		DMagneticFieldMap* Bfield;
         DRootGeom* RootGeom;
 
-		void ProceedToNextEvent(){_waitingLogic.ProceedToNextEvent();}
-        void SetAutoPlay(bool value){_waitingLogic.SetAutoPlay(value);}
+
 
 
 
@@ -76,12 +45,8 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		jerror_t evnt(jana::JEventLoop *eventLoop, uint64_t eventnumber);	///< Called every event.
 		jerror_t erun(void);						///< Called everytime run number changes, provided brun has been called.
 		jerror_t fini(void);						///< Called after last event of last event source has been processed.
-		TCanvas *canvas;
-		TApplication *mApplication;
-        TEveCaloDataHist* data;
-        WaitingLogic _waitingLogic;
-        hdvis::RootLoopCommander &_rootLoopCommander;
 
+        hdvis::ApplicationContext &_context;
 };
 
 #endif // _JEventProcessor_EventReader_
