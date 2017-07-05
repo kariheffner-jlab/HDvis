@@ -22,7 +22,7 @@ var HDVisConfig = function() {
     this.bkg_color = 0x000000;
 
     this.FCAL_EScale = 100.;
-    this.TrackingChiSq_NDF_cut = 100.;
+    this.TrackingChiSq_NDF_cut = 0.;
 
     // Thomas, here is GUI examples:
     // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -112,7 +112,7 @@ function makeGUI(){
             gui_TrackVis(eventobjs,0,value);
         });
 
-    Trackinggui.add(config, 'TrackingChiSq_NDF_cut', 0, 100).name("ChiSq/NDF cut").onChange(function(value) { this.TrackingChiSq_NDF_cut=value;
+    Trackinggui.add(config, 'TrackingChiSq_NDF_cut', 0, 10).name("ChiSq/NDF cut").onChange(function(value) { this.TrackingChiSq_NDF_cut=value;
         var eventobjs = scene.getObjectByName("GluexEvent").children;
         for(var i=0;i<eventobjs.length;i++) {
             if(eventobjs[i].name.split('_')[0]==="track")

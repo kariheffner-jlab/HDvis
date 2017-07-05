@@ -37,6 +37,7 @@
 
 
 
+    var clock = new THREE.Clock();
     var container, stats;
 
     var camera,ortho_camera, controls, scene, renderer, raycaster, effect;
@@ -225,24 +226,6 @@
 
 
 
-        //scroll through vertices making visible
-       /* if(scene.getObjectByName("GluexEvent")) {
-            var eventobjs = scene.getObjectByName("GluexEvent").children;
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "track") {
-                    var trackverticies = eventobjs[i].geometry.vertices;
-
-                    for (var j = 0; j < trackverticies.length; j++) {
-                        if (!trackverticies[j].visibility) {
-                            trackverticies[j].visibility = true;
-                            eventobjs[i].geometry.needsUpdate = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }*/
-
         renderer.animate( render );
         //render();
         //stats.update();
@@ -332,6 +315,29 @@
         }
 
 
+        //scroll through vertices making visible
+/*        if(scene.getObjectByName("GluexEvent") && (clock.elapsedTime/10)%2===0) {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "track") {
+                    var trackverticies = eventobjs[i].geometry.vertices;
+
+                    for (var j = 0; j < trackverticies.length; j++) {
+                        if (!trackverticies[j].visibility) {
+                            trackverticies[j].visibility = true;
+                            eventobjs[i].geometry.needsUpdate = true;
+                            break;
+                        }
+                        else
+                        {
+                            trackverticies[j].visibility = false;
+                            eventobjs[i].geometry.needsUpdate = true;
+                        }
+                    }
+                }
+            }
+        }
+*/
         if(VRbool)
         {
             
