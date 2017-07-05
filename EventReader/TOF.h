@@ -18,7 +18,7 @@ public:
     void Add_TOFPoints(vector<const DTOFPoint*> TOFPoints)
     {
         ofstream event_out;
-        event_out.open("../js/event.json", ios::app);//JSON
+        event_out.open("event.json", ios::app);//JSON
         event_out<<"\"TOF_points\": "<<"[\n";//JSON
 
         for(uint i=0;i<TOFPoints.size();i++)
@@ -37,7 +37,7 @@ public:
     {
 
         ofstream event_out;
-        event_out.open("../js/event.json", ios::app);//JSON
+        event_out.open("event.json", ios::app);//JSON
         event_out<<"\"TOF_hits\": "<<"[\n";//JSON
 
         for(uint i=0;i<TOFHits.size();i++)

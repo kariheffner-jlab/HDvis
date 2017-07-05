@@ -15,7 +15,7 @@ public:
     {
 
         ofstream event_out;
-        event_out.open("../js/event.json", ios::app);//JSON
+        event_out.open("event.json", ios::app);//JSON
         event_out<<"\"FDC_hits\": "<<"[\n";//JSON
 
         for(uint i=0;i<FDCHits.size();i++)

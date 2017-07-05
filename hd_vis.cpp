@@ -3,10 +3,10 @@
 #include "EventReader/JEventProcessor_EventReader.h"
 #include "DANA/DApplication.h"
 #include <mutex>
-#include <GuiListener.h>
 #include <functional>
 #include <TFile.h>
 #include "ControlLoop.h"
+#include <HttpServerController.h>
 
 using namespace std;
 
@@ -27,8 +27,6 @@ void Usage(void);
 DApplication *gDana;
 hdvis::ControlLoop gControlLoop;
 
-GuiListener gGuiListener;
-
 
 //-----------
 // main
@@ -47,13 +45,20 @@ int main(int narg, char *argv[])
 	// Instantiate our event processor
     auto myproc = new JEventProcessor_EventReader(gControlLoop.Context());
 
+    HttpServerController srv;
+    srv.StartListening();
+
     gControlLoop.RunRootAppMultithreaded();
     //gControlLoop.RunRootAppThisThread();
+
+
 
     // Run though all events, calling our event processor's methods
     dana.monitor_heartbeat = false;
     dana.Run(myproc);
 	return dana.GetExitCode();
+
+
 
     return 0;
 

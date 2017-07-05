@@ -13,7 +13,7 @@ public:
     void Add_SCHits(vector<const DSCHit *> SCHits) {
 
         ofstream event_out;
-        event_out.open("../js/event.json", ios::app);//JSON
+        event_out.open("event.json", ios::app);//JSON
         event_out << "\"SC_hits\": " << "[\n";//JSON
 
         for (uint i = 0; i < SCHits.size(); i++) {

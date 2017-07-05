@@ -171,7 +171,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
 
         std::ofstream event_out;
-        event_out.open("../js/event.json");
+        event_out.open("event.json");
         std::cout<<"opened/created event json "<<endl;
         event_out<<"{\n";
         event_out.close();
@@ -216,14 +216,14 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         //Will take the Charged Tracks given and visualize them
         Tracks.Add_DChargedTracks(ChargedTracks);
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
         Tracks.Add_DNeutralParticles(NeutralTracks);
 //------------------------------------------------------------------------------------------
         StartC SCDet;
 
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
 
@@ -231,12 +231,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 //------------------------------------------------------------------------------------------
         TOF TOFDet;
 
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
 
         TOFDet.Add_TOFPoints(TOFPoints);
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
         TOFDet.Add_TOFHits(TOFHits);
@@ -244,12 +244,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //Decalre the FCAL "module"
         FCAL FCALDet;
         //Take the hits and visualize them
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
 
         FCALDet.Add_FCALHits(FCALHits);
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
 
@@ -257,7 +257,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 //------------------------------------------------------------------------------------------
         BCAL BCALDet;
         //Take the hits and visualize them
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
 
@@ -265,7 +265,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 //------------------------------------------------------------------------------------------
         CDC CDCDet;
         //Take the hits and visualize them
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
 
@@ -273,7 +273,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 //------------------------------------------------------------------------------------------
         FDC FDCDet;
         //Take the hits and visualize them
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
         event_out<<",";
         event_out.close();
         //cout<<"ADDING FDC HITS"<<endl;
@@ -281,7 +281,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
 
 
-        event_out.open("../js/event.json",ios::app);
+        event_out.open("event.json",ios::app);
+        event_out<<"\"event_number\":"<<eventnumber<<endl;
         event_out<<"}";
         event_out.close();
 
