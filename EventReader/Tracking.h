@@ -95,9 +95,6 @@ public:
 
     void Add_DNeutralParticles(vector<const DNeutralParticle*> NeutralTracks)
     {
-
-        vector<TEvePointSet*> NeutTrack_points;
-
         ofstream event_out;
         event_out.open("../js/event.json", ios::app);//JSON
         event_out<<"\"neutral_tracks\": "<<"[\n";//JSON
@@ -109,7 +106,7 @@ public:
             string name=PID_name + Form(" Track Points %i", i);
             //cout<<name<<endl;
             rt->Reset();
-            auto Track_ps = new TEvePointSet();
+
 
 
             rt->SetMass(NeutralTracks[i]->Get_BestFOM()->mass());
@@ -133,17 +130,6 @@ public:
 
                 track_points.push_back(step_loc);
 
-                Track_ps->SetNextPoint(step_loc.X(), step_loc.Y(),step_loc.Z()); //FCAL alignment is 150.501,-349.986,147.406
-                //FCAL_ps->SetNextPoint(FCALHits[i]->x+150.501, FCALHits[i]->y-349.986, 26.5+147.406); //FCAL alignment is 150.501,-349.986,147.406
-
-                Track_ps->SetMainColorRGB(float(255.),float(255.), 0.);
-
-
-                Track_ps->SetPointId(new TNamed(Form(" Track Points %i", i), ""));
-                Track_ps->SetMarkerSize(1);
-                Track_ps->SetMarkerStyle(4);
-                Track_ps->SetElementName(name.c_str());
-
             }
             WriteTrackJSON(event_out, name,momentum, 0,-1, track_points);
             track_points.clear();
@@ -153,15 +139,10 @@ public:
             else
                 event_out<<"}"<<endl;
 
-            NeutTrack_points.push_back(Track_ps);
         }
 
         event_out<<"]"<<endl;
         event_out.close();
-
-        for (int i = 0; i < NeutTrack_points.size(); i++) {
-           // gEve->AddElement(NeutTrack_points[i]);
-        }
 
     }
     void WriteTrackJSON(ofstream& event_out, string id, TVector3 momentum, double charge, double TrackChiSq_NDF, vector<DVector3> track_points)

@@ -17,7 +17,8 @@ public:
     KeyboardControl():
         _isQuitCommand(false),
         _isNextCommand(false),
-        _isAutoplayCommand(false)
+        _isAutoplayCommand(false),
+        _mustCancel(false)
     {
 
     }
@@ -29,10 +30,10 @@ public:
     void StartListening() {
 
 
-        auto io_thread = std::thread([&]{
+        io_thread.reset(new std::thread([&]{
             char nextChar;
             bool error = false;
-            while(!error && (nextChar = std::getchar()))
+            while(!_mustCancel && (nextChar = std::getchar()))
             {
 
                 std::cout<<"getchar code: "<<(int)nextChar<<" char: '"<<nextChar<<"'"<<endl;
@@ -49,9 +50,13 @@ public:
                         break;
                 }
             }
-        });
+        }));
 
-        io_thread.join();
+        //io_thread.join();
+    }
+
+    void StopListening() {
+        _mustCancel = true;
     }
 
     bool IsQuitCommand() {return _isQuitCommand;}
@@ -67,6 +72,9 @@ private:
     std::atomic<bool> _isQuitCommand;
     std::atomic<bool> _isNextCommand;
     std::atomic<bool> _isAutoplayCommand;
+    std::atomic<bool> _mustCancel;
+
+    std::unique_ptr<std::thread> io_thread;
 
 };
 

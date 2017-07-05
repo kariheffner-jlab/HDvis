@@ -31,10 +31,10 @@ namespace hdvis
 
         void RunRootAppThisThread()
         {
-            while (!_keyboardControl.IsQuitCommand()) {
+            _keyboardControl.PrintMenu();
+            _keyboardControl.StartListening();
 
-                _keyboardControl.PrintMenu();
-                _keyboardControl.StartListening();
+            while (!_keyboardControl.IsQuitCommand()) {
 
                 //while(!gEventMutex.try_lock()) std::this_thread::yield();
 
