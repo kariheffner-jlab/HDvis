@@ -97,6 +97,7 @@ THREE.GluexEventLoader.prototype = {
                 vertex.z = point[2];
 
                 //setRGB(track_color.r,track_color.g,track_color.b);
+
                 geometry.vertices.push( vertex );
             });
 
@@ -108,6 +109,12 @@ THREE.GluexEventLoader.prototype = {
                 transparent: true,
                 sizeAttenuation: false
             });
+
+   /*         var trackverticies = geometry.vertices;
+
+            for (var j = 0; j < trackverticies.length; j++) {
+                    trackverticies[j].visibility = false;
+            }*/
 
             var trackMesh= new THREE.Points( geometry, material );
             //scope.materials.neuTrack["color"]=0x0000ff;
