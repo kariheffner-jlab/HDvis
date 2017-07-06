@@ -7,7 +7,7 @@
 
 #include "ApplicationContext.h"
 #include "KeyboardControl.h"
-
+#include "JEventProcessor_EventReader.h"
 #include <mutex>
 
 
@@ -48,6 +48,8 @@ namespace hdvis
 
                         _context.JanaWaitingLogic().ProceedToNextEvent();
                         std::cout<<"COMMAND ProceedToNextEvent: "<<std::endl;
+
+
                     }
 
                     if(_keyboardControl.IsAutoplayCommand()) {
