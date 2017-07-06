@@ -131,11 +131,18 @@
 
     <!--<a href="#" class="button blue">button</a>-->
 
-    <a href="#" class="button gray" OnClick=console.log("next")>next</a>
+    <a href="#" class="button gray" OnClick="nextclick()">next</a>
     <a href="#" class="button gray" OnClick=console.log("autoplay")>autoplay</a>
     <span> JANA is active </span>
 </nav>
-
+<script>
+function nextclick() {
+console.log("next");
+var xhr = new XMLHttpRequest();
+xhr.open('PUT', "http://localhost:5000", true);
+xhr.send();
+}
+</script>
 
 <script>
 
