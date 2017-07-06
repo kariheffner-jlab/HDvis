@@ -139,8 +139,8 @@
 function nextclick() {
 console.log("next");
 var xhr = new XMLHttpRequest();
-xhr.open('POST', "http://localhost:5000", true);
-xhr.send("/hi");
+xhr.open('PUSH', "http://localhost:5000", true);
+xhr.send("hi");
 }
 </script>
 

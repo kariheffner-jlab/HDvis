@@ -88,6 +88,7 @@ protected:
         });
 
         svr.get("/hi", [](const Request &req, Response &res) {
+            std::cout<<"I saw /hi"<<endl;
             res.set_content("Hello World!", "text/plain");
         });
 
