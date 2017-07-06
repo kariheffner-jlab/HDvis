@@ -198,6 +198,7 @@ function autoplay_click() {
     var mouse = new THREE.Vector2(), INTERSECTED;
 
     keyState: new Array();
+    var drawCount=-1;
 
 
     if(VRbool)
@@ -359,18 +360,61 @@ function autoplay_click() {
 
     }
     //
+    function updatePositions(lineGeo) {
 
+        var positions = lineGeo.children[0].geometry.attributes.position.array;
+
+        var parent=lineGeo.geometry.vertices;
+        var limit=parent.length;
+
+        var index = 0;
+
+        for ( var i = 0; i<1000; i ++ ) {
+
+            if(parent[i]) {
+                positions[index++] = parent[i].x;
+                positions[index++] = parent[i].y;
+                positions[index++] = parent[i].z;
+            }
+            else
+            {
+               positions[index++] = parent[limit-1].x;
+               positions[index++] = parent[limit-1].y;
+               positions[index++] = parent[limit-1].z;
+            }
+
+        }
+
+    }
     function animate() {
 
-        //requestAnimationFrame( animate );
+        requestAnimationFrame( animate );
+
+        drawCount = ( drawCount + 1 ) % 1000;
 
         controls.update();
+        if(scene.getObjectByName("GluexEvent")) {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "track") {
+                    var thisGeo=eventobjs[i].children[0].geometry;
+                    if(thisGeo) {
+                        thisGeo.drawRange.start = 0;
+                        thisGeo.drawRange.count = drawCount;
 
+                        if (drawCount === 0) {
+                            // periodically, generate new data
+                            updatePositions(eventobjs[i]);
+                            thisGeo.attributes.position.needsUpdate = true; // required after the first render
+                        }
+                    }
+                }
+            }
+        }
 
-
-        renderer.animate( render );
-        //render();
-        //stats.update();
+        //renderer.animate( render );
+        render();
+        stats.update();
 
     }
 
@@ -453,29 +497,7 @@ function autoplay_click() {
         }
 
 
-        //scroll through vertices making visible
-/*        if(scene.getObjectByName("GluexEvent") && (clock.elapsedTime/10)%2===0) {
-            var eventobjs = scene.getObjectByName("GluexEvent").children;
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "track") {
-                    var trackverticies = eventobjs[i].geometry.vertices;
 
-                    for (var j = 0; j < trackverticies.length; j++) {
-                        if (!trackverticies[j].visibility) {
-                            trackverticies[j].visibility = true;
-                            eventobjs[i].geometry.needsUpdate = true;
-                            break;
-                        }
-                        else
-                        {
-                            trackverticies[j].visibility = false;
-                            eventobjs[i].geometry.needsUpdate = true;
-                        }
-                    }
-                }
-            }
-        }
-*/
         if(VRbool)
         {
             
