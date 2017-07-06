@@ -107,6 +107,7 @@
 
     </style>
     <link rel="stylesheet" type="text/css" href="dat.gui.css" />
+
 </head>
 <body>
 
@@ -124,6 +125,7 @@
 <script src="js/threex.dilategeometry.js"></script>
 <script src="js/threex.atmospherematerial.js"></script>
 <script src="js/cameras/CombinedCamera.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 
 <nav style="position:absolute; left: 100px; z-index: 100">
@@ -131,23 +133,51 @@
 
     <!--<a href="#" class="button blue">button</a>-->
 
-    <a href="#" class="button gray" OnClick="nextclick()">next</a>
-    <a href="#" class="button gray" OnClick=console.log("autoplay")>autoplay</a>
-    <span> JANA is active </span>
+    <a href="#" class="button gray" OnClick="next_click()">next</a>
+    <a id="autoPlay" href="#" class="button gray" OnClick="autoplay_click()">autoplay</a>
+    <span id="janaStatus" style="color: darkgray"> JANA status </span>
 </nav>
 <script>
-function nextclick() {
-console.log("next");
-var xhr = new XMLHttpRequest();
-xhr.open('PUSH', "http://localhost:5000", true);
-xhr.send("hi");
+function next_click() {
+    console.log("calling /api/v1/next");
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', "/api/v1/next", true);
+    xhr.send();
+}
+
+function autoplay_click() {
+    console.log("calling /api/v1/autoplay-on");
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', "/api/v1/autoplay-on", true);
+    xhr.send();
 }
 </script>
 
 <script>
 
 
+    (function poll() {
+        //alert("hey");
+        $.ajax({
+            url: "/api/v1/status",
+            type: "GET",
+            success: function(data) {
 
+                var message = "JANA: " + data.janaState + " event: " + data.eventNumber.toString();
+
+                console.log("polling result => " + message);
+                if(data.isAutoPlay) {
+                    if($("#autoPlay").hasClass("gray")){
+                        $("#autoPlay").removeClass("gray").addClass("green");
+                    }
+                }
+                $("#janaStatus").text(message);
+            },
+            dataType: "json",
+            complete: setTimeout(function() {poll()}, 1000),
+            timeout: 2000
+        })
+    })();
 
     var clock = new THREE.Clock();
     var container, stats;
@@ -301,7 +331,7 @@ xhr.send("hi");
         event.preventDefault();
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        //console.log(mouse.x+","+mouse.y)
+
     }
 
     function onWindowResize() {
@@ -361,12 +391,10 @@ xhr.send("hi");
         if(!event) return;    // There might be no event loaded (yet... or at all)
 
         var intersects = raycaster.intersectObjects( event.children);// Make improvement
-        //intersects+=raycaster.intersectObjects( evgeometry.children);
-        //console.log(INTERSECTED);
+
 
         if ( intersects.length > 0 ) {
-            //console.log(intersects.length);
-            //console.log(intersects[0].name);
+
 
             if ( INTERSECTED !== intersects[ 0 ].object ) //you are over an object and it isn't the same one as before (otherwise do nothing)
             {
@@ -415,10 +443,8 @@ xhr.send("hi");
 
 
         }else {
-            //console.log("off of the object");
+
             if ( INTERSECTED ) {
-                //console.log("reset the object");
-                //INTERSECTED.material.opacity = 1;
                 INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;

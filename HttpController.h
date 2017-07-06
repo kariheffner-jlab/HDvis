@@ -7,18 +7,33 @@
 
 #include <httplib.h>
 #include <cstdio>
+#include <utility>
+#include <utility>
 
-using namespace httplib;
 
-class HttpServerController {
+namespace hdvis{
+
+class HttpController {
 public:
 
-    ~HttpServerController(){
-        svr.stop();
+    typedef std::function<std::string (const httplib::Request&)> Handler;
+
+    ~HttpController(){
+        _server.stop();
+    }
+
+    void AddApiGetRoute(const char* pattern, HttpController::Handler handler)
+    {
+        _server.get(pattern, [handler](const httplib::Request &req, httplib::Response &res) {
+
+            string jsonResult = handler(req);
+            res.set_content(jsonResult, "application/json");
+        });
     }
 
 
-    std::string dump_headers(const MultiMap &headers) {
+    std::string DumpHeaders(const httplib::MultiMap &headers)
+    {
         std::string s;
         char buf[BUFSIZ];
 
@@ -33,7 +48,8 @@ public:
 
 
 
-    std::string log(const Request &req, const Response &res) {
+    std::string Log(const httplib::Request &req, const httplib::Response &res)
+    {
         std::string s;
         char buf[BUFSIZ];
 
@@ -52,13 +68,13 @@ public:
         snprintf(buf, sizeof(buf), "%s\n", query.c_str());
         s += buf;
 
-        s += dump_headers(req.headers);
+        // s += DumpHeaders(req.headers);
 
         s += "--------------------------------\n";
 
         snprintf(buf, sizeof(buf), "%d\n", res.status);
         s += buf;
-        s += dump_headers(res.headers);
+        // s += DumpHeaders(res.headers);
 
         if (!res.body.empty()) {
             s += res.body;
@@ -77,59 +93,51 @@ public:
 
 protected:
     void StartServer() {
+        using namespace httplib;
+
+        _server.set_base_dir(baseDir.c_str());
 
 
-
-        svr.set_base_dir(baseDir.c_str());
-
-
-        svr.get("/", [=](const Request &req, Response &res) {
-            res.set_redirect("/hi");
+        _server.get("/", [=](const Request &req, Response &res) {
+            res.set_redirect("/event.html");
         });
 
-        svr.get("/hi", [](const Request &req, Response &res) {
+        _server.get("/hi", [](const Request &req, Response &res) {
             std::cout<<"I saw /hi"<<endl;
             res.set_content("Hello World!", "text/plain");
         });
 
-        svr.get("/dump", [&](const Request &req, Response &res) {
-            res.set_content(dump_headers(req.headers), "text/plain");
+        _server.get("/dump", [&](const Request &req, Response &res) {
+            res.set_content(DumpHeaders(req.headers), "text/plain");
         });
 
-        svr.get("/stop", [&](const Request &req, Response &res) {
-            svr.stop();
+        _server.get("/stop", [&](const Request &req, Response &res) {
+            _server.stop();
         });
 
-
-
-        //std::ifstream t("file.txt");
-        //std::string str((std::istreambuf_iterator<char>(t)),
-        //              std::istreambuf_iterator<char>());
-
-
-        svr.set_error_handler([](const Request &req, Response &res) {
+        _server.set_error_handler([](const Request &req, Response &res) {
             const char *fmt = "<p>Error Status: <span style='color:red;'>%d</span></p>";
             char buf[BUFSIZ];
             snprintf(buf, sizeof(buf), fmt, res.status);
             res.set_content(buf, "text/html");
         });
 
-        svr.set_logger([&](const Request &req, const Response &res) {
-            printf("%s", log(req, res).c_str());
+        _server.set_logger([&](const Request &req, const Response &res) {
+            printf("%s", Log(req, res).c_str());
         });
 
-        cout << "The server started at port " << port << "...";
+        cout << "The server started at port " << port << "..." << endl;
 
-        svr.listen("localhost", 5000);
+        _server.listen("localhost", 5000);
     }
 
 private:
     std::thread _runThread;
-    Server svr;
+    httplib::Server _server;
     int port = 5000;
     std::string baseDir = "./www";
 
 };
-
+}
 
 #endif //EVESTANDALONE_SERVERCONTROLLER_H

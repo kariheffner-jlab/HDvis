@@ -61,7 +61,7 @@ set(SOURCE_FILES
         ApplicationContext.cpp
 
         httplib.h
-        HttpServerController.h
+        HttpController.h
         KeyboardControl.h
         StringUtils.h
 

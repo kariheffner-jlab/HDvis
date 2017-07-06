@@ -8,6 +8,7 @@
 #include "ApplicationContext.h"
 #include "KeyboardControl.h"
 #include "JEventProcessor_EventReader.h"
+#include "HttpController.h"
 #include <mutex>
 
 
@@ -20,6 +21,38 @@ namespace hdvis
                 _isMultithreaded(false)
         {
 
+            _httpControl.AddApiGetRoute("/api/v1/status", [this](const httplib::Request &req) {
+                std::cout<<"/api/v1/status"<<endl;
+                std::ostringstream buffer;
+                buffer << "{\"janaState\":\""<< _context.JanaStateStr() << "\""
+                       << ",\"eventNumber\": " << _context.CurrentEventNumber()
+                       << ",\"isAutoPlay\": " << (int)_context.JanaWaitingLogic().IsAutoPlay()
+                       <<"}";
+
+
+                return buffer.str();
+            });
+
+            _httpControl.AddApiGetRoute("/api/v1/next", [this](const httplib::Request &req) {
+                std::cout<<"/api/v1/next"<<endl;
+                _context.JanaWaitingLogic().ProceedToNextEvent();
+                std::cout<<"COMMAND ProceedToNextEvent: "<<std::endl;
+                return "[1]";
+            });
+
+            _httpControl.AddApiGetRoute("/api/v1/autoplay-on", [this](const httplib::Request &req) {
+                std::cout<<"/api/v1/autoplay-on"<<endl;
+                _context.JanaWaitingLogic().SetAutoPlay(true);
+                std::cout<<"COMMAND autoplay: "<<(_context.JanaWaitingLogic().IsAutoPlay()? "on": "off")<<std::endl;
+                return "[1]";
+            });
+
+            _httpControl.AddApiGetRoute("/api/v1/autoplay-off", [this](const httplib::Request &req) {
+                std::cout<<"/api1/autoplay-off"<<endl;
+                _context.JanaWaitingLogic().SetAutoPlay(false);
+                std::cout<<"COMMAND autoplay: "<<(_context.JanaWaitingLogic().IsAutoPlay()? "on": "off")<<std::endl;
+                return "[1]";
+            });
         }
 
         void RunRootAppMultithreaded()
@@ -33,6 +66,9 @@ namespace hdvis
         {
             _keyboardControl.PrintMenu();
             _keyboardControl.StartListening();
+
+            _httpControl.StartListening();
+
 
             while (!_keyboardControl.IsQuitCommand()) {
 
@@ -48,8 +84,6 @@ namespace hdvis
 
                         _context.JanaWaitingLogic().ProceedToNextEvent();
                         std::cout<<"COMMAND ProceedToNextEvent: "<<std::endl;
-
-
                     }
 
                     if(_keyboardControl.IsAutoplayCommand()) {
@@ -76,6 +110,7 @@ namespace hdvis
         std::thread _runThread;
         std::atomic<bool> _isMultithreaded;
         KeyboardControl _keyboardControl;
+        HttpController _httpControl;
 
     };
 

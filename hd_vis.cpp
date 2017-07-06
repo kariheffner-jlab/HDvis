@@ -6,7 +6,7 @@
 #include <functional>
 #include <TFile.h>
 #include "ControlLoop.h"
-#include <HttpServerController.h>
+#include <HttpController.h>
 
 using namespace std;
 
@@ -27,6 +27,19 @@ void Usage(void);
 DApplication *gDana;
 hdvis::ControlLoop gControlLoop;
 
+class LineBufferedOutput : public std::streambuf
+{
+    std::vector<char> myBuffer;
+protected:
+    int overflow( int ch ) override
+    {
+        myBuffer.push_back( ch );
+        if ( ch == '\n' ) {
+            //   whatever you have to do...
+        }
+        //  return traits::eof() for failure...
+    }
+};
 
 //-----------
 // main
@@ -45,8 +58,7 @@ int main(int narg, char *argv[])
 	// Instantiate our event processor
     auto myproc = new JEventProcessor_EventReader(gControlLoop.Context());
 
-    HttpServerController srv;
-    srv.StartListening();
+
 
     gControlLoop.RunRootAppMultithreaded();
     //gControlLoop.RunRootAppThisThread();

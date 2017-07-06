@@ -290,8 +290,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
     }   // <- unlock EventMutex
 
-
+    _context.SetCurrentEventNumber(eventnumber);
+    _context.SetJanaState(hdvis::JanaStates::Idle);
     _context.JanaWaitingLogic().Wait();
+    _context.SetJanaState(hdvis::JanaStates::ProcessingEvent);
 
 
     return NOERROR;
