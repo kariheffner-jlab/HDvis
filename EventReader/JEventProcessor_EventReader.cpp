@@ -287,6 +287,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         event_out.close();
 
         cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
+        system("google-chrome http://localhost:63342/EveStandAlone/js/event.html");
+
     }   // <- unlock EventMutex
 
 
