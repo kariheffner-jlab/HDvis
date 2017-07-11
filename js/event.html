@@ -348,8 +348,14 @@ function autoplay_click() {
         switch (event.keyCode) {
 
             case 86: VRbool = !VRbool;break;//v
-            case 87: camera.translateZ(-MoveDelta);camera.updateMatrixWorld();break;//w
-            case 83: camera.translateZ(MoveDelta);camera.updateMatrixWorld();break;//s
+            case 87: camera.translateZ(-MoveDelta);camera.updateMatrixWorld();
+                camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//w
+            case 83: camera.translateZ(MoveDelta);camera.updateMatrixWorld();
+                camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//s
             case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();camera.getWorldDirection( camera_facing );
                 orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
                 controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//a
