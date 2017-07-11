@@ -215,83 +215,54 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         Tracking Tracks(Bfield,RootGeom);
 
         //Will take the Charged Tracks given and visualize them
-        event_out<<Tracks.Add_DChargedTracks(ChargedTracks);
+        auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
         
-        event_out<<",";
-        
-        event_out<<Tracks.Add_DNeutralParticles(NeutralTracks);
-//------------------------------------------------------------------------------------------
-        StartC SCDet;
+        auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
 
-        
-        event_out<<",";
+        // StartCounter
+        auto scdHitsJson = StartC::Add_SCHits(SCHits);
 
+        // TOF
+        auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
+        auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
 
-        event_out<<SCDet.Add_SCHits(SCHits);
-//------------------------------------------------------------------------------------------
-        TOF TOFDet;
+        // FCAL;
+        auto fcalHitsJson = FCAL::Add_FCALHits(FCALHits);
+        auto fcalShowersJson = FCAL::Add_FCALShowers(FCALShowers);
 
-        
-        event_out<<",";
+        // BCAL
+        auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
 
+        // CDC
+        auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
-        event_out<<TOFDet.Add_TOFPoints(TOFPoints);
-        
-        event_out<<",";
+        // FDC
+        auto fdcHitsJson = FDC::Add_FDCHits(FDCHits);
 
-        event_out<<TOFDet.Add_TOFHits(TOFHits);
-//------------------------------------------------------------------------------------------
-        //Decalre the FCAL "module"
-        FCAL FCALDet;
-        //Take the hits and visualize them
-        
-        event_out<<",";
+        tao::json::value eventJson ({
+                { "charged_tracks", chargedTracksJson },
+                { "neutral_tracks", neutralTracksJson },
+                { "SC_hits", scdHitsJson },
+                { "TOF_points", tofPointsJson },
+                { "TOF_hits", tofHitsJson },
+                { "FCAL_hits", fcalHitsJson },
+                { "FCAL_showers", fcalShowersJson },
+                { "BCAL_hits", bcalHitsJson },
+                { "CDC_hits", cdcHitsJson },
+                { "FDC_hits", fdcHitsJson }
 
-
-        event_out<<FCALDet.Add_FCALHits(FCALHits);
-        
-        event_out<<",";
-
-
-        event_out<<FCALDet.Add_FCALShowers(FCALShowers);
-//------------------------------------------------------------------------------------------
-        BCAL BCALDet;
-        //Take the hits and visualize them
-        
-        event_out<<",";
+        });
 
 
-        event_out<<BCALDet.Add_BCALHits(BCALHits);
-//------------------------------------------------------------------------------------------
-        CDC CDCDet;
-        //Take the hits and visualize them
-        
-        event_out<<",";
-
-
-        event_out<<CDCDet.Add_CDCHits(CDCHits);
-//------------------------------------------------------------------------------------------
-        FDC FDCDet;
-        //Take the hits and visualize them
-        
-        event_out<<",";
-        
-        //cout<<"ADDING FDC HITS"<<endl;
-        event_out<<FDCDet.Add_FDCHits(FDCHits);
-
-
-
-        event_out<<",";
-        event_out<<"\"event_number\":"<<eventnumber<<endl;
-        event_out<<"}";
 
         //event_out.write("www/event.json");
-        string outstr = event_out.str();
-        std::ofstream event_json;
-        event_json.open("www/event.json");
+
+        std::ofstream eventFile;
+        eventFile.open("www/event.json");
         std::cout<<"opened/created event json "<<endl;
-        event_json<<outstr;
-        event_json.close();
+        eventFile<< tao::json::to_string(eventJson, 4);
+
+        eventFile.close();
 
         cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
 

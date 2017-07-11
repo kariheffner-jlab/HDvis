@@ -33,7 +33,7 @@ public:
     };
 
 
-    string Add_DChargedTracks(vector<const DChargedTrack*> ChargedTracks)
+    tao::json::value Add_DChargedTracks(vector<const DChargedTrack*> ChargedTracks)
     {
         auto jsonTracks = tao::json::value::array({});
 
@@ -91,11 +91,14 @@ public:
 
         //event_out<<"]"<<endl;
         //string outstr = event_out.str();
-        return tao::json::to_string(tao::json::value( { {"charged_tracks", jsonTracks} }), 4);
+        //return tao::json::to_string(tao::json::value( {{ "charged_tracks", jsonTracks }}), 4);
+
+        return jsonTracks;
+
 
     }
 
-    string Add_DNeutralParticles(vector<const DNeutralParticle*> NeutralTracks)
+    tao::json::value Add_DNeutralParticles(vector<const DNeutralParticle*> NeutralTracks)
     {
         //ostringstream event_out;
        // event_out<<"\"neutral_tracks\": "<<"[\n";//JSON
@@ -145,7 +148,8 @@ public:
 
         //event_out<<"]"<<endl;
         //string outstr = event_out.str();
-        return tao::json::to_string(tao::json::value( { {"neutral_tracks", jsonTracks} }), 4);
+        //return tao::json::to_string(tao::json::value( { {"neutral_tracks", jsonTracks} }), 4);
+        return jsonTracks;
 
     }
     void WriteTrackJSON(ofstream& event_out, string id, TVector3 momentum, double charge, double TrackChiSq_NDF, vector<DVector3> track_points)

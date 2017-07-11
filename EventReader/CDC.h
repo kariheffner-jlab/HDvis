@@ -11,28 +11,20 @@ class CDC
 {
 public:
 
-    string Add_CDCHits(vector<const DCDCHit*> CDCHits)
+    static tao::json::value Add_CDCHits(vector<const DCDCHit*> CDCHits)
     {
 
-        ostringstream event_out;
-
-        event_out<<"\"CDC_hits\": "<<"[\n";//JSON
+        auto arr = tao::json::value::array({});
 
         for(uint i=0;i<CDCHits.size();i++)
         {
-            event_out<<WriteHitJSON(i, CDCHits[i]->ring, CDCHits[i]->straw, CDCHits[i]->q, CDCHits[i]->t, CDCHits[i]->d, CDCHits[i]->itrack, CDCHits[i]->ptype);
-            if(i!=CDCHits.size()-1)
-                event_out<<","<<endl;
-
+            arr.emplace_back(WriteHitJSON(i, CDCHits[i]->ring, CDCHits[i]->straw, CDCHits[i]->q, CDCHits[i]->t, CDCHits[i]->d, CDCHits[i]->itrack, CDCHits[i]->ptype));
         }
 
-        event_out<<"]"<<endl;
-        string outstr = event_out.str();
-        return outstr;
-
+        return arr;
     }
 
-    tao::json::value WriteHitJSON(int id, int ring, int straw, float q, float t, float d, int itrack, int ptype)
+    static tao::json::value WriteHitJSON(int id, int ring, int straw, float q, float t, float d, int itrack, int ptype)
     {
         tao::json::value CDCHit({
                                          {"id", id},

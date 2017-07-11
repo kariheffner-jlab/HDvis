@@ -11,30 +11,21 @@ class BCAL
 {
 public:
 
-    string Add_BCALHits(vector<const DBCALHit*> BCALHits)
+    static tao::json::value Add_BCALHits(vector<const DBCALHit*> BCALHits)
     {
-
-        std::ostringstream event_out;
-
-        event_out<<"\"BCAL_hits\": "<<"[\n";//JSON
+        auto arr = tao::json::value::array({});
 
         for(uint i=0;i<BCALHits.size();i++)
         {
-            event_out<<WriteHitJSON(i, BCALHits[i]->module, BCALHits[i]->layer, BCALHits[i]->sector, BCALHits[i]->end, BCALHits[i]->pulse_peak, BCALHits[i]->E, BCALHits[i]->t, BCALHits[i]->t_raw, BCALHits[i]->cellId);
-                if(i!=BCALHits.size()-1)
-                    event_out<<","<<endl;
+            arr.emplace_back(WriteHitJSON(i, BCALHits[i]->module, BCALHits[i]->layer, BCALHits[i]->sector, BCALHits[i]->end, BCALHits[i]->pulse_peak, BCALHits[i]->E, BCALHits[i]->t, BCALHits[i]->t_raw, BCALHits[i]->cellId));
 
         }
-
-        event_out<<"]"<<endl;
-        string outstr = event_out.str();
-        return outstr;
-
+        return arr;
     }
 
-    tao::json::value WriteHitJSON(int id, int module, int layer, int sector, DBCALGeometry::End end, int pulse_peak, float E, float t, float t_raw, int cellId)
+    static tao::json::value WriteHitJSON(int id, int module, int layer, int sector, DBCALGeometry::End end, int pulse_peak, float E, float t, float t_raw, int cellId)
     {
-        tao::json::value BCALHit({
+        return tao::json::value({
                                         {"id", id},
                                         {"module", module},
                                         {"layer", layer},
@@ -46,8 +37,6 @@ public:
                                         {"t_raw", t_raw},
                                         {"cellId", cellId}
                                 });
-
-        return BCALHit;
     }
 
 };

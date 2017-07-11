@@ -10,25 +10,22 @@
 class StartC {
 public:
 
-    string Add_SCHits(vector<const DSCHit *> SCHits) {
+    static tao::json::value Add_SCHits(vector<const DSCHit *> SCHits) {
 
-        ostringstream event_out;
-        event_out << "\"SC_hits\": " << "[\n";//JSON
+        auto arr = tao::json::value::array({});
 
         for (uint i = 0; i < SCHits.size(); i++) {
-            event_out<<WriteHitJSON(i, SCHits[i]->sector, SCHits[i]->dE, SCHits[i]->t, SCHits[i]->t_TDC,SCHits[i]->t_fADC, SCHits[i]->pulse_height, SCHits[i]->has_fADC, SCHits[i]->has_TDC);
-            if (i != SCHits.size() - 1)
-                event_out << "," << endl;
+            arr.emplace_back(WriteHitJSON(i, SCHits[i]->sector, SCHits[i]->dE, SCHits[i]->t, SCHits[i]->t_TDC,SCHits[i]->t_fADC, SCHits[i]->pulse_height, SCHits[i]->has_fADC, SCHits[i]->has_TDC));
+
 
         }
 
-        event_out << "]" << endl;
-        string outstr = event_out.str();
-        return outstr;
+
+        return arr;
 
     }
 
-    tao::json::value WriteHitJSON(int id, int sector, float dE, float t, float t_TDC, float t_fADC, float pulse_height, bool has_fADC, bool has_TDC)
+     static tao::json::value WriteHitJSON(int id, int sector, float dE, float t, float t_TDC, float t_fADC, float pulse_height, bool has_fADC, bool has_TDC)
      {
          tao::json::value SCHit({
                                          {"id", id},
