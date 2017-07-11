@@ -94,19 +94,23 @@ function makeGUI(){
 
     var Trackinggui= gui.addFolder('Tracking');
 
-    Trackinggui.add(config, 'positive_tracks', config.positive_tracks).name('Show Positive Tracks')
+    var positiveTrackgui=Trackinggui.addFolder('Positive Tracks');
+    var negativeTrackgui=Trackinggui.addFolder('Negative Tracks');
+    var neutralTrackgui=Trackinggui.addFolder('Neutral Tracks');
+
+    positiveTrackgui.add(config, 'positive_tracks', config.positive_tracks).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackVis(eventobjs,1,value);
         });
 
-    Trackinggui.add(config, 'negative_tracks', config.negative_tracks).name('Show Negative Tracks')
+    negativeTrackgui.add(config, 'negative_tracks', config.negative_tracks).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackVis(eventobjs,-1,value);
         });
 
-    Trackinggui.add(config, 'neutral_tracks', config.neutral_tracks).name('Show Neutral Tracks')
+    neutralTrackgui.add(config, 'neutral_tracks', config.neutral_tracks).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackVis(eventobjs,0,value);
@@ -123,35 +127,40 @@ function makeGUI(){
                     if(tracks_chi>this.TrackingChiSq_NDF_cut)
                     {
                         eventobjs[i].material.visible = false;
+                        eventobjs[i].children[0].material.visible=false;
                     }
                     else
                     {
                         if((config.positive_tracks===true && eventobjs[i].userData.charge===1) || (config.negative_tracks===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0)) {
                             eventobjs[i].material.visible = true;
+                            eventobjs[i].children[0].material.visible=true;
                         }
                     }
                 }
                 else {
                     if((config.positive_tracks===true && eventobjs[i].userData.charge===1) || (config.negative_tracks===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0))
-                    {eventobjs[i].material.visible = true;}
+                    {
+                        eventobjs[i].material.visible = true;
+                        eventobjs[i].children[0].material.visible=true;
+                    }
                 }
             }
         }
     });
 
-    Trackinggui.addColor(config, 'positive_track_color', config.positive_track_color).name('Positive Color')
+    positiveTrackgui.addColor(config, 'positive_track_color', config.positive_track_color).name('Positive Color')
         .onChange(function(colorChosen) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackColor(eventobjs,1,colorChosen);
         });
 
-    Trackinggui.addColor(config, 'negative_track_color', config.negative_track_color).name('Negative Color')
+    negativeTrackgui.addColor(config, 'negative_track_color', config.negative_track_color).name('Negative Color')
         .onChange(function(colorChosen) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackColor(eventobjs,-1,colorChosen);
         });
 
-    Trackinggui.addColor(config, 'neutral_track_color', config.neutral_track_color).name('Neutral Color')
+    neutralTrackgui.addColor(config, 'neutral_track_color', config.neutral_track_color).name('Neutral Color')
         .onChange(function(colorChosen) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackColor(eventobjs,0,colorChosen);
