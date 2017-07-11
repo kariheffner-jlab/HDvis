@@ -200,7 +200,6 @@ function autoplay_click() {
     keyState: new Array();
     var drawCount=-1;
 
-
     if(VRbool)
     {
         WEBVR.checkAvailability().catch( function( message ) {
@@ -351,26 +350,32 @@ function autoplay_click() {
             case 86: VRbool = !VRbool;break;//v
             case 87: camera.translateZ(-MoveDelta);camera.updateMatrixWorld();break;//w
             case 83: camera.translateZ(MoveDelta);camera.updateMatrixWorld();break;//s
-            case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();break;//a
-            case 68: camera.translateX(MoveDelta);camera.updateMatrixWorld();break;//d
-            case 32: camera.translateY(MoveDelta);camera.updateMatrixWorld();break;//spacebar
-            case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();break;//z
+            case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//a
+            case 68: camera.translateX(MoveDelta);camera.updateMatrixWorld();
+                camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//d
+            case 32: camera.translateY(MoveDelta);camera.updateMatrixWorld();
+                camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//spacebar
+            case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();
+                camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//z
 
          }
 
     }
     //
     function updatePositions(lineGeo) {
-
         var positions = lineGeo.children[0].geometry.attributes.position.array;
-
         var parent=lineGeo.geometry.vertices;
         var limit=parent.length;
-
         var index = 0;
-
         for ( var i = 0; i<1000; i ++ ) {
-
             if(parent[i]) {
                 positions[index++] = parent[i].x;
                 positions[index++] = parent[i].y;
@@ -378,44 +383,41 @@ function autoplay_click() {
             }
             else
             {
-               positions[index++] = parent[limit-1].x;
-               positions[index++] = parent[limit-1].y;
-               positions[index++] = parent[limit-1].z;
+                positions[index++] = parent[limit-1].x;
+                positions[index++] = parent[limit-1].y;
+                positions[index++] = parent[limit-1].z;
             }
-
         }
-
     }
-    function animate() {
 
-        requestAnimationFrame( animate );
-
-        drawCount = ( drawCount + 1 ) % 1000;
-
-        controls.update();
-        if(scene.getObjectByName("GluexEvent")) {
-            var eventobjs = scene.getObjectByName("GluexEvent").children;
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "track") {
-                    var thisGeo=eventobjs[i].children[0].geometry;
-                    if(thisGeo) {
-                        thisGeo.drawRange.start = 0;
-                        thisGeo.drawRange.count = drawCount;
-
-                        if (drawCount === 0) {
-                            // periodically, generate new data
-                            updatePositions(eventobjs[i]);
-                            thisGeo.attributes.position.needsUpdate = true; // required after the first render
-                        }
+    function animateTrackLines(eventobjs) {
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].name.split('_')[0] === "track") {
+                var thisGeo = eventobjs[i].children[0].geometry;
+                if (thisGeo) {
+                    thisGeo.drawRange.start = 0;
+                    thisGeo.drawRange.count = drawCount;
+                    if (drawCount === 0) {
+                        // periodically, generate new data
+                        updatePositions(eventobjs[i]);
+                        thisGeo.attributes.position.needsUpdate = true; // required after the first render
                     }
                 }
             }
         }
+    }
+    function animate() {
 
+        requestAnimationFrame( animate );
+        drawCount = ( drawCount + 1 ) % 1000;
+        controls.update();
+        if(scene.getObjectByName("GluexEvent")) {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            animateTrackLines(eventobjs);
+        }
         //renderer.animate( render );
         render();
         stats.update();
-
     }
 
     function render() {
@@ -497,7 +499,29 @@ function autoplay_click() {
         }
 
 
+        //scroll through vertices making visible
+/*        if(scene.getObjectByName("GluexEvent") && (clock.elapsedTime/10)%2===0) {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "track") {
+                    var trackverticies = eventobjs[i].geometry.vertices;
 
+                    for (var j = 0; j < trackverticies.length; j++) {
+                        if (!trackverticies[j].visibility) {
+                            trackverticies[j].visibility = true;
+                            eventobjs[i].geometry.needsUpdate = true;
+                            break;
+                        }
+                        else
+                        {
+                            trackverticies[j].visibility = false;
+                            eventobjs[i].geometry.needsUpdate = true;
+                        }
+                    }
+                }
+            }
+        }
+*/
         if(VRbool)
         {
             
