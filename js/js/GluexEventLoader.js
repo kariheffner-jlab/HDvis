@@ -57,7 +57,7 @@ THREE.GluexEventLoader.prototype = {
                 var material = new THREE.PointsMaterial({
                     color: 0xff0000,
                     size: 4,
-                    opacity: 0.6,
+                    opacity: .6,
                     //blending: THREE.AdditiveBlending,
                     transparent: true,
                     sizeAttenuation: false
@@ -68,7 +68,7 @@ THREE.GluexEventLoader.prototype = {
                 var material = new THREE.PointsMaterial({
                     color: 0x00ff00,
                     size: 4,
-                    opacity: 0.6,
+                    opacity: .6,
                     //blending: THREE.AdditiveBlending,
                     transparent: true,
                     sizeAttenuation: false
@@ -80,8 +80,15 @@ THREE.GluexEventLoader.prototype = {
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
 
-            var trackLineMesh=new THREE.Line(geometry,material);
-            scope.group.add(trackLineMesh);
+            var linematerial = new THREE.LineBasicMaterial( { color: material.color, linewidth: 2 } );
+            linematerial.side = THREE.DoubleSide;
+            var lineBufferGeo=new THREE.BufferGeometry().fromGeometry( geometry );
+            var positions = new Float32Array( 1000 * 3 ); // 3 vertices per point
+            lineBufferGeo.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+            var trackLineMesh=new THREE.Line(lineBufferGeo,linematerial);
+            trackLineMesh.frustumCulled = false;
+            trackLineMesh.name="trackline_"+geometry.name;
+            trackMesh.add(trackLineMesh);
             //console.log(track.charge);
         });
         //iterate neutral tracks
@@ -110,21 +117,24 @@ THREE.GluexEventLoader.prototype = {
                 sizeAttenuation: false
             });
 
-   /*         var trackverticies = geometry.vertices;
 
-            for (var j = 0; j < trackverticies.length; j++) {
-                    trackverticies[j].visibility = false;
-            }*/
-
-            var trackMesh= new THREE.Points( geometry, material );
+            var trackMesh= new THREE.Points( geometry , material );
             //scope.materials.neuTrack["color"]=0x0000ff;
             //console.log(track_charge);
             trackMesh.userData={charge:0, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
 
-            var trackLineMesh=new THREE.Line(geometry,material);
-            scope.group.add(trackLineMesh);
+            var linematerial = new THREE.LineBasicMaterial( { color: material.color, linewidth: 2 } );
+            linematerial.side = THREE.DoubleSide;
+            var lineBufferGeo=new THREE.BufferGeometry().fromGeometry( geometry );
+
+            var positions = new Float32Array( 1000 * 3 ); // 3 vertices per point
+            lineBufferGeo.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+            var trackLineMesh=new THREE.Line(lineBufferGeo,linematerial);
+            trackLineMesh.frustumCulled = false;
+            trackLineMesh.name="trackline_"+geometry.name;
+            trackMesh.add(trackLineMesh);
             //console.log(track.charge);
         });
 
