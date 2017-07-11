@@ -248,6 +248,22 @@
         }
     }
 
+    function animateTrackLines(eventobjs) {
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].name.split('_')[0] === "track") {
+                var thisGeo = eventobjs[i].children[0].geometry;
+                if (thisGeo) {
+                    thisGeo.drawRange.start = 0;
+                    thisGeo.drawRange.count = drawCount;
+                    if (drawCount === 0) {
+                        // periodically, generate new data
+                        updatePositions(eventobjs[i]);
+                        thisGeo.attributes.position.needsUpdate = true; // required after the first render
+                    }
+                }
+            }
+        }
+    }
     function animate() {
 
         requestAnimationFrame( animate );
@@ -255,20 +271,7 @@
         controls.update();
         if(scene.getObjectByName("GluexEvent")) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "track") {
-                    var thisGeo=eventobjs[i].children[0].geometry;
-                    if(thisGeo) {
-                        thisGeo.drawRange.start = 0;
-                        thisGeo.drawRange.count = drawCount;
-                        if (drawCount === 0) {
-                            // periodically, generate new data
-                            updatePositions(eventobjs[i]);
-                            thisGeo.attributes.position.needsUpdate = true; // required after the first render
-                        }
-                    }
-                }
-            }
+            animateTrackLines(eventobjs);
         }
         //renderer.animate( render );
         render();
