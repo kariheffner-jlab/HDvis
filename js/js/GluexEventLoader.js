@@ -80,8 +80,15 @@ THREE.GluexEventLoader.prototype = {
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
 
-            var trackLineMesh=new THREE.Line(geometry,material);
-            scope.group.add(trackLineMesh);
+            var linematerial = new THREE.LineBasicMaterial( { color: material.color, linewidth: 2 } );
+            linematerial.side = THREE.DoubleSide;
+            var lineBufferGeo=new THREE.BufferGeometry().fromGeometry( geometry );
+            var positions = new Float32Array( 1000 * 3 ); // 3 vertices per point
+            lineBufferGeo.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+            var trackLineMesh=new THREE.Line(lineBufferGeo,linematerial);
+            trackLineMesh.frustumCulled = false;
+            trackLineMesh.name="trackline_"+geometry.name;
+            trackMesh.add(trackLineMesh);
             //console.log(track.charge);
         });
         //iterate neutral tracks
@@ -123,8 +130,16 @@ THREE.GluexEventLoader.prototype = {
             trackMesh.name = geometry.name;
             scope.group.add(trackMesh);
 
-            var trackLineMesh=new THREE.Line(geometry,material);
-            scope.group.add(trackLineMesh);
+            var linematerial = new THREE.LineBasicMaterial( { color: material.color, linewidth: 2 } );
+            linematerial.side = THREE.DoubleSide;
+            var lineBufferGeo=new THREE.BufferGeometry().fromGeometry( geometry );
+
+            var positions = new Float32Array( 1000 * 3 ); // 3 vertices per point
+            lineBufferGeo.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+            var trackLineMesh=new THREE.Line(lineBufferGeo,linematerial);
+            trackLineMesh.frustumCulled = false;
+            trackLineMesh.name="trackline_"+geometry.name;
+            trackMesh.add(trackLineMesh);
             //console.log(track.charge);
         });
 
