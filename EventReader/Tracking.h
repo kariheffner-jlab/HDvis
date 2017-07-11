@@ -2,12 +2,14 @@
 // Created by tbritton on 5/31/17.
 //
 
-#include <TEvePointSet.h>
 #include <TRACKING/DReferenceTrajectory.h>
 #include <PID/DChargedTrack.h>
 #include <PID/DNeutralParticle.h>
-#include <TEveManager.h>
+
 #include <fstream>
+#include <tao/json.hpp>
+#include <tao/json/from_string.hpp>
+#include <tao/json/value.hpp>
 
 #ifndef EVESTANDALONE_TRACKING_H
 #define EVESTANDALONE_TRACKING_H
@@ -31,11 +33,9 @@ public:
     };
 
 
-    void Add_DChargedTracks(vector<const DChargedTrack*> ChargedTracks)
+    string Add_DChargedTracks(vector<const DChargedTrack*> ChargedTracks)
     {
-        ofstream event_out;
-        event_out.open("event.json", ios::app);//JSON
-        event_out<<"\"charged_tracks\": "<<"[\n";//JSON
+        auto jsonTracks = tao::json::value::array({});
 
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
@@ -76,28 +76,30 @@ public:
 
             }
 
-            WriteTrackJSON(event_out, name, momentum,charge,TrackChiSq_NDF, track_points);
+           // event_out<<WriteTrackJSON2(name, momentum,charge,TrackChiSq_NDF, track_points);
+            jsonTracks.emplace_back(WriteTrackJSON2(name, momentum,charge,TrackChiSq_NDF, track_points));
             track_points.clear();
             //delete track_points;
 
-            if(i!=ChargedTracks.size()-1)
+           /* if(i!=ChargedTracks.size()-1)
                 event_out<<"},"<<endl;
             else
-                event_out<<"}"<<endl;
+                event_out<<"}"<<endl;*/
 
 
         }
 
-        event_out<<"]"<<endl;
-        event_out.close();
+        //event_out<<"]"<<endl;
+        //string outstr = event_out.str();
+        return tao::json::to_string(tao::json::value( { {"charged_tracks", jsonTracks} }), 4);
 
     }
 
-    void Add_DNeutralParticles(vector<const DNeutralParticle*> NeutralTracks)
+    string Add_DNeutralParticles(vector<const DNeutralParticle*> NeutralTracks)
     {
-        ofstream event_out;
-        event_out.open("event.json", ios::app);//JSON
-        event_out<<"\"neutral_tracks\": "<<"[\n";//JSON
+        //ostringstream event_out;
+       // event_out<<"\"neutral_tracks\": "<<"[\n";//JSON
+        auto jsonTracks = tao::json::value::array({});
 
         for(int i=0;i<NeutralTracks.size()/*TrackCandidates.size()*/;i++)
         {
@@ -106,8 +108,6 @@ public:
             string name=PID_name + Form(" Track Points %i", i);
             //cout<<name<<endl;
             rt->Reset();
-
-
 
             rt->SetMass(NeutralTracks[i]->Get_BestFOM()->mass());
             //rt.SetMass(TrackCandidates[i]->mass());
@@ -131,18 +131,21 @@ public:
                 track_points.push_back(step_loc);
 
             }
-            WriteTrackJSON(event_out, name,momentum, 0,-1, track_points);
+            //event_out<<tao::json::to_string(WriteTrackJSON2(name,momentum, 0,-1, track_points), 4);
+
+            jsonTracks.emplace_back(WriteTrackJSON2(name,momentum, 0,-1, track_points));
             track_points.clear();
 
-            if(i!=NeutralTracks.size()-1)
-                event_out<<"},"<<endl;
-            else
-                event_out<<"}"<<endl;
+            //if(i!=NeutralTracks.size()-1)
+             //   event_out<<"},"<<endl;
+            //else
+             //   event_out<<"}"<<endl;
 
         }
 
-        event_out<<"]"<<endl;
-        event_out.close();
+        //event_out<<"]"<<endl;
+        //string outstr = event_out.str();
+        return tao::json::to_string(tao::json::value( { {"neutral_tracks", jsonTracks} }), 4);
 
     }
     void WriteTrackJSON(ofstream& event_out, string id, TVector3 momentum, double charge, double TrackChiSq_NDF, vector<DVector3> track_points)
@@ -170,6 +173,41 @@ public:
 
             event_out<<"]"<<endl; //JSON
         }
+    }
+    tao::json::value WriteTrackJSON2( string id, TVector3 momentum, double charge, double TrackChiSq_NDF, vector<DVector3> track_points)
+    {
+        tao::json::value track(
+                {
+                        {"id", id},
+                        {"charge", charge},
+                        {"TrackChiSq_NDF", TrackChiSq_NDF},
+                        {"momentum", momentum.Mag()}
+
+                });
+
+        std::ostringstream ss;
+        auto jsonArray = tao::json::value::array({});
+
+
+        vector<double> vals;
+
+        for (int j = 0; j<track_points.size(); j++) {
+            vals.push_back(track_points[j].X());
+            jsonArray.emplace_back(tao::json::value::array({track_points[j].X() , track_points[j].Y() , track_points[j].Z()}));
+
+//
+//            if (j != track_points.size()-1) {
+//                ss << "[" << track_points[j].X() << "," << track_points[j].Y() << "," << track_points[j].Z() << "],";
+//            } else {
+//                ss << "[" << track_points[j].X() << "," << track_points[j].Y() << "," << track_points[j].Z() << "]"; //JSON
+//            }
+        }
+
+
+
+        track["points"] = jsonArray;
+
+        return track;
     }
 private:
     DReferenceTrajectory* rt;

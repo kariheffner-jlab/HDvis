@@ -15,44 +15,44 @@
 class TOF
 {
 public:
-    void Add_TOFPoints(vector<const DTOFPoint*> TOFPoints)
+    string Add_TOFPoints(vector<const DTOFPoint*> TOFPoints)
     {
-        ofstream event_out;
-        event_out.open("event.json", ios::app);//JSON
+        ostringstream event_out;
         event_out<<"\"TOF_points\": "<<"[\n";//JSON
 
         for(uint i=0;i<TOFPoints.size();i++)
         {
-            WritePointJSON(event_out,i,TOFPoints[i]->t,TOFPoints[i]->dE, TOFPoints[i]->tErr,TOFPoints[i]->pos);
+            event_out<<WritePointJSON(i,TOFPoints[i]->t,TOFPoints[i]->dE, TOFPoints[i]->tErr,TOFPoints[i]->pos);
             if(i!=TOFPoints.size()-1)
                 event_out<<","<<endl;
         }
 
         event_out<<"]"<<endl;
-        event_out.close();
+        string outstr = event_out.str();
+        return outstr;
 
     }
 
-    void Add_TOFHits(vector<const DTOFHit*> TOFHits)
+    string Add_TOFHits(vector<const DTOFHit*> TOFHits)
     {
 
-        ofstream event_out;
-        event_out.open("event.json", ios::app);//JSON
+        ostringstream event_out;
         event_out<<"\"TOF_hits\": "<<"[\n";//JSON
 
         for(uint i=0;i<TOFHits.size();i++)
         {
-            WriteHitJSON(event_out, i, TOFHits[i]->plane,TOFHits[i]->bar, TOFHits[i]->end, TOFHits[i]->dE, TOFHits[i]->Amp, TOFHits[i]->t_fADC, TOFHits[i]->t_TDC, TOFHits[i]->t, TOFHits[i]->has_fADC, TOFHits[i]->has_TDC);
+            event_out<<WriteHitJSON(i, TOFHits[i]->plane,TOFHits[i]->bar, TOFHits[i]->end, TOFHits[i]->dE, TOFHits[i]->Amp, TOFHits[i]->t_fADC, TOFHits[i]->t_TDC, TOFHits[i]->t, TOFHits[i]->has_fADC, TOFHits[i]->has_TDC);
             if(i!=TOFHits.size()-1)
                 event_out<<","<<endl;
 
         }
 
         event_out<<"]"<<endl;
-        event_out.close();
+        string outstr = event_out.str();
+        return outstr;
 
     }
-    void WritePointJSON(ofstream& event_out, int id, double t, double dE, double tErr, DVector3 fPosition)
+    tao::json::value WritePointJSON(int id, double t, double dE, double tErr, DVector3 fPosition)
     {
         tao::json::value TOFPoint({
                                             {"id", id},
@@ -64,9 +64,9 @@ public:
                                             {"z", fPosition.Z()}
                                     });
 
-        event_out << tao::json::to_string(TOFPoint, 4);
+        return TOFPoint;//event_out << tao::json::to_string(TOFPoint, 4);
     }
-    void WriteHitJSON(ofstream& event_out, int id, int plane,int bar, int end, float dE, float Amp, float t_fADC, float t_TDC, float t, bool has_fADC, bool has_TDC)
+    tao::json::value WriteHitJSON(int id, int plane,int bar, int end, float dE, float Amp, float t_fADC, float t_TDC, float t, bool has_fADC, bool has_TDC)
     {
         tao::json::value TOFHit({
                                           {"id", id},
@@ -82,7 +82,7 @@ public:
                                           {"has_TDC", has_TDC}
                                   });
 
-        event_out << tao::json::to_string(TOFHit, 4);
+        return TOFHit;//event_out << tao::json::to_string(TOFHit, 4);
     }
 
 };

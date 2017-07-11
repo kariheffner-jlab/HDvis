@@ -17,40 +17,42 @@ class FCAL
 {
 public:
 
-    void Add_FCALHits(vector<const DFCALHit *> FCALHits)
+    string Add_FCALHits(vector<const DFCALHit *> FCALHits)
     {
-        ofstream event_out;
-        event_out.open("event.json", ios::app);//JSON
+        ostringstream event_out;
         event_out<<"\"FCAL_hits\": "<<"[\n";//JSON
 
         for (uint i = 0; i < FCALHits.size(); i++) {
 
-            WriteHitJSON(event_out,i,FCALHits[i]->row,FCALHits[i]->column,FCALHits[i]->x,FCALHits[i]->y,FCALHits[i]->E,FCALHits[i]->t,FCALHits[i]->intOverPeak);
+            event_out<<tao::json::to_string(WriteHitJSON(i,FCALHits[i]->row,FCALHits[i]->column,FCALHits[i]->x,FCALHits[i]->y,FCALHits[i]->E,FCALHits[i]->t,FCALHits[i]->intOverPeak),4);
             if(i!=FCALHits.size()-1)
                 event_out<<","<<endl;
 
         }
         event_out<<"]"<<endl;
-        event_out.close();
+        string outstr = event_out.str();
+        return outstr;
+
 
     }
-    void Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
+    string Add_FCALShowers(vector<const DFCALShower *> FCALShowers)
     {
-        ofstream event_out;
-        event_out.open("event.json", ios::app);//JSON
+        ostringstream event_out;
         event_out<<"\"FCAL_showers\": "<<"[\n";//JSON
 
         for(uint i=0;i<FCALShowers.size();i++)
         {
-            WriteShowerJSON(event_out,i,FCALShowers[i]->getEnergy(),FCALShowers[i]->getTime(),FCALShowers[i]->getPosition());
+            event_out<<WriteShowerJSON(i,FCALShowers[i]->getEnergy(),FCALShowers[i]->getTime(),FCALShowers[i]->getPosition());
             if(i!=FCALShowers.size()-1)
                 event_out<<","<<endl;
         }
 
         event_out<<"]"<<endl;
-        event_out.close();
+        string outstr = event_out.str();
+        return outstr;
     }
-    void WriteHitJSON(ofstream& event_out, int id, int row,  int column, float x, float y, float E, float t, float intOverPeak)
+
+    tao::json::value WriteHitJSON(int id, int row,  int column, float x, float y, float E, float t, float intOverPeak)
     {
         tao::json::value FCALHit({
                                         {"id", id},
@@ -63,10 +65,10 @@ public:
                                         {"intOverPeak", intOverPeak}
                                 });
 
-        event_out << tao::json::to_string(FCALHit, 4);
+        return FCALHit;//event_out << tao::json::to_string(FCALHit, 4);
 
     }
-    void WriteShowerJSON(ofstream& event_out, int id, double fEnergy, double fTime, DVector3 fPosition)
+    tao::json::value WriteShowerJSON(int id, double fEnergy, double fTime, DVector3 fPosition)
     {
         tao::json::value FCALShower({
                                          {"id", id},
@@ -77,7 +79,7 @@ public:
                                          {"z", fPosition.Z()}
                                  });
 
-        event_out << tao::json::to_string(FCALShower, 4);
+        return FCALShower;// << tao::json::to_string(FCALShower, 4);
 
     }
 private:

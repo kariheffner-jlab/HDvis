@@ -170,11 +170,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             return NOERROR;
         }
 
-        std::ofstream event_out;
-        event_out.open("event.json");
+        std::ostringstream event_out;
+        
         std::cout<<"opened/created event json "<<endl;
-        event_out<<"{\n";
-        event_out.close();
+        //event_out<<"{\n";
+        
 
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DNeutralParticle*> NeutralTracks;
@@ -215,76 +215,83 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         Tracking Tracks(Bfield,RootGeom);
 
         //Will take the Charged Tracks given and visualize them
-        Tracks.Add_DChargedTracks(ChargedTracks);
-        event_out.open("event.json",ios::app);
+        event_out<<Tracks.Add_DChargedTracks(ChargedTracks);
+        
         event_out<<",";
-        event_out.close();
-        Tracks.Add_DNeutralParticles(NeutralTracks);
+        
+        event_out<<Tracks.Add_DNeutralParticles(NeutralTracks);
 //------------------------------------------------------------------------------------------
         StartC SCDet;
 
-        event_out.open("event.json",ios::app);
+        
         event_out<<",";
-        event_out.close();
 
-        SCDet.Add_SCHits(SCHits);
+
+        event_out<<SCDet.Add_SCHits(SCHits);
 //------------------------------------------------------------------------------------------
         TOF TOFDet;
 
-        event_out.open("event.json",ios::app);
+        
         event_out<<",";
-        event_out.close();
 
-        TOFDet.Add_TOFPoints(TOFPoints);
-        event_out.open("event.json",ios::app);
+
+        event_out<<TOFDet.Add_TOFPoints(TOFPoints);
+        
         event_out<<",";
-        event_out.close();
-        TOFDet.Add_TOFHits(TOFHits);
+
+        event_out<<TOFDet.Add_TOFHits(TOFHits);
 //------------------------------------------------------------------------------------------
         //Decalre the FCAL "module"
         FCAL FCALDet;
         //Take the hits and visualize them
-        event_out.open("event.json",ios::app);
+        
         event_out<<",";
-        event_out.close();
 
-        FCALDet.Add_FCALHits(FCALHits);
-        event_out.open("event.json",ios::app);
+
+        event_out<<FCALDet.Add_FCALHits(FCALHits);
+        
         event_out<<",";
-        event_out.close();
 
-        FCALDet.Add_FCALShowers(FCALShowers);
+
+        event_out<<FCALDet.Add_FCALShowers(FCALShowers);
 //------------------------------------------------------------------------------------------
         BCAL BCALDet;
         //Take the hits and visualize them
-        event_out.open("event.json",ios::app);
+        
         event_out<<",";
-        event_out.close();
 
-        BCALDet.Add_BCALHits(BCALHits);
+
+        event_out<<BCALDet.Add_BCALHits(BCALHits);
 //------------------------------------------------------------------------------------------
         CDC CDCDet;
         //Take the hits and visualize them
-        event_out.open("event.json",ios::app);
+        
         event_out<<",";
-        event_out.close();
 
-        CDCDet.Add_CDCHits(CDCHits);
+
+        event_out<<CDCDet.Add_CDCHits(CDCHits);
 //------------------------------------------------------------------------------------------
         FDC FDCDet;
         //Take the hits and visualize them
-        event_out.open("event.json",ios::app);
+        
         event_out<<",";
-        event_out.close();
+        
         //cout<<"ADDING FDC HITS"<<endl;
-        FDCDet.Add_FDCHits(FDCHits);
+        event_out<<FDCDet.Add_FDCHits(FDCHits);
 
 
 
-        event_out.open("event.json",ios::app);
+        event_out<<",";
         event_out<<"\"event_number\":"<<eventnumber<<endl;
         event_out<<"}";
-        event_out.close();
+
+        //event_out.write("www/event.json");
+        string outstr = event_out.str();
+        std::ofstream event_json;
+        event_json.open("www/event.json");
+        std::cout<<"opened/created event json "<<endl;
+        event_json<<outstr;
+        event_json.close();
 
         cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
 
