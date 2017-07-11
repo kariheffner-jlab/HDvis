@@ -215,8 +215,14 @@
                 camera.getWorldDirection( camera_facing );
                 orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
                 controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//d
-            case 32: camera.translateY(MoveDelta);camera.updateMatrixWorld();break;//spacebar
-            case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();break;//z
+            case 32: camera.translateY(MoveDelta);camera.updateMatrixWorld();
+                camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//spacebar
+            case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();
+                camera.getWorldDirection( camera_facing );
+                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//z
 
          }
 
@@ -246,7 +252,6 @@
 
         requestAnimationFrame( animate );
         drawCount = ( drawCount + 1 ) % 1000;
-        camera.updateMatrixWorld();
         controls.update();
         if(scene.getObjectByName("GluexEvent")) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
