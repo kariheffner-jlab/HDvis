@@ -197,6 +197,8 @@ function autoplay_click() {
     // start scene
     var mouse = new THREE.Vector2(), INTERSECTED;
 
+    var virginGeometry = null;
+
     keyState: new Array();
     var drawCount=-1;
 
@@ -211,6 +213,28 @@ function autoplay_click() {
 
     init();
     animate();
+
+    function loadEventFromFile() {
+        if(!virginGeometry){
+            console.info("Can't load event because geometry is still not loaded")
+            return;
+        }
+
+        // hard cleanup!
+        while(scene.children.length > 0){
+            scene.remove(scene.children[0]);
+        }
+
+        var geometry = virginGeometry.clone();
+
+        scene.add(geometry);
+
+        var eventLoader = new THREE.GluexEventLoader();
+        eventLoader.setGeometry(loadedGeom);
+        eventLoader.load('./event.json', function(loadedEvent) {
+            scene.add(loadedEvent);
+        });
+    }
 
     function init() {
 
@@ -278,14 +302,10 @@ function autoplay_click() {
         var geometryLoader = new THREE.GluexHDDSLoader();
 
         geometryLoader.load('./hdds/main_full_HDDS.xml', function (loadedGeom) {
+            virginGeometry = loadedGeom;
 
-            var eventLoader = new THREE.GluexEventLoader();
-            eventLoader.setGeometry(loadedGeom);
-            eventLoader.load('./event.json', function(loadedEvent) {
-                scene.add(loadedEvent);
-            });
-
-            scene.add(loadedGeom);
+            // when we have a geometry, we can load the event
+            loadEventFromFile();
         });
 
 
