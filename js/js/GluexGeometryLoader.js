@@ -14,6 +14,7 @@ THREE.GluexGeometryLoader.prototype = {
     geometries: {},
     refs: {},
     meshes: [],
+    tofDefaultColor: 0xa3bad2,
 
     load: function (url, onLoad, onProgress, onError) {
 
@@ -127,6 +128,7 @@ THREE.GluexGeometryLoader.prototype = {
     },
     
     buildTofSection: function (path, sectionName, planeNum, startIndex, isRight) {
+        var scope = this;
 
         var sectionJson = this.importedGeometry[path];
         var shape = sectionJson.shape;
@@ -148,10 +150,10 @@ THREE.GluexGeometryLoader.prototype = {
         // Go through repetitions and create modules
         for(var i=0; i< sectionJson.division.number; i++){
 
-            var moduleGeo = new THREE.BoxBufferGeometry(shape.x, moduleY, shape.z);
+            var moduleGeo = new THREE.BoxGeometry(shape.x, moduleY, shape.z);
 
             var material = new THREE.MeshLambertMaterial({
-                color: 0xa3bad2,
+                color: scope.tofDefaultColor,
                 transparent: true,
                 opacity: 0.5});
             var module = new THREE.Mesh(moduleGeo, material);

@@ -18,12 +18,14 @@ public:
 
     typedef std::function<std::string (const httplib::Request&)> Handler;
 
-    ~HttpController(){
+    ~HttpController()
+    {
         _server.stop();
     }
 
     void AddApiGetRoute(const char* pattern, HttpController::Handler handler)
     {
+
         _server.get(pattern, [handler](const httplib::Request &req, httplib::Response &res) {
 
             string jsonResult = handler(req);
@@ -81,6 +83,7 @@ public:
         }
 
         s += "\n";
+
 
         return s;
     }

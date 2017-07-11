@@ -95,7 +95,7 @@ THREE.GluexHDDSLoader.prototype = {
 
         return ftof;
     },
-    
+
     buildTofPlane: function (xmlSection, planeIndex) {
         var xmlPlacement = xmlSection.querySelectorAll('composition[name="ForwardTOF"] > posXYZ')[planeIndex];
         var placement = extractPlacement(xmlPlacement);
@@ -151,7 +151,8 @@ THREE.GluexHDDSLoader.prototype = {
         region.name='TOF' + '_plane' + planeNum + '_' + name ;
 
         // Module box that we will copy
-        var moduleBox = this.boxFromXml(tofXmlSection, volumeName);
+        // Modules should NOT be of buffered geometry, because they get colored by faces
+        var moduleBox = this.boxFromXml(tofXmlSection, volumeName, false);
 
         // Go through repetitions and create modules
         for(var i=0; i< ncopy; i++){
@@ -199,10 +200,13 @@ THREE.GluexHDDSLoader.prototype = {
         return geometry;
     },
 
-    boxFromXml:function(xmlElement, boxName){
+    boxFromXml:function(xmlElement, boxName, isBuffered){
+        isBuffered = (typeof isBuffered !== 'undefined') ?  isBuffered : true;
+
         var xmlBox = xmlElement.querySelectorAll('box[name="'+boxName+'"]')[0];
         var params = parseXYZ(xmlBox.getAttribute('X_Y_Z'));
-        return new THREE.BoxBufferGeometry(params[0], params[1], params[2]);
+        if(isBuffered) return new THREE.BoxBufferGeometry(params[0], params[1], params[2]);
+        return new THREE.BoxGeometry(params[0], params[1], params[2]);
     },
 
     /**

@@ -141,8 +141,10 @@
 function next_click() {
     console.log("calling /api/v1/next");
     var xhr = new XMLHttpRequest();
+    previousJanaState = "Processing";
     xhr.open('GET', "/api/v1/next", true);
     xhr.send();
+
 }
 
 function autoplay_click() {
@@ -154,7 +156,7 @@ function autoplay_click() {
 </script>
 
 <script>
-
+    var previousJanaState = "";
 
     (function poll() {
         //alert("hey");
@@ -164,6 +166,12 @@ function autoplay_click() {
             success: function(data) {
 
                 var message = "JANA: " + data.janaState + " event: " + data.eventNumber.toString();
+
+                if(data.janaState === "Idle" && previousJanaState!== "Idle") {
+                    loadEventFromFile();
+                }
+
+                previousJanaState = data.janaState;
 
                 console.log("polling result => " + message);
                 if(data.isAutoPlay) {
@@ -214,6 +222,14 @@ function autoplay_click() {
     init();
     animate();
 
+    function recursiveRemove(mesh) {
+        while(mesh.children.length > 0){
+            var child = mesh.children[0];
+            recursiveRemove(child);
+            mesh.remove(child);
+        }
+    }
+
     function loadEventFromFile() {
         if(!virginGeometry){
             console.info("Can't load event because geometry is still not loaded")
@@ -221,16 +237,41 @@ function autoplay_click() {
         }
 
         // hard cleanup!
-        while(scene.children.length > 0){
-            scene.remove(scene.children[0]);
+        var geom = scene.getObjectByName('GluexGeometry');
+        var event = scene.getObjectByName('GluexEvent');
+        if(geom) {
+            // reset the geometry color
+            var tofMesh = geom.getObjectByName("FTOF");
+            tofMesh.children.forEach(function (tofPlane) {
+                tofPlane.children.forEach(function (tofSector) {
+                    tofSector.children.forEach(function (tofStrip) {
+                        for (var i = 0; i < tofStrip.geometry.faces.length; i++) {
+                            for (var vjs = 0; vjs < 3; vjs++) {
+                                //var sidecolor = new THREE.Color(0x00ff00);
+                                tofStrip.geometry.faces[i].vertexColors[vjs] = virginGeometry.tofDefaultColor;//sidecolor;
+                            }
+                        }
+
+                        tofStrip.geometry.colorsNeedUpdate = true;
+                    });
+                });
+            });
         }
+        if(event) {
+            recursiveRemove(event);
+            scene.remove(event);
+        }
+
+
+        animate();
 
         var geometry = virginGeometry.clone();
 
         scene.add(geometry);
 
         var eventLoader = new THREE.GluexEventLoader();
-        eventLoader.setGeometry(loadedGeom);
+        eventLoader.setGeometry(geometry);
+
         eventLoader.load('./event.json', function(loadedEvent) {
             scene.add(loadedEvent);
         });

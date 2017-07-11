@@ -12,9 +12,12 @@ THREE.GluexEventLoader.prototype = {
     refs: {},
     meshes: [],
     geometry:null,
+    TOFReferenceColor:null,
 
     setGeometry: function (geometry) {
         this.geometry = geometry;
+        var tofMesh = geometry.getObjectByName("FTOF");
+        TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
     },
 
     load: function (url, onLoad, onProgress, onError) {
@@ -232,14 +235,20 @@ THREE.GluexEventLoader.prototype = {
         });
 
 
-       var tofMesh = scope.geometry.getObjectByName("FTOF");
+        var tofMesh = scope.geometry.getObjectByName("FTOF");
 
-       var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
+        var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
+
         var TOFOneHitColor = new THREE.Color;
+
         TOFOneHitColor.setRGB(1,1,0);
+
         var TOFTwoHitColor = new THREE.Color;
+
         TOFTwoHitColor.setRGB(1,.66,0);
+
         var TOFThreeHitColor = new THREE.Color;
+
         TOFThreeHitColor.setRGB(1,0,0);
 
         this.EventData.TOF_hits.forEach(function (hit) {
@@ -267,10 +276,6 @@ THREE.GluexEventLoader.prototype = {
                 if(object.geometry.type==="BufferGeometry") {
                     object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
                 }
-
-                var glowMesh = new THREEx.GeometricGlowMesh(object);
-                //object.add(glowMesh.object3d);
-
 
                 object.material.vertexColors=THREE.VertexColors;
 
@@ -342,6 +347,7 @@ THREE.GluexEventLoader.prototype = {
                     half_length=true;
 
                 for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
+
 
 
                     if((i===face_sent1 || i===face_sent2) && !half_length) {

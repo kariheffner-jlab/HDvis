@@ -210,61 +210,63 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(FDCHits);
         loop->Get(SCHits);
 
+        try {
+            //Setup the tracking to display tracking info
+            Tracking Tracks(Bfield,RootGeom);
 
-        //Setup the tracking to display tracking info
-        Tracking Tracks(Bfield,RootGeom);
+            //Will take the Charged Tracks given and visualize them
+            auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
 
-        //Will take the Charged Tracks given and visualize them
-        auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
-        
-        auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
+            auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
 
-        // StartCounter
-        auto scdHitsJson = StartC::Add_SCHits(SCHits);
+            // StartCounter
+            auto scdHitsJson = StartC::Add_SCHits(SCHits);
 
-        // TOF
-        auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
-        auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
+            // TOF
+            auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
+            auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
 
-        // FCAL;
-        auto fcalHitsJson = FCAL::Add_FCALHits(FCALHits);
-        auto fcalShowersJson = FCAL::Add_FCALShowers(FCALShowers);
+            // FCAL;
+            auto fcalHitsJson = FCAL::Add_FCALHits(FCALHits);
+            auto fcalShowersJson = FCAL::Add_FCALShowers(FCALShowers);
 
-        // BCAL
-        auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
+            // BCAL
+            auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
 
-        // CDC
-        auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
+            // CDC
+            auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
-        // FDC
-        auto fdcHitsJson = FDC::Add_FDCHits(FDCHits);
+            // FDC
+            auto fdcHitsJson = FDC::Add_FDCHits(FDCHits);
 
-        tao::json::value eventJson ({
-                { "charged_tracks", chargedTracksJson },
-                { "neutral_tracks", neutralTracksJson },
-                { "SC_hits", scdHitsJson },
-                { "TOF_points", tofPointsJson },
-                { "TOF_hits", tofHitsJson },
-                { "FCAL_hits", fcalHitsJson },
-                { "FCAL_showers", fcalShowersJson },
-                { "BCAL_hits", bcalHitsJson },
-                { "CDC_hits", cdcHitsJson },
-                { "FDC_hits", fdcHitsJson }
+            tao::json::value eventJson ({
+                                            { "charged_tracks", chargedTracksJson },
+                                            { "neutral_tracks", neutralTracksJson },
+                                            { "SC_hits", scdHitsJson },
+                                            { "TOF_points", tofPointsJson },
+                                            { "TOF_hits", tofHitsJson },
+                                            { "FCAL_hits", fcalHitsJson },
+                                            { "FCAL_showers", fcalShowersJson },
+                                            { "BCAL_hits", bcalHitsJson },
+                                            { "CDC_hits", cdcHitsJson },
+                                            { "FDC_hits", fdcHitsJson }
+                                        });
 
-        });
+            std::ofstream eventFile;
+            eventFile.open("www/event.json");
+            std::cout<<"opened/created event json "<<endl;
+            eventFile<< tao::json::to_string(eventJson, 4);
 
+            eventFile.close();
 
+            cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
 
-        //event_out.write("www/event.json");
+        }
+        catch (std::exception& ex)
+        {
+            std::cout<< ex.what() << std::endl;
 
-        std::ofstream eventFile;
-        eventFile.open("www/event.json");
-        std::cout<<"opened/created event json "<<endl;
-        eventFile<< tao::json::to_string(eventJson, 4);
-
-        eventFile.close();
-
-        cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
+        }
 
     }   // <- unlock EventMutex
 
