@@ -205,7 +205,7 @@ function autoplay_click() {
     // start scene
     var mouse = new THREE.Vector2(), INTERSECTED;
 
-    var virginGeometry = null;
+    var gluexGeometry = null;
 
     keyState: new Array();
     var drawCount=-1;
@@ -231,49 +231,47 @@ function autoplay_click() {
     }
 
     function loadEventFromFile() {
-        if(!virginGeometry){
+        if(!gluexGeometry){
             console.info("Can't load event because geometry is still not loaded")
             return;
         }
 
         // hard cleanup!
-        var geom = scene.getObjectByName('GluexGeometry');
+        var existingGeometry = scene.getObjectByName('GluexGeometry');
         var event = scene.getObjectByName('GluexEvent');
-        if(geom) {
+        if(existingGeometry) {
             // reset the geometry color
-            var tofMesh = geom.getObjectByName("FTOF");
+            var tofMesh = existingGeometry.getObjectByName("FTOF");
             tofMesh.children.forEach(function (tofPlane) {
                 tofPlane.children.forEach(function (tofSector) {
                     tofSector.children.forEach(function (tofStrip) {
                         for (var i = 0; i < tofStrip.geometry.faces.length; i++) {
                             for (var vjs = 0; vjs < 3; vjs++) {
                                 //var sidecolor = new THREE.Color(0x00ff00);
-                                tofStrip.geometry.faces[i].vertexColors[vjs] = virginGeometry.tofDefaultColor;//sidecolor;
+                                tofStrip.geometry.faces[i].vertexColors[vjs] = gluexGeometry.tofDefaultColor;//sidecolor;
                                 tofStrip.userData.end0h=0;
                                 tofStrip.userData.end1h=0;
                             }
                         }
-
+                        tofStrip.geometry.verticesNeedUpdate = true;
                         tofStrip.geometry.colorsNeedUpdate = true;
                     });
                 });
             });
+        }
+        else {
+
+            scene.add(gluexGeometry);
         }
         if(event) {
             recursiveRemove(event);
             scene.remove(event);
         }
 
-
         animate();
 
-        var geometry = virginGeometry.clone();
-
-        scene.add(geometry);
-
         var eventLoader = new THREE.GluexEventLoader();
-        eventLoader.setGeometry(geometry);
-
+        eventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
             scene.add(loadedEvent);
         });
@@ -345,7 +343,7 @@ function autoplay_click() {
         var geometryLoader = new THREE.GluexHDDSLoader();
 
         geometryLoader.load('./hdds/main_full_HDDS.xml', function (loadedGeom) {
-            virginGeometry = loadedGeom;
+            gluexGeometry = loadedGeom;
 
             // when we have a geometry, we can load the event
             loadEventFromFile();

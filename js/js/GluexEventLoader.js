@@ -242,23 +242,20 @@ THREE.GluexEventLoader.prototype = {
         var geom = scene.getObjectByName('GluexGeometry');
 
 
-            // reset the geometry color
+        // reset the geometry color
+        var zeroColor = new THREE.Color( 0xffffff );
 
-            tofMesh.children.forEach(function (tofPlane) {
-                tofPlane.children.forEach(function (tofSector) {
-                    tofSector.children.forEach(function (tofStrip) {
-                        for (var i = 0; i < tofStrip.geometry.faces.length; i++) {
-                            for (var vjs = 0; vjs < 3; vjs++) {
-                                //var sidecolor = new THREE.Color(0x00ff00);
-                                tofStrip.geometry.faces[i].vertexColors[vjs] = TOFReferenceColor;//virginGeometry.tofDefaultColor;//sidecolor;
-
-                            }
-                        }
-                        tofStrip.geometry.verticesNeedUpdate=true;
-                        tofStrip.geometry.colorsNeedUpdate = true;
-                    });
+        tofMesh.children.forEach(function (tofPlane) {
+            tofPlane.children.forEach(function (tofSector) {
+                tofSector.children.forEach(function (tofStrip) {
+                    tofStrip.material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5});
+                    //tofStrip.material.vertexColors=THREE.VertexColors;
+                    //tofStrip.userData.end0h=0;
+                    //tofStrip.userData.end1h=0;
+                    //tofStrip.geometry.colorsNeedUpdate = true;
                 });
             });
+        });
 
         var TOFOneHitColor = new THREE.Color;
 
@@ -275,7 +272,6 @@ THREE.GluexEventLoader.prototype = {
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
            // console.log("hit id:"+hit.id);
-            console.log("HEY");
             var plane=hit.plane;
             var bar=hit.bar;
             var end = hit.end;
@@ -305,20 +301,20 @@ THREE.GluexEventLoader.prototype = {
 
                 if(end===0)
                 {
-                    console.log(object.userData.end0h);
+                    //console.log(object.userData.end0h);
                     object.userData.end0h++;
-                    console.log(object.userData.end0h);
+                    //console.log(object.userData.end0h);
                     numhits=object.userData.end0h;
                 }
                 else if(end===1)
                 {
-                    console.log(object.userData.end1h);
+                    //console.log(object.userData.end1h);
                     object.userData.end1h++;
-                    console.log(object.userData.end1h);
+                    //console.log(object.userData.end1h);
                     numhits=object.userData.end1h;
                 }
 
-                color = new THREE.Color( 0xffffff );
+                var color = new THREE.Color( 0xffffff );
 
                 if(numhits===1)
                 {

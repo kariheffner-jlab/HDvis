@@ -29,7 +29,6 @@ namespace hdvis
                        << ",\"isAutoPlay\": " << (int)_context.JanaWaitingLogic().IsAutoPlay()
                        <<"}";
 
-
                 return buffer.str();
             });
 
@@ -71,10 +70,6 @@ namespace hdvis
 
 
             while (!_keyboardControl.IsQuitCommand()) {
-
-                //while(!gEventMutex.try_lock()) std::this_thread::yield();
-
-                //std::lock_guard<std::mutex> eventMutexLockGuard(ApplicationContext::InnerLoopMutex);
                 auto lock = std::unique_lock<std::mutex>(ApplicationContext::InnerLoopMutex);
 
                 try {

@@ -28,8 +28,6 @@ public:
     }
 
     void StartListening() {
-
-
         io_thread.reset(new std::thread([&]{
             char nextChar;
             bool error = false;
