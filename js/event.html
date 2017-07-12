@@ -208,7 +208,7 @@ function autoplay_click() {
     var gluexGeometry = null;
 
     keyState: new Array();
-    var drawCount=-1;
+    var drawCount=2;
 
     if(VRbool)
     {
@@ -239,28 +239,7 @@ function autoplay_click() {
         // hard cleanup!
         var existingGeometry = scene.getObjectByName('GluexGeometry');
         var event = scene.getObjectByName('GluexEvent');
-        if(existingGeometry) {
-            // reset the geometry color
-            var tofMesh = existingGeometry.getObjectByName("FTOF");
-            tofMesh.children.forEach(function (tofPlane) {
-                tofPlane.children.forEach(function (tofSector) {
-                    tofSector.children.forEach(function (tofStrip) {
-                        for (var i = 0; i < tofStrip.geometry.faces.length; i++) {
-                            for (var vjs = 0; vjs < 3; vjs++) {
-                                //var sidecolor = new THREE.Color(0x00ff00);
-                                tofStrip.geometry.faces[i].vertexColors[vjs] = gluexGeometry.tofDefaultColor;//sidecolor;
-                                tofStrip.userData.end0h=0;
-                                tofStrip.userData.end1h=0;
-                            }
-                        }
-                        tofStrip.geometry.verticesNeedUpdate = true;
-                        tofStrip.geometry.colorsNeedUpdate = true;
-                    });
-                });
-            });
-        }
-        else {
-
+        if(!existingGeometry) {
             scene.add(gluexGeometry);
         }
         if(event) {

@@ -29,11 +29,10 @@ public:
 
     void StartListening() {
         io_thread.reset(new std::thread([&]{
+
             char nextChar;
             bool error = false;
-            while(!_mustCancel && (nextChar = std::getchar()))
-            {
-
+            while(!_mustCancel && (nextChar = std::getchar())){
                 std::cout<<"getchar code: "<<(int)nextChar<<" char: '"<<nextChar<<"'"<<endl;
 
                 switch (nextChar){
@@ -50,7 +49,6 @@ public:
             }
         }));
 
-        //io_thread.join();
     }
 
     void StopListening() {
