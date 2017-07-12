@@ -239,6 +239,27 @@ THREE.GluexEventLoader.prototype = {
 
         var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
 
+        var geom = scene.getObjectByName('GluexGeometry');
+
+
+            // reset the geometry color
+
+            tofMesh.children.forEach(function (tofPlane) {
+                tofPlane.children.forEach(function (tofSector) {
+                    tofSector.children.forEach(function (tofStrip) {
+                        for (var i = 0; i < tofStrip.geometry.faces.length; i++) {
+                            for (var vjs = 0; vjs < 3; vjs++) {
+                                //var sidecolor = new THREE.Color(0x00ff00);
+                                tofStrip.geometry.faces[i].vertexColors[vjs] = TOFReferenceColor;//virginGeometry.tofDefaultColor;//sidecolor;
+
+                            }
+                        }
+                        tofStrip.geometry.verticesNeedUpdate=true;
+                        tofStrip.geometry.colorsNeedUpdate = true;
+                    });
+                });
+            });
+
         var TOFOneHitColor = new THREE.Color;
 
         TOFOneHitColor.setRGB(1,1,0);
@@ -253,7 +274,8 @@ THREE.GluexEventLoader.prototype = {
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
-            //console.log("hit id:"+hit.id);
+           // console.log("hit id:"+hit.id);
+            console.log("HEY");
             var plane=hit.plane;
             var bar=hit.bar;
             var end = hit.end;
@@ -283,16 +305,16 @@ THREE.GluexEventLoader.prototype = {
 
                 if(end===0)
                 {
-                    //console.log(object.userData.end0h);
+                    console.log(object.userData.end0h);
                     object.userData.end0h++;
-                    //console.log(object.userData.end0h);
+                    console.log(object.userData.end0h);
                     numhits=object.userData.end0h;
                 }
                 else if(end===1)
                 {
-                    //console.log(object.userData.end1h);
+                    console.log(object.userData.end1h);
                     object.userData.end1h++;
-                    //console.log(object.userData.end1h);
+                    console.log(object.userData.end1h);
                     numhits=object.userData.end1h;
                 }
 
@@ -391,24 +413,6 @@ THREE.GluexEventLoader.prototype = {
             else {
                 console.log("DIDN'T FIND " + geoName);
             }//console.log(object);
-
-
-
-            //console.log(object.geometry.faces.length);
-
-            /*(var rcol=Math.random();
-            var gcol=Math.random();
-            var bcol=Math.random();
-
-            for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
-                if(i%2==0) {
-                    rcol=Math.random();
-                    gcol=Math.random();
-                    bcol=Math.random();
-                }
-                object.geometry.faces[ i ].color.setRGB( rcol,gcol,bcol );
-            }
-            object.geometry.colorsNeedUpdate = true*/
 
         });
         return this.group;

@@ -249,6 +249,8 @@ function autoplay_click() {
                             for (var vjs = 0; vjs < 3; vjs++) {
                                 //var sidecolor = new THREE.Color(0x00ff00);
                                 tofStrip.geometry.faces[i].vertexColors[vjs] = virginGeometry.tofDefaultColor;//sidecolor;
+                                tofStrip.userData.end0h=0;
+                                tofStrip.userData.end1h=0;
                             }
                         }
 
