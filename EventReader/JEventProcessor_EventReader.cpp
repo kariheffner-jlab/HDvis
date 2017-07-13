@@ -169,6 +169,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
 
         std::ostringstream event_out;
+
         std::cout<<"opened/created event json "<<endl;
 
         vector<const DChargedTrack*> ChargedTracks;
