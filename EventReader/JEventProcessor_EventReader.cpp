@@ -174,7 +174,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         
         std::cout<<"opened/created event json "<<endl;
         //event_out<<"{\n";
-        
 
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DNeutralParticle*> NeutralTracks;

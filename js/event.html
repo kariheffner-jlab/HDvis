@@ -248,9 +248,8 @@ function autoplay_click() {
             scene.remove(event);
         }
 
-        //animate();
         drawCount=-1;
-        var eventLoader = new THREE.GluexEventLoader();
+        var eventLoader = new THREE.GluexEventLoader(ViewerConfig);
         eventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
             scene.add(loadedEvent);
@@ -441,6 +440,11 @@ function autoplay_click() {
                 if (thisGeo) {
                     thisGeo.drawRange.start = 0;
                     thisGeo.drawRange.count = drawCount;
+                    if(ViewerConfig.positive_track_line==='Off')
+                        thisGeo.drawRange.count = 0;
+                    if(ViewerConfig.positive_track_line==='Static')
+                        thisGeo.drawRange.count = max_swim_steps;
+
                     if (drawCount === 0) {
                         // periodically, generate new data
                         updatePositions(eventobjs[i],max_swim_steps);

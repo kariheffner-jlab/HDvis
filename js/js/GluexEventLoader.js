@@ -1,5 +1,6 @@
-THREE.GluexEventLoader = function () {
+THREE.GluexEventLoader = function (config) {
     this.EventData = null;
+    this.Configuration=config
 };
 
 THREE.GluexEventLoader.prototype = {
@@ -12,6 +13,7 @@ THREE.GluexEventLoader.prototype = {
     refs: {},
     meshes: [],
     geometry:null,
+    Configuration:null,
     TOFReferenceColor:null,
 
     setGeometry: function (geometry) {

@@ -13,6 +13,9 @@ var HDVisConfig = function() {
 
     this.ftofDetail = 'modules'; // "box", "sections", "modules"
 
+    this.positive_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.positive_track_line= 'Dynamic';
+
     this.positive_tracks=true;
     this.negative_tracks=true;
     this.neutral_tracks=true;
@@ -103,6 +106,12 @@ function makeGUI(){
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackVis(eventobjs,1,value);
         });
+
+    positiveTrackgui.add( config, 'positive_track_line', config.positive_track_lineOptions )
+        .name('Track Lines')
+        .onFinishChange(function(value) {
+            console.log(value);
+            });
 
     negativeTrackgui.add(config, 'negative_tracks', config.negative_tracks).name('Show Swim Points')
         .onFinishChange(function(value) {
