@@ -16,6 +16,12 @@ var HDVisConfig = function() {
     this.positive_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
     this.positive_track_line= 'Dynamic';
 
+    this.negative_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.negative_track_line= 'Dynamic';
+
+    this.neutral_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.neutral_track_line= 'Dynamic';
+
     this.positive_tracks=true;
     this.negative_tracks=true;
     this.neutral_tracks=true;
@@ -110,7 +116,7 @@ function makeGUI(){
     positiveTrackgui.add( config, 'positive_track_line', config.positive_track_lineOptions )
         .name('Track Lines')
         .onFinishChange(function(value) {
-            console.log(value);
+            //console.log(value);
             });
 
     negativeTrackgui.add(config, 'negative_tracks', config.negative_tracks).name('Show Swim Points')
@@ -119,10 +125,22 @@ function makeGUI(){
             gui_TrackVis(eventobjs,-1,value);
         });
 
+    negativeTrackgui.add( config, 'negative_track_line', config.negative_track_lineOptions )
+        .name('Track Lines')
+        .onFinishChange(function(value) {
+            //console.log(value);
+        });
+
     neutralTrackgui.add(config, 'neutral_tracks', config.neutral_tracks).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackVis(eventobjs,0,value);
+        });
+
+    neutralTrackgui.add( config, 'neutral_track_line', config.neutral_track_lineOptions )
+        .name('Track Lines')
+        .onFinishChange(function(value) {
+           // console.log(value);
         });
 
     Trackinggui.add(config, 'TrackingChiSq_NDF_cut', 0, 10).name("ChiSq/NDF cut").onChange(function(value) { this.TrackingChiSq_NDF_cut=value;

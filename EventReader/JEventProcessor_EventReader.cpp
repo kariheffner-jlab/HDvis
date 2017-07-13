@@ -131,7 +131,6 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
 // evnt
 //------------------
 jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumber) {
-
     // This is called for every event. Use of common resources like writing
     // to a file or filling a histogram should be mutex protected. Using
     // loop->Get(...) to get reconstructed objects (and thereby activating the

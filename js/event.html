@@ -440,9 +440,13 @@ function autoplay_click() {
                 if (thisGeo) {
                     thisGeo.drawRange.start = 0;
                     thisGeo.drawRange.count = drawCount;
-                    if(ViewerConfig.positive_track_line==='Off')
+                    if((ViewerConfig.positive_track_line==='Off' && eventobjs[i].userData.charge===1) ||
+                        (ViewerConfig.negative_track_line==='Off' && eventobjs[i].userData.charge===-1) ||
+                        (ViewerConfig.neutral_track_line==='Off' && eventobjs[i].userData.charge===0) )
                         thisGeo.drawRange.count = 0;
-                    if(ViewerConfig.positive_track_line==='Static')
+                    else if((ViewerConfig.positive_track_line==='Static' && eventobjs[i].userData.charge===1) ||
+                        (ViewerConfig.negative_track_line==='Static' && eventobjs[i].userData.charge===-1) ||
+                        (ViewerConfig.neutral_track_line==='Static' && eventobjs[i].userData.charge===0) )
                         thisGeo.drawRange.count = max_swim_steps;
 
                     if (drawCount === 0) {
