@@ -33,7 +33,7 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 		vector<factory_info_t> fac_info;
 
 		DMagneticFieldMap* Bfield;
-        DRootGeom* RootGeom;
+        DGeometry* Geom;
 
 
 

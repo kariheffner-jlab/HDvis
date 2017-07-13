@@ -20,7 +20,7 @@ class Tracking
 {
 public:
 
-    Tracking(DMagneticFieldMap* Bfield, DRootGeom* RootGeom)
+    Tracking(DMagneticFieldMap* Bfield, DGeometry* Geom)//DGeometry
     {
         int RMAX_INTERIOR=65;
         int RMAX_EXTERIOR=89;
@@ -28,8 +28,8 @@ public:
         rt->Rsqmax_interior = RMAX_INTERIOR*RMAX_INTERIOR;//innerBCAL radius
         rt->Rsqmax_exterior = RMAX_EXTERIOR*RMAX_EXTERIOR;
 
-        rt->SetDRootGeom(RootGeom);
-        rt->SetDGeometry(NULL);
+        rt->SetDRootGeom(NULL);
+        rt->SetDGeometry(Geom);
     };
 
 

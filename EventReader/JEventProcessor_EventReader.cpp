@@ -121,7 +121,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     }
 
     Bfield=gDana->GetBfield(uint(runnumber));
-    RootGeom=gDana->GetRootGeom(uint(runnumber));
+    Geom=gDana->GetDGeometry(uint(runnumber));//GetDGeometry(uint(runnumber))
     cout << endl;
 
     return NOERROR;
@@ -212,7 +212,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         try {
             //Setup the tracking to display tracking info
-            Tracking Tracks(Bfield,RootGeom);
+            Tracking Tracks(Bfield,Geom);
 
             //Will take the Charged Tracks given and visualize them
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
