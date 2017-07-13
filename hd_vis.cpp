@@ -10,9 +10,6 @@
 
 using namespace std;
 
-TGeoManager * hddsroot();
-//TGeoManager * getGeom();
-
 typedef void SetTFilePtrAddress_t(TFile **);
 TFile* tfilePtr = NULL;
 string OUTPUT_FILENAME = "hd_root.root";

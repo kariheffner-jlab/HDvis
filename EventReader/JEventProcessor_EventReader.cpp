@@ -73,6 +73,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     usleep(100000); //this just gives the Main thread a chance to finish printing the "Launching threads" message
     cout << endl;
 
+
     // If ACTIVATE_ALL is set then add EVERYTHING.
     if (ACTIVATE_ALL) {
         toprint = factory_names;
@@ -121,7 +122,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     }
 
     Bfield=gDana->GetBfield(uint(runnumber));
-    Geom=gDana->GetDGeometry(uint(runnumber));//GetDGeometry(uint(runnumber))
+    Geom=gDana->GetDGeometry(uint(runnumber));
     cout << endl;
 
     return NOERROR;
@@ -137,14 +138,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // reconstruction algorithm) should be done outside of any mutex lock
     // since multiple threads may call this method at the same time.
     // Here's an example:
-    //
+    ///
     // vector<const MyDataClass*> mydataclasses;
     // loop->Get(mydataclasses);
     //
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
-
     {
         static bool isFirstGoodEvent = true;
         auto lock = std::unique_lock<std::mutex>(hdvis::ApplicationContext::InnerLoopMutex);
@@ -163,16 +163,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             }
         }
 
-        //Skips the first few non-Physics events (find a better way)
-       if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))//&& FCALDigiHits.size()==0 && FCALClusters.size()==0 && FCALShowers.size()==0 && FCALTruthShowers.size()==0) {
+       if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))
         {
             return NOERROR;
         }
 
         std::ostringstream event_out;
-        
         std::cout<<"opened/created event json "<<endl;
-        //event_out<<"{\n";
 
         vector<const DChargedTrack*> ChargedTracks;
         vector<const DNeutralParticle*> NeutralTracks;

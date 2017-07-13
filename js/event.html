@@ -249,7 +249,8 @@ function autoplay_click() {
         }
 
         drawCount=-1;
-        var eventLoader = new THREE.GluexEventLoader(ViewerConfig);
+        var eventLoader = new THREE.GluexEventLoader();
+        eventLoader.setConfiguration(ViewerConfig);
         eventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
             scene.add(loadedEvent);

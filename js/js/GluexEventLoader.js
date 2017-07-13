@@ -1,6 +1,5 @@
 THREE.GluexEventLoader = function (config) {
     this.EventData = null;
-    this.Configuration=config
 };
 
 THREE.GluexEventLoader.prototype = {
@@ -20,6 +19,9 @@ THREE.GluexEventLoader.prototype = {
         this.geometry = geometry;
         var tofMesh = geometry.getObjectByName("FTOF");
         TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
+    },
+    setConfiguration: function (config) {
+        this.Configuration = config;
     },
 
     load: function (url, onLoad, onProgress, onError) {
@@ -60,31 +62,33 @@ THREE.GluexEventLoader.prototype = {
                 geometry.vertices.push( vertex );
                 });
 
-            if(track_charge == "1") {
-                var material = new THREE.PointsMaterial({
-                    color: 0xff0000,
-                    size: 4,
-                    opacity: .6,
-                    //blending: THREE.AdditiveBlending,
-                    transparent: true,
-                    sizeAttenuation: false
-                })
-                var trackMesh = new THREE.Points(geometry, material);
+            var trackcolor=new THREE.Color;
+            var swim_vis=false;
+            if(track_charge === 1) {
+                trackcolor= 0xff0000;
+                swim_vis=scope.Configuration.positive_tracks;
+
             }//console.log(track_charge);
-            else if(track_charge == "-1") {
-                var material = new THREE.PointsMaterial({
-                    color: 0x00ff00,
-                    size: 4,
-                    opacity: .6,
-                    //blending: THREE.AdditiveBlending,
-                    transparent: true,
-                    sizeAttenuation: false
-                })
-                var trackMesh= new THREE.Points( geometry, material );
+            else if(track_charge === -1) {
+                trackcolor= 0x00ff00;
+                swim_vis=scope.Configuration.negative_tracks;
             }
+            var material = new THREE.PointsMaterial({
+                color: trackcolor,
+                size: 4,
+                opacity: .6,
+                visible: swim_vis,
+                //blending: THREE.AdditiveBlending,
+                transparent: true,
+                sizeAttenuation: false
+            });
+
+             var trackMesh= new THREE.Points( geometry, material );
 
             trackMesh.userData={charge:track_charge, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
+
+
             scope.group.add(trackMesh);
 
             var linematerial = new THREE.LineBasicMaterial( { color: material.color, linewidth: 2 } );
@@ -119,6 +123,7 @@ THREE.GluexEventLoader.prototype = {
                 color: 0xffff00,
                 size: 4,
                 opacity:.6,
+                visible: scope.Configuration.neutral_tracks,
                 //blending: THREE.AdditiveBlending,
                 transparent: true,
                 sizeAttenuation: false
@@ -130,6 +135,8 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track_charge);
             trackMesh.userData={charge:0, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
+
+
             scope.group.add(trackMesh);
 
             var linematerial = new THREE.LineBasicMaterial( { color: material.color, linewidth: 2 } );
