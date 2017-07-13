@@ -33,9 +33,11 @@ THREE.GluexEventLoader.prototype = {
     },
 
     /** Function that works with loaded json */
+
+
     parse: function (text) {
         this.EventData = JSON.parse(text);
-
+        var eventNum=this.EventData.event_number;
         var scope = this;
         scene.name="Hall";
         // Iterate charged_tracks
@@ -236,14 +238,6 @@ THREE.GluexEventLoader.prototype = {
 
 
         var tofMesh = scope.geometry.getObjectByName("FTOF");
-
-        var TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
-
-        var geom = scene.getObjectByName('GluexGeometry');
-
-
-        // reset the geometry color
-        var zeroColor = new THREE.Color( 0xffffff );
 
         tofMesh.children.forEach(function (tofPlane) {
             tofPlane.children.forEach(function (tofSector) {

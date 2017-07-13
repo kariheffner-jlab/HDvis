@@ -158,6 +158,7 @@ function autoplay_click() {
 <script>
     var previousJanaState = "";
 
+
     (function poll() {
         //alert("hey");
         $.ajax({
@@ -208,7 +209,7 @@ function autoplay_click() {
     var gluexGeometry = null;
 
     keyState: new Array();
-    var drawCount=2;
+    var drawCount=-1;
 
     if(VRbool)
     {
@@ -247,8 +248,8 @@ function autoplay_click() {
             scene.remove(event);
         }
 
-        animate();
-
+        //animate();
+        drawCount=-1;
         var eventLoader = new THREE.GluexEventLoader();
         eventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
@@ -413,12 +414,12 @@ function autoplay_click() {
 
     }
     //
-    function updatePositions(lineGeo) {
+    function updatePositions(lineGeo,max_swim_steps) {
         var positions = lineGeo.children[0].geometry.attributes.position.array;
         var parent=lineGeo.geometry.vertices;
         var limit=parent.length;
         var index = 0;
-        for ( var i = 0; i<1000; i ++ ) {
+        for ( var i = 0; i<max_swim_steps; i ++ ) {
             if(parent[i]) {
                 positions[index++] = parent[i].x;
                 positions[index++] = parent[i].y;
@@ -433,7 +434,7 @@ function autoplay_click() {
         }
     }
 
-    function animateTrackLines(eventobjs) {
+    function animateTrackLines(eventobjs,max_swim_steps) {
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "track") {
                 var thisGeo = eventobjs[i].children[0].geometry;
@@ -442,7 +443,7 @@ function autoplay_click() {
                     thisGeo.drawRange.count = drawCount;
                     if (drawCount === 0) {
                         // periodically, generate new data
-                        updatePositions(eventobjs[i]);
+                        updatePositions(eventobjs[i],max_swim_steps);
                         thisGeo.attributes.position.needsUpdate = true; // required after the first render
                     }
                 }
@@ -452,11 +453,24 @@ function autoplay_click() {
     function animate() {
 
         requestAnimationFrame( animate );
-        drawCount = ( drawCount + 1 ) % 1000;
+
         controls.update();
-        if(scene.getObjectByName("GluexEvent")) {
-            var eventobjs = scene.getObjectByName("GluexEvent").children;
-            animateTrackLines(eventobjs);
+        var eventObj = scene.getObjectByName("GluexEvent");
+        if( eventObj ) {
+            var eventobjs = eventObj.children;
+            var max_swim_steps=0;
+            for (var i = 0; i < eventobjs.length; i++)
+            {
+                if (eventobjs[i].name.split('_')[0] === "track") {
+                    if(eventObj.children[i].geometry.vertices.length > max_swim_steps)
+                    {
+
+                        max_swim_steps=eventObj.children[i].geometry.vertices.length;
+                    }
+                }
+            }
+            drawCount = ( drawCount + 1 ) % max_swim_steps;
+            animateTrackLines(eventobjs,max_swim_steps);
         }
         //renderer.animate( render );
         render();

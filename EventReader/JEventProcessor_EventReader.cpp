@@ -216,7 +216,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             //Will take the Charged Tracks given and visualize them
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
-
             auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
 
             // StartCounter
@@ -249,7 +248,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             { "FCAL_showers", fcalShowersJson },
                                             { "BCAL_hits", bcalHitsJson },
                                             { "CDC_hits", cdcHitsJson },
-                                            { "FDC_hits", fdcHitsJson }
+                                            { "FDC_hits", fdcHitsJson },
+                                            {"event_number",eventnumber}
                                         });
 
             std::ofstream eventFile;
@@ -264,6 +264,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
         catch (std::exception& ex)
         {
+            std::cout<<"caught exception"<<endl;
             std::cout<< ex.what() << std::endl;
 
         }
