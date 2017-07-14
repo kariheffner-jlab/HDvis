@@ -72,6 +72,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     if (ACTIVATE_ALL) {
         toprint = factory_names;
     } else {
+
         // make sure factories exist for all requested data types
         // If a factory isn't found, but one with a "D" prefixed
         // is, go ahead and correct the name.
@@ -210,7 +211,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             // StartCounter
             auto scdHitsJson = StartC::Add_SCHits(SCHits);
 
-            // TOF
+            //TOF
             auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
             auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
 

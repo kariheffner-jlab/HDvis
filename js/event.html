@@ -246,13 +246,15 @@ function autoplay_click() {
             scene.remove(event);
         }
 
-        drawCount=-1;
+
         var eventLoader = new THREE.GluexEventLoader();
         eventLoader.setConfiguration(ViewerConfig);
         eventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
             scene.add(loadedEvent);
         });
+        clock.stop();
+        clock.start();
     }
 
     function init() {
@@ -402,13 +404,13 @@ function autoplay_click() {
         }
     }
 
-    function animateTrackLines(clock,time_scale,eventobjs,max_swim_steps) {
+    function animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps) {
 
         var SceneTime=clock.getElapsedTime();
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "track") {
                 var thisGeo = eventobjs[i].children[0].geometry;
-                var track_start=eventobjs[i].userData.start_time;
+                var track_start=(eventobjs[i].userData.start_time/time_scale)-min_start_time;
                 var draw_count=0;
 
                 for(;draw_count<max_swim_steps;draw_count++)
@@ -417,7 +419,7 @@ function autoplay_click() {
                     {
                         break;
                     }
-                    if(((eventobjs[i].userData.steps[draw_count])[3]+track_start)/time_scale>SceneTime )
+                    if((((eventobjs[i].userData.steps[draw_count])[3]/time_scale)+track_start)>SceneTime )
                     {
                         break;
                     }
@@ -446,21 +448,26 @@ function autoplay_click() {
         requestAnimationFrame( animate );
         var time_scale=2;
         var SceneTime=clock.getElapsedTime();
-        console.log(SceneTime);
+        // console.log(SceneTime);
         controls.update();
         var eventObj = scene.getObjectByName("GluexEvent");
         if( eventObj ) {
             var eventobjs = eventObj.children;
             var max_swim_steps=0;
             var max_swim_time=0;
+            var min_start_time=99999999999;
 
             for (var i = 0; i < eventobjs.length; i++)
             {
                 if (eventobjs[i].name.split('_')[0] === "track") {
                     var last_step=(eventObj.children[i].userData.steps.length)-1;
-                    if((eventObj.children[i].userData.start_time+eventObj.children[i].userData.steps[last_step][3])/time_scale > max_swim_time)
+                    if((eventObj.children[i].userData.steps[last_step][3])/time_scale > max_swim_time)
                     {
-                        max_swim_time=(eventObj.children[i].userData.start_time+eventObj.children[i].userData.steps[last_step][3])/time_scale;
+                        max_swim_time=(eventObj.children[i].userData.steps[last_step][3])/time_scale;
+                    }
+                    if(eventObj.children[i].userData.start_time < min_start_time)
+                    {
+                        min_start_time=eventObj.children[i].userData.start_time/time_scale;
                     }
                     if(eventObj.children[i].geometry.vertices.length > max_swim_steps)
                     {
@@ -469,7 +476,7 @@ function autoplay_click() {
                     }
                 }
             }
-            if(SceneTime>max_swim_time+5)
+            if(SceneTime>(max_swim_time+Math.abs(min_start_time)))
             {
                 clock.stop();
                 // required after the first render
@@ -483,9 +490,8 @@ function autoplay_click() {
                 }
                 clock.start();
             }
-            drawCount = ( drawCount + 1 ) % (max_swim_steps+100);
 
-            animateTrackLines(clock,time_scale,eventobjs,max_swim_steps);
+            animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps);
         }
         //renderer.animate( render );
         render();
