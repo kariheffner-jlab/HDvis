@@ -68,7 +68,6 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     usleep(100000); //this just gives the Main thread a chance to finish printing the "Launching threads" message
     cout << endl;
 
-
     // If ACTIVATE_ALL is set then add EVERYTHING.
     if (ACTIVATE_ALL) {
         toprint = factory_names;
@@ -97,7 +96,6 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
 
         toprint = really_toprint;
     }
-
     // At this point, toprint should contain a list of all factories
     // in dataClassName:tag format, that both exist and were requested.
     // Seperate the tag from the name and fill the fac_info vector.
