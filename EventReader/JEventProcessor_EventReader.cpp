@@ -29,7 +29,6 @@ extern string OUTPUT_FILENAME;
 #define ansi_normal        ansi_escape<<"[0m"
 
 // Routine used to create our JEventProcessor
-
 #include <mutex>
 
 extern DApplication *gDana;
@@ -40,7 +39,6 @@ extern DApplication *gDana;
 JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::ApplicationContext &context):
     _context(context)
 {
-
 }
 
 //------------------

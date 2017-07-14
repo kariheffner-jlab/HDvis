@@ -83,7 +83,7 @@ THREE.GluexEventLoader.prototype = {
 
              var trackMesh= new THREE.Points( geometry, material );
 
-            trackMesh.userData={charge:track_charge, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
+            trackMesh.userData={charge:track_charge, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF,start_time:track.start_time,steps:track.points}
             trackMesh.name = geometry.name;
 
 
@@ -128,7 +128,7 @@ THREE.GluexEventLoader.prototype = {
 
             var trackMesh= new THREE.Points( geometry , material );
 
-            trackMesh.userData={charge:0, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
+            trackMesh.userData={charge:0, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF,start_time:track.start_time,steps:track.points}
             trackMesh.name = geometry.name;
 
             scope.group.add(trackMesh);

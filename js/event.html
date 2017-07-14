@@ -430,22 +430,34 @@ function autoplay_click() {
     function animate() {
 
         requestAnimationFrame( animate );
-
-        console.log(clock.getDelta());
+        var SceneTime=clock.getElapsedTime();
+        console.log(SceneTime);
         controls.update();
         var eventObj = scene.getObjectByName("GluexEvent");
         if( eventObj ) {
             var eventobjs = eventObj.children;
             var max_swim_steps=0;
+            var max_swim_time=0;
+
             for (var i = 0; i < eventobjs.length; i++)
             {
                 if (eventobjs[i].name.split('_')[0] === "track") {
+                    var last_step=(eventObj.children[i].userData.steps.length)-1;
+                    if(eventObj.children[i].userData.start_time+eventObj.children[i].userData.steps[last_step][3] > max_swim_time)
+                    {
+                        max_swim_time=eventObj.children[i].userData.start_time+eventObj.children[i].userData.steps[last_step][3]
+                    }
                     if(eventObj.children[i].geometry.vertices.length > max_swim_steps)
                     {
 
                         max_swim_steps=eventObj.children[i].geometry.vertices.length;
                     }
                 }
+            }
+            if(SceneTime>max_swim_time+5)
+            {
+                clock.stop();
+                clock.start();
             }
             drawCount = ( drawCount + 1 ) % (max_swim_steps+100);
             animateTrackLines(eventobjs,max_swim_steps);
