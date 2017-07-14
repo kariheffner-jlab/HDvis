@@ -201,7 +201,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(SCHits);
 
         try {
-
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
 
@@ -228,6 +227,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             // FDC
             auto fdcHitsJson = FDC::Add_FDCHits(FDCHits);
+
 
             tao::json::value eventJson ({
                                             { "charged_tracks", chargedTracksJson },

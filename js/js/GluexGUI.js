@@ -29,6 +29,7 @@ var HDVisConfig = function() {
     this.negative_track_color = [0, 255, 0]; // RGB array
     this.neutral_track_color = [255, 255, 0]; // RGB array
     this.bkg_color = 0x000000;
+    this.time_scale=5; // ns/sec
 
     this.FCAL_EScale = 100.;
     this.TrackingChiSq_NDF_cut = 0.;
@@ -38,7 +39,7 @@ var HDVisConfig = function() {
 };
 
 
-function makeGUI(){
+function makeGUI(scene){
     var config = new HDVisConfig();
     var gui = new dat.GUI({load: JSON});
     gui.remember(config);
@@ -48,6 +49,8 @@ function makeGUI(){
             renderer.setClearColor(chosenColor);
             //  renderer.clearColor.setRGB(chosenColor[0]/255.,chosenColor[1]/255.,chosenColor[2]/255.);
         });
+
+    gui.add(config, 'time_scale', .1, 20).name("Time Scale (ns/s)").onChange(function(value) { this.time_scale=value;});
 
     gui.addFolder('CDC');
 

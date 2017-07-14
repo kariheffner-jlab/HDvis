@@ -446,7 +446,7 @@ function autoplay_click() {
     function animate() {
 
         requestAnimationFrame( animate );
-        var time_scale=2;
+        var time_scale=ViewerConfig.time_scale;
         var SceneTime=clock.getElapsedTime();
         // console.log(SceneTime);
         controls.update();
