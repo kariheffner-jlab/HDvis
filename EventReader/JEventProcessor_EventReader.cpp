@@ -16,8 +16,6 @@
 #include "SC.h"
 #include <TRACKING/DTrackCandidate.h>
 #include <DANA/DStatusBits.h>
-#include <fstream>
-
 
 using namespace jana;
 
@@ -41,7 +39,6 @@ extern DApplication *gDana;
 //------------------
 JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::ApplicationContext &context):
     _context(context)
-
 {
 
 }

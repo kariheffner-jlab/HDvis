@@ -37,8 +37,6 @@ THREE.GluexEventLoader.prototype = {
     },
 
     /** Function that works with loaded json */
-
-
     parse: function (text) {
         this.EventData = JSON.parse(text);
         var eventNum=this.EventData.event_number;
@@ -114,8 +112,6 @@ THREE.GluexEventLoader.prototype = {
                 vertex.y = point[1];
                 vertex.z = point[2];
 
-                //setRGB(track_color.r,track_color.g,track_color.b);
-
                 geometry.vertices.push( vertex );
             });
 
@@ -131,11 +127,9 @@ THREE.GluexEventLoader.prototype = {
 
 
             var trackMesh= new THREE.Points( geometry , material );
-            //scope.materials.neuTrack["color"]=0x0000ff;
-            //console.log(track_charge);
+
             trackMesh.userData={charge:0, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF};
             trackMesh.name = geometry.name;
-
 
             scope.group.add(trackMesh);
 
@@ -189,16 +183,12 @@ THREE.GluexEventLoader.prototype = {
             boxmesh.position.z=(655+(FCAL_EScale/2)*hit.E);//660
 
             boxmesh.userData={E:hit.E,column:hit.column,row:hit.row,x:hit.x,y:hit.y,intOverPeak:hit.intOverPeak,t:hit.t};
-            //userDataList=Object.keys(boxmesh.userData);
-            //console.log(userDataList.length);
-            //scene.add(boxmesh);
-            //console.log(userDataList[0]);
-            //console.log(boxmesh.userData[userDataList[0]]);
 
             boxmesh.name = geometry.name;
             scope.group.add(boxmesh);
             //console.log(track.charge);
         });
+
 
         this.EventData.FCAL_showers.forEach(function (shower) {
             //console.log(hit.id);
@@ -235,10 +225,6 @@ THREE.GluexEventLoader.prototype = {
             pointmesh.position.y=point.y;
             pointmesh.position.z=point.z;//+40 May not be needed.....
 
-            //scene.add(pointmesh);
-
-            //setRGB(track_color.r,track_color.g,track_color.b);
-            //console.log(track_charge);
 
             pointmesh.name = geometry.name;
             scope.group.add(pointmesh);
@@ -253,8 +239,8 @@ THREE.GluexEventLoader.prototype = {
                 tofSector.children.forEach(function (tofStrip) {
                     tofStrip.material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5});
                     //tofStrip.material.vertexColors=THREE.VertexColors;
-                    //tofStrip.userData.end0h=0;
-                    //tofStrip.userData.end1h=0;
+                    tofStrip.userData.end0h=0;
+                    tofStrip.userData.end1h=0;
                     //tofStrip.geometry.colorsNeedUpdate = true;
                 });
             });
@@ -357,7 +343,6 @@ THREE.GluexEventLoader.prototype = {
                     face_sent2 = 3;
                 }else
                 {
-
                     face_sent1 = 0;
                     //face_sent2 = 0;
                 }
@@ -368,8 +353,6 @@ THREE.GluexEventLoader.prototype = {
                     half_length=true;
 
                 for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
-
-
 
                     if((i===face_sent1 || i===face_sent2) && !half_length) {
                         for (var vjs = 0; vjs < 3; vjs++) {
@@ -399,15 +382,6 @@ THREE.GluexEventLoader.prototype = {
                 }
                 object.geometry.colorsNeedUpdate = true;
 
-                /*if(object.material.color === TOFReferenceColor)
-                {
-                    object.material.color.setRGB(1,1,0);
-                }
-               else
-               {
-                   object.material.color.setRGB(1,object.material.color.g-1./2.,0);
-
-               }*/
             }
             else {
                 console.log("DIDN'T FIND " + geoName);
@@ -415,8 +389,6 @@ THREE.GluexEventLoader.prototype = {
 
         });
         return this.group;
-    },
-
-
+    }
 
 };

@@ -191,7 +191,7 @@ function autoplay_click() {
     var clock = new THREE.Clock();
     var container, stats;
 
-    var camera,ortho_camera, controls, scene, renderer, raycaster, effect;
+    var camera,ortho_camera, controls, scene, renderer, raycaster;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -202,7 +202,6 @@ function autoplay_click() {
     var VRbool=false;
 
     var ViewerConfig;
-    var info;
     // start scene
     var mouse = new THREE.Vector2(), INTERSECTED;
 
@@ -290,9 +289,6 @@ function autoplay_click() {
                 document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
             } );
         }
-        //effect = new THREE.StereoEffect(renderer);
-        //effect.setSize(window.innerWidth, window.innerHeight);
-
 
         stats = new Stats();
         document.body.appendChild(stats.dom);
@@ -304,20 +300,6 @@ function autoplay_click() {
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
         document.addEventListener( 'keydown', onKeyDown, false );
-
-        var alpha = 0.5;
-        var gamma = 0.5;
-        var material = new THREE.MeshBasicMaterial( {
-            color: new THREE.Color().setHSL( alpha, 0.5, gamma * 0.5 ),
-            reflectivity: 0.1,
-            shading: THREE.SmoothShading
-        } );
-
-        var meshMaterial = new THREE.MeshLambertMaterial( {
-            color: 0xffffff,
-            opacity: 0.5,
-            transparent: true
-        } );
 
         var geometryLoader = new THREE.GluexHDDSLoader();
 
@@ -345,7 +327,6 @@ function autoplay_click() {
         texture1.minFilter=THREE.LinearFilter;
         texture1.needsUpdate = true;
 
-
         var spriteMaterial = new THREE.SpriteMaterial( { map: texture1} );
 
         sprite1 = new THREE.Sprite( spriteMaterial );
@@ -353,16 +334,9 @@ function autoplay_click() {
         sprite1.position.set( mouse.x, mouse.y, 0 );
         scene.add( sprite1 );
 
-
-        // ref for lumens: http://www.power-sure.com/lumens.htm
-
-        // Here is our mighty config
-
         // GUI----------------------------------------------------------------------------------------
-        ViewerConfig=makeGUI();
+        ViewerConfig=makeGUI(scene);
     }
-
-
 
     function onDocumentMouseMove( event ) {
         event.preventDefault();
@@ -386,34 +360,29 @@ function autoplay_click() {
 
             case 86: VRbool = !VRbool;break;//v
             case 87: camera.translateZ(-MoveDelta);camera.updateMatrixWorld();
-                camera.getWorldDirection( camera_facing );
-                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
-                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//w
+                resetOrbitPoint(controls,camera,camera_facing);break;//w
             case 83: camera.translateZ(MoveDelta);camera.updateMatrixWorld();
-                camera.getWorldDirection( camera_facing );
-                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
-                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//s
-            case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();camera.getWorldDirection( camera_facing );
-                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
-                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//a
+                resetOrbitPoint(controls,camera,camera_facing);break;//s
+            case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();
+                resetOrbitPoint(controls,camera,camera_facing);break;//a
             case 68: camera.translateX(MoveDelta);camera.updateMatrixWorld();
-                camera.getWorldDirection( camera_facing );
-                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
-                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//d
+                resetOrbitPoint(controls,camera,camera_facing);break;//d
             case 32: camera.translateY(MoveDelta);camera.updateMatrixWorld();
-                camera.getWorldDirection( camera_facing );
-                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
-                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//spacebar
+                resetOrbitPoint(controls,camera,camera_facing);break;//spacebar
             case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();
-                camera.getWorldDirection( camera_facing );
-                orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
-                controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);break;//z
+                break;//z
 
          }
 
     }
     //
-    function updatePositions(lineGeo,max_swim_steps) {
+    function resetOrbitPoint(controls,camera,camera_facing)
+    {
+        camera.getWorldDirection( camera_facing );
+        orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+        controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);
+    }
+    function updateTrackPositions(lineGeo,max_swim_steps) {
         var positions = lineGeo.children[0].geometry.attributes.position.array;
         var parent=lineGeo.geometry.vertices;
         var limit=parent.length;
@@ -451,7 +420,7 @@ function autoplay_click() {
 
                     if (drawCount === 0) {
                         // periodically, generate new data
-                        updatePositions(eventobjs[i],max_swim_steps);
+                        updateTrackPositions(eventobjs[i],max_swim_steps);
                         thisGeo.attributes.position.needsUpdate = true; // required after the first render
                     }
                 }
@@ -503,15 +472,11 @@ function autoplay_click() {
 
         var intersects = raycaster.intersectObjects( event.children);// Make improvement
 
-
         if ( intersects.length > 0 ) {
-
 
             if ( INTERSECTED !== intersects[ 0 ].object ) //you are over an object and it isn't the same one as before (otherwise do nothing)
             {
                 if ( INTERSECTED ) {
-
-
                     //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
                     INTERSECTED.material.wireframe=false;
                 }
@@ -548,11 +513,7 @@ function autoplay_click() {
                     context1.clearRect(0,0,300,300);
                     texture1.needsUpdate = true;
                 }
-
-
             }
-
-
         }else {
 
             if ( INTERSECTED ) {
@@ -563,30 +524,6 @@ function autoplay_click() {
             texture1.needsUpdate = true;
         }
 
-
-        //scroll through vertices making visible
-/*        if(scene.getObjectByName("GluexEvent") && (clock.elapsedTime/10)%2===0) {
-            var eventobjs = scene.getObjectByName("GluexEvent").children;
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "track") {
-                    var trackverticies = eventobjs[i].geometry.vertices;
-
-                    for (var j = 0; j < trackverticies.length; j++) {
-                        if (!trackverticies[j].visibility) {
-                            trackverticies[j].visibility = true;
-                            eventobjs[i].geometry.needsUpdate = true;
-                            break;
-                        }
-                        else
-                        {
-                            trackverticies[j].visibility = false;
-                            eventobjs[i].geometry.needsUpdate = true;
-                        }
-                    }
-                }
-            }
-        }
-*/
         if(VRbool)
         {
             

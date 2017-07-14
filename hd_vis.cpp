@@ -10,33 +10,18 @@
 
 using namespace std;
 
-typedef void SetTFilePtrAddress_t(TFile **);
-TFile* tfilePtr = NULL;
-string OUTPUT_FILENAME = "hd_root.root";
-string COMMAND_LINE_OUTPUT_FILENAME = "";
-bool filename_from_command_line = false;
+//typedef void SetTFilePtrAddress_t(TFile **);
+//TFile* tfilePtr = NULL;
+//string OUTPUT_FILENAME = "hd_root.root";
+//string COMMAND_LINE_OUTPUT_FILENAME = "";
+//bool filename_from_command_line = false;
 
 void ParseCommandLineArguments(int &narg, char *argv[]);
 void DecideOutputFilename(void);
 void Usage(void);
 
-
 DApplication *gDana;
 hdvis::ControlLoop gControlLoop;
-
-class LineBufferedOutput : public std::streambuf
-{
-    std::vector<char> myBuffer;
-protected:
-    int overflow( int ch ) override
-    {
-        myBuffer.push_back( ch );
-        if ( ch == '\n' ) {
-            //   whatever you have to do...
-        }
-        //  return traits::eof() for failure...
-    }
-};
 
 //-----------
 // main
@@ -46,28 +31,18 @@ int main(int narg, char *argv[])
 	// Parse the command line
 	ParseCommandLineArguments(narg, argv);
 
-	// Create ROOT application 
-	// Instantiate an event loop object
-    //new TGeoManager("GLUEX", "GlueX Geometry");
 	DApplication dana(narg, argv);
     gDana=&dana;
 
 	// Instantiate our event processor
     auto myproc = new JEventProcessor_EventReader(gControlLoop.Context());
 
-
-
     gControlLoop.RunRootAppMultithreaded();
-    //gControlLoop.RunRootAppThisThread();
-
-
 
     // Run though all events, calling our event processor's methods
     dana.monitor_heartbeat = false;
     dana.Run(myproc);
 	return dana.GetExitCode();
-
-
 
     return 0;
 
@@ -97,8 +72,8 @@ void ParseCommandLineArguments(int &narg, char *argv[])
 					cerr<<"\"-o\" requires a filename!"<<endl;
 					exit(-1);
 				}
-				COMMAND_LINE_OUTPUT_FILENAME = argv[i+1];
-				filename_from_command_line = true;
+				//COMMAND_LINE_OUTPUT_FILENAME = argv[i+1];
+				//filename_from_command_line = true;
 				
 				// Remove the "-o fname" arguments from file list so
 				// JANA won't think the "fname" is an input file.
@@ -120,21 +95,21 @@ void Usage(void)
 	if(app == NULL) app = new DApplication(0, NULL);
 
 	cout<<"Usage:"<<endl;
-	cout<<"       hd_root [options] source1 source2 ..."<<endl;
+	cout<<"       EveStandAlone source "<<endl;
 	cout<<endl;
 	cout<<"Process events from a Hall-D data source (e.g. a file)"<<endl;
-	cout<<"This will create a ROOT file that plugins or debug histos"<<endl;
-	cout<<"can write into."<<endl;
+	//cout<<"This will create a ROOT file that plugins or debug histos"<<endl;
+	//cout<<"can write into."<<endl;
 	cout<<endl;
-	cout<<"Options:"<<endl;
-	cout<<endl;
+	/*cout<<"Options:"<<endl;
+	cout<<endl;*/
 	app->Usage();
-	cout<<endl;
+/*	cout<<endl;
 	cout<<"   -h        Print this message"<<endl;
 	cout<<"   -Dname    Activate factory for data of type \"name\" (can be used multiple times)"<<endl;
 	cout<<"   -A        Activate factories (overrides and -DXXX options)"<<endl;
 	cout<<"   -o fname  Set output filename (default is \"hd_root.root\")"<<endl;
-	cout<<endl;
+	cout<<endl;*/
 
 	exit(0);
 }
