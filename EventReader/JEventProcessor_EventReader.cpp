@@ -228,7 +228,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             // FDC
             auto fdcHitsJson = FDC::Add_FDCHits(FDCHits);
 
-
             tao::json::value eventJson ({
                                             { "charged_tracks", chargedTracksJson },
                                             { "neutral_tracks", neutralTracksJson },

@@ -533,9 +533,16 @@ function autoplay_click() {
                 {
 
                     context1.clearRect(0,0,1024,512);
-                    var userDataList=Object.keys(intersects[ 0 ].object.userData);
+                    var objType= intersects[ 0 ].object.name.split("_")[0];
                     var message = intersects[ 0 ].object.name.split("_")[1];
-                    for(var i=0;i<userDataList.length;i++)
+                    var total_data=userDataList.length;
+
+                    if(objType==="track")
+                    {
+                        total_data--;
+                    }
+
+                    for(var i=0;i<total_data;i++)
                     {
                         message+=",";
                         message+=userDataList[i]+":";
