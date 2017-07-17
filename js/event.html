@@ -555,7 +555,7 @@ function autoplay_click() {
                     context1.clearRect(0,0,1024,512);
                     var objType= intersects[ 0 ].object.name.split("_")[0];
                     var message = intersects[ 0 ].object.name.split("_")[1];
-                    var userDataList=intersects[ 0 ].object.userData;
+                    var userDataList=Object.keys(intersects[ 0 ].object.userData);
                     var total_data=userDataList.length;
 
                     if(objType==="track")
