@@ -404,9 +404,18 @@ function autoplay_click() {
         }
     }
 
-    function animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps) {
+    function animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time) {
 
         var SceneTime=clock.getElapsedTime();
+
+        var timeToShow=(min_start_time+SceneTime)*time_scale;
+        if( timeToShow>(min_start_time+max_swim_time)*time_scale)
+        {
+            timeToShow=(min_start_time+max_swim_time)*time_scale;
+        }
+
+
+
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "track") {
                 var thisGeo = eventobjs[i].children[0].geometry;
@@ -429,15 +438,20 @@ function autoplay_click() {
                     thisGeo.drawRange.start = 0;
 
                     thisGeo.drawRange.count = draw_count;
+                    ViewerConfig.SceneTimeMessage=timeToShow;
 
                     if((ViewerConfig.positive_track_line==='Off' && eventobjs[i].userData.charge===1) ||
                         (ViewerConfig.negative_track_line==='Off' && eventobjs[i].userData.charge===-1) ||
-                        (ViewerConfig.neutral_track_line==='Off' && eventobjs[i].userData.charge===0) )
+                        (ViewerConfig.neutral_track_line==='Off' && eventobjs[i].userData.charge===0) ) {
                         thisGeo.drawRange.count = 0;
+                        ViewerConfig.SceneTimeMessage = (min_start_time + max_swim_time) * time_scale;
+                    }
                     else if((ViewerConfig.positive_track_line==='Static' && eventobjs[i].userData.charge===1) ||
                         (ViewerConfig.negative_track_line==='Static' && eventobjs[i].userData.charge===-1) ||
-                        (ViewerConfig.neutral_track_line==='Static' && eventobjs[i].userData.charge===0) )
+                        (ViewerConfig.neutral_track_line==='Static' && eventobjs[i].userData.charge===0) ) {
                         thisGeo.drawRange.count = max_swim_steps;
+                        ViewerConfig.SceneTimeMessage = (min_start_time + max_swim_time) * time_scale;
+                    }
 
                 }
             }
@@ -476,6 +490,7 @@ function autoplay_click() {
                     }
                 }
             }
+
             if(SceneTime>(max_swim_time+Math.abs(min_start_time)))
             {
                 clock.stop();
@@ -491,7 +506,7 @@ function autoplay_click() {
                 clock.start();
             }
 
-            animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps);
+            animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time);
         }
         //renderer.animate( render );
         render();
