@@ -138,21 +138,23 @@
     <span id="janaStatus" style="color: darkgray"> JANA status </span>
 </nav>
 <script>
-function next_click() {
-    console.log("calling /api/v1/next");
-    var xhr = new XMLHttpRequest();
-    previousJanaState = "Processing";
-    xhr.open('GET', "/api/v1/next", true);
-    xhr.send();
+    function next_click() {
+        console.log("calling /api/v1/next");
+        firstShowing=true;
+        clock.stop();
+        var xhr = new XMLHttpRequest();
+        previousJanaState = "Processing";
+        xhr.open('GET', "/api/v1/next", true);
+        xhr.send();
 
-}
+    }
 
-function autoplay_click() {
-    console.log("calling /api/v1/autoplay-on");
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', "/api/v1/autoplay-on", true);
-    xhr.send();
-}
+    function autoplay_click() {
+        console.log("calling /api/v1/autoplay-on");
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', "/api/v1/autoplay-on", true);
+        xhr.send();
+    }
 </script>
 
 <script>
@@ -198,7 +200,7 @@ function autoplay_click() {
 
     var canvas1, context1, texture1;
     var sprite1;
-
+    var firstShowing=true;
     var VRbool=false;
 
     var ViewerConfig;
@@ -253,6 +255,7 @@ function autoplay_click() {
         eventLoader.load('./event.json', function(loadedEvent) {
             scene.add(loadedEvent);
         });
+        firstShowing=true;
         clock.stop();
         clock.start();
     }
@@ -374,7 +377,7 @@ function autoplay_click() {
             case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();
                 break;//z
 
-         }
+        }
 
     }
     //
@@ -406,7 +409,14 @@ function autoplay_click() {
 
     function animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time) {
 
+        if(firstShowing)
+        {
+            clock.stop();
+            clock.start();
+        }
+
         var SceneTime=clock.getElapsedTime()*time_scale;
+
 
         var timeToShow=(min_start_time+SceneTime);
         if( timeToShow>(max_total_time))
@@ -461,6 +471,13 @@ function autoplay_click() {
 
         requestAnimationFrame( animate );
         var time_scale=ViewerConfig.time_scale;
+
+        if(firstShowing)
+        {
+            clock.stop();
+            clock.start();
+        }
+
         var SceneTime=clock.getElapsedTime()*time_scale;
         // console.log(SceneTime);
         controls.update();
@@ -495,8 +512,12 @@ function autoplay_click() {
                 }
             }
 
-            if(SceneTime+min_start_time>(max_total_time+2*time_scale))//includes a 2 second delay at the end
+            if((SceneTime+min_start_time>(max_total_time+2*time_scale)) || firstShowing)//includes a 2 second delay at the end
             {
+                if(firstShowing)
+                {
+                    firstShowing=false;
+                }
                 clock.stop();
                 ViewerConfig.SceneTimeMessage=min_start_time.toFixed(3);
                 // required after the first render
@@ -598,7 +619,7 @@ function autoplay_click() {
 
         if(VRbool)
         {
-            
+
             if(renderer.vr)
                 renderer.vr.enabled = true;
 
@@ -606,7 +627,7 @@ function autoplay_click() {
 
         }
         else {
-           // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+            // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
             //renderer.vr.enabled = false;
             if(renderer.vr)
                 renderer.vr.enabled = false;
