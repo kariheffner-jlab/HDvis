@@ -495,7 +495,7 @@ function autoplay_click() {
                 }
             }
 
-            if(SceneTime>(max_total_time))
+            if(SceneTime+min_start_time>(max_total_time+2*time_scale))//includes a 2 second delay at the end
             {
                 clock.stop();
                 ViewerConfig.SceneTimeMessage=min_start_time;
