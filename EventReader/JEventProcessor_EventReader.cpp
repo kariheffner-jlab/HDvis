@@ -242,6 +242,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             std::ofstream eventFile;
             eventFile.open("www/event.json");
+
             std::cout<<"opened/created event json "<<endl;
             eventFile<< tao::json::to_string(eventJson, 4);
 
