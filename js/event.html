@@ -375,7 +375,7 @@
             case 32: camera.translateY(MoveDelta);camera.updateMatrixWorld();
                 resetOrbitPoint(controls,camera,camera_facing);break;//spacebar
             case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();
-                break;//z
+                resetOrbitPoint(controls,camera,camera_facing);break;//z
 
         }
 

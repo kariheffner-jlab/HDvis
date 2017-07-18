@@ -249,6 +249,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             eventFile.close();
 
             cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
+
         }
         catch (std::exception& ex)
         {
