@@ -255,7 +255,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             std::cout<<"caught exception"<<endl;
             std::cout<< ex.what() << std::endl;
         }
-
     }   // <- unlock EventMutex
 
     _context.SetCurrentEventNumber(eventnumber);

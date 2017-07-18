@@ -22,9 +22,9 @@ var HDVisConfig = function() {
     this.neutral_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
     this.neutral_track_line= 'Dynamic';
 
-    this.positive_tracks=true;
-    this.negative_tracks=true;
-    this.neutral_tracks=true;
+    this.positive_tracks=false;
+    this.negative_tracks=false;
+    this.neutral_tracks=false;
     this.positive_track_color = [255, 0, 0]; // RGB array
     this.negative_track_color = [0, 255, 0]; // RGB array
     this.neutral_track_color = [255, 255, 0]; // RGB array
