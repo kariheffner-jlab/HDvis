@@ -159,7 +159,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                 }
             }
         }
-
        if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))
         {
             return NOERROR;
