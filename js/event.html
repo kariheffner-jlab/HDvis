@@ -408,6 +408,41 @@
         }
     }
 
+    function animateFCALHits(clock,time_scale,eventobjs,min_start_time,max_total_time)
+    {
+        var SceneTime=clock.getElapsedTime()*time_scale;
+
+
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].name.split('_')[0] === "FCALHit") {
+                if (ViewerConfig.TOFPointVis === "Dynamic") {
+                    if (SceneTime + min_start_time > eventobjs[i].userData.t) {
+                        //console.log( "start: "+eventobjs[i].geometry.parameters.depth);
+                        eventobjs[i].geometry=new THREE.BoxGeometry(2,2,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
+                        eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2));//(655+((SceneTime/max_total_time)*eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)/2);
+                        eventobjs[i].geometryNeedsUpdate=true;
+
+                    }
+                    else if (SceneTime + min_start_time < eventobjs[i].userData.t && eventobjs[i].geometry.parameters.depth !== 0 ) {
+                        eventobjs[i].geometry=new THREE.BoxGeometry(2,2,0);
+                        eventobjs[i].position.z= (655+0);
+                        eventobjs[i].geometryNeedsUpdate=true;
+                    }
+                }
+                else if(ViewerConfig.FCALHitVis === "Off" && eventobjs[i].material.visibile===true)
+                {
+                    eventobjs[i].material.visibile=false;
+                }
+                else if(ViewerConfig.FCALHitVis === "Static" && eventobjs[i].geometry.parameters.depth !== 0)
+                {
+                    eventobjs[i].geometry=new THREE.BoxGeometry(2,2,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
+                    eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2));
+                    eventobjs[i].geometryNeedsUpdate=true;
+                }
+            }
+        }
+    }
+
     function animateTOFPoints(clock,time_scale,eventobjs,min_start_time)
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
@@ -596,7 +631,8 @@
             }
 
             animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
-            animateTOFPoints(clock,time_scale,eventobjs,min_start_time)
+            animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
+            animateFCALHits(clock,time_scale,eventobjs,min_start_time);
         }
         //renderer.animate( render );
         render();

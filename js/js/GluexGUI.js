@@ -13,17 +13,20 @@ var HDVisConfig = function() {
 
     this.ftofDetail = 'modules'; // "box", "sections", "modules"
 
-    this.positive_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.positive_track_lineOptions ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.positive_track_line= 'Dynamic';
 
-    this.negative_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.negative_track_lineOptions ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.negative_track_line= 'Dynamic';
 
-    this.neutral_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.neutral_track_lineOptions ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.neutral_track_line= 'Dynamic';
 
-    this.TOFPoint_Options ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
+
+    this.FCALHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.FCALHitVis= 'Dynamic';
 
     this.positive_tracks=false;
     this.negative_tracks=false;
@@ -72,6 +75,28 @@ function makeGUI(scene){
                 eventobjs[i].geometry.elementsNeedUpdate=true;
                 eventobjs[i].geometry.verticesNeedUpdate=true;
             }
+        }
+    });
+
+    fcalGuiFolder.add( config, 'FCALHitVis', config.FCALHit_Options )
+        .name('FCAL Hits').onFinishChange(function(value) {
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FCALHit") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FCALHit" && eventobjs[i].material.visible===0) {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
         }
     });
 

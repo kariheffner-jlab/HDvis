@@ -139,7 +139,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // vector<const MyDataClass*> mydataclasses;
     // loop->Get(mydataclasses);
     //
-    //
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...
     // japp->RootFillUnLock(this);
@@ -160,6 +159,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                 }
             }
         }
+
        if(!loop->GetJEvent().GetStatusBit(kSTATUS_PHYSICS_EVENT))
         {
             return NOERROR;
