@@ -136,6 +136,7 @@
     <a href="#" class="button gray" OnClick="next_click()">next</a>
     <a id="autoPlay" href="#" class="button gray" OnClick="autoplay_click()">autoplay</a>
     <span id="janaStatus" style="color: darkgray"> JANA status </span>
+    <span style="display: block; text-align: center;color: green; font-size: 30px" id="EventClock" > Event Clock </span>
 </nav>
 <script>
     function next_click() {
@@ -427,7 +428,8 @@
 
         var errNum=99999999999;
         if(ViewerConfig.SceneTimeMessage===errNum.toFixed(3)) {
-            ViewerConfig.SceneTimeMessage = "NO TRACKS IN EVENT"
+            $("#EventClock").text("NO TRACKS IN EVENT");
+            //ViewerConfig.SceneTimeMessage = "NO TRACKS IN EVENT"
         }
 
 
@@ -453,19 +455,22 @@
                     thisGeo.drawRange.start = 0;
 
                     thisGeo.drawRange.count = draw_count;
-                    ViewerConfig.SceneTimeMessage=timeToShow.toFixed(3);
+                    //ViewerConfig.SceneTimeMessage=timeToShow.toFixed(3);
+                    $("#EventClock").text(timeToShow.toFixed(3)+ " ns");
 
                     if((ViewerConfig.positive_track_line==='Off' && eventobjs[i].userData.charge===1) ||
                         (ViewerConfig.negative_track_line==='Off' && eventobjs[i].userData.charge===-1) ||
                         (ViewerConfig.neutral_track_line==='Off' && eventobjs[i].userData.charge===0) ) {
                         thisGeo.drawRange.count = 0;
-                        ViewerConfig.SceneTimeMessage = max_total_time.toFixed(3);
+                        //ViewerConfig.SceneTimeMessage = max_total_time.toFixed(3);
+                        $("#EventClock").text(timeToShow.toFixed(3)+ " ns");
                     }
                     else if((ViewerConfig.positive_track_line==='Static' && eventobjs[i].userData.charge===1) ||
                         (ViewerConfig.negative_track_line==='Static' && eventobjs[i].userData.charge===-1) ||
                         (ViewerConfig.neutral_track_line==='Static' && eventobjs[i].userData.charge===0) ) {
                         thisGeo.drawRange.count = max_swim_steps;
-                        ViewerConfig.SceneTimeMessage = max_total_time.toFixed(3);
+                        //ViewerConfig.SceneTimeMessage = max_total_time.toFixed(3);
+                        $("#EventClock").text(timeToShow.toFixed(3)+ " ns");
                     }
 
                 }

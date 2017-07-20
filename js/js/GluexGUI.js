@@ -33,7 +33,7 @@ var HDVisConfig = function() {
 
     this.FCAL_EScale = 100.;
     this.TrackingChiSq_NDF_cut = 0.;
-    this.SceneTimeMessage=""
+    //this.SceneTimeMessage=""
 
     // Thomas, here is GUI examples:
     // http://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -51,7 +51,7 @@ function makeGUI(scene){
             //  renderer.clearColor.setRGB(chosenColor[0]/255.,chosenColor[1]/255.,chosenColor[2]/255.);
         });
 
-    gui.add(config, 'SceneTimeMessage').name("Event Time (ns)").listen();
+    //gui.add(config, 'SceneTimeMessage').name("Event Time (ns)").listen();
 
     gui.add(config, 'time_scale', .1, 20).name("Time Scale (ns/s)").onChange(function(value) { this.time_scale=value;});
 
