@@ -74,7 +74,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
         toprint = factory_names;
     } else {
 
-        // make sure factories exist for all requested data types
+        // make sure factories exist fdor all requested data types
         // If a factory isn't found, but one with a "D" prefixed
         // is, go ahead and correct the name.
         vector<string> really_toprint;
@@ -85,6 +85,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
                 if (factory_names[j] == toprint[i])found = 1;
                 if (factory_names[j] == "D" + toprint[i])dfound = 1;
             }
+
             if (found)
                 really_toprint.push_back(toprint[i]);
             else if (dfound)
@@ -98,6 +99,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
 
         toprint = really_toprint;
     }
+
     // At this point, toprint should contain a list of all factories
     // in dataClassName:tag format, that both exist and were requested.
     // Seperate the tag from the name and fill the fac_info vector.
@@ -133,9 +135,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
     // reconstruction algorithm) should be done outside of any mutex lock
     // since multiple threads may call this method at the same time.
     // Here's an example:
-    ///
+    //
     // vector<const MyDataClass*> mydataclasses;
     // loop->Get(mydataclasses);
+    //
     //
     // japp->RootFillLock(this);
     //  ... fill historgrams or trees ...

@@ -225,6 +225,7 @@ THREE.GluexEventLoader.prototype = {
             pointmesh.position.y=point.y;
             pointmesh.position.z=point.z;//+40 May not be needed.....
 
+            pointmesh.userData={t:point.t};
 
             pointmesh.name = geometry.name;
             scope.group.add(pointmesh);
