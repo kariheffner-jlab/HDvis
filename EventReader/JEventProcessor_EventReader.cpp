@@ -68,6 +68,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     usleep(100000); //this just gives the Main thread a chance to finish printing the "Launching threads" message
     cout << endl;
 
+
     // If ACTIVATE_ALL is set then add EVERYTHING.
     if (ACTIVATE_ALL) {
         toprint = factory_names;

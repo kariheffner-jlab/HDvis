@@ -414,9 +414,22 @@
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
-                if(SceneTime>eventobjs[i].userData.t) {
-                    eventobjs[i].geometry = new THREE.SphereGeometry(10 * Math.sin(SceneTime) * Math.sin(SceneTime), 32, 32, 0, 6.3, 0, 6.3);
+                if(SceneTime>eventobjs[i].userData.t && eventobjs[i].userData.t>=0 ) {
+                    eventobjs[i].geometry = new THREE.SphereGeometry(6, 32, 32, 0, 6.3, 0, 6.3);
                     eventobjs[i].geometryNeedsUpdate = true;
+                    eventobjs[i].material.color.r=1;
+                    eventobjs[i].material.color.g=0;
+                    eventobjs[i].material.color.b=0;
+                    eventobjs[i].colorsNeedUpdate=true;
+                }
+                else if(eventobjs[i].material.color.r===1)
+                {
+                    eventobjs[i].geometry = new THREE.SphereGeometry(2, 32, 32, 0, 6.3, 0, 6.3);
+                    eventobjs[i].geometryNeedsUpdate = true;
+                    eventobjs[i].material.color.r=0;
+                    eventobjs[i].material.color.g=0;
+                    eventobjs[i].material.color.b=1;
+                    eventobjs[i].colorsNeedUpdate=true;
                 }
             }
         }
@@ -535,6 +548,17 @@
                         max_total_time=(eventObj.children[i].userData.steps[last_step][3])+eventObj.children[i].userData.start_time
                     }
                 }
+                //two tof point classes (in track time...or out) so don't let them contribute to min/max time
+                /*if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
+                 if(eventObj.children[i].userData.t < min_start_time)
+                 {
+                 min_start_time=eventObj.children[i].userData.t;
+                 }
+                 if(eventObj.children[i].userData.t > max_total_time)
+                 {
+                 max_total_time=eventObj.children[i].userData.t;
+                 }
+                 }*/
             }
 
             if((SceneTime+min_start_time>(max_total_time+2*time_scale)) || firstShowing)//includes a 2 second delay at the end
