@@ -22,6 +22,9 @@ var HDVisConfig = function() {
     this.neutral_track_lineOptions ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
     this.neutral_track_line= 'Dynamic';
 
+    this.TOFPoint_Options ={"Static": 'Static', "Dynamic": 'Dynamic', "Off": 'Off'};
+    this.TOFPointVis= 'Dynamic';
+
     this.positive_tracks=false;
     this.negative_tracks=false;
     this.neutral_tracks=false;
@@ -106,6 +109,28 @@ function makeGUI(scene){
             // Fires when a controller loses focus.
             //alert("The new value is " + value);
         });
+
+    tofGuiFolder.add( config, 'TOFPointVis', config.TOFPoint_Options )
+        .name('TOF Points').onFinishChange(function(value) {
+            if(value==="Off") {
+                var eventobjs = scene.getObjectByName("GluexEvent").children;
+                for (var i = 0; i < eventobjs.length; i++) {
+                    if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
+                        eventobjs[i].material.visible = 0;
+                    }
+                }
+            }
+            else
+            {
+                var eventobjs = scene.getObjectByName("GluexEvent").children;
+                for (var i = 0; i < eventobjs.length; i++) {
+                    if (eventobjs[i].name.split('_')[0] === "TOFPoint" && eventobjs[i].material.visible===0) {
+                        eventobjs[i].material.visible = 1;
+                    }
+                }
+
+            }
+    });
 
     var Trackinggui= gui.addFolder('Tracking');
 
