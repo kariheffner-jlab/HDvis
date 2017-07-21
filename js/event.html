@@ -428,7 +428,7 @@
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "FCALHit") {
-                if (ViewerConfig.TOFPointVis === "Dynamic") {
+                if (ViewerConfig.FCALHitVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t) {
                         eventobjs[i].scale.set(1,1,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
                         eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2));//(655+((SceneTime/max_total_time)*eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)/2);
@@ -445,9 +445,9 @@
                 {
                     eventobjs[i].material.visibile=false;
                 }
-                else if(ViewerConfig.FCALHitVis === "Static" && eventobjs[i].geometry.parameters.depth !== 0)
+                else if(ViewerConfig.FCALHitVis === "Static" && eventobjs[i].scale.z !== eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)
                 {
-                    eventobjs[i].geometry=new THREE.BoxGeometry(2,2,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
+                    eventobjs[i].scale.set(1,1,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
                     eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2));
                     eventobjs[i].geometryNeedsUpdate=true;
                 }
@@ -486,7 +486,7 @@
                 }
                 else if(ViewerConfig.TOFPointVis === "Static"&& eventobjs[i].material.color.r===1)
                 {
-                    eventobjs[i].geometry = new THREE.SphereGeometry(2, 32, 32, 0, 6.3, 0, 6.3);
+                    eventobjs[i].scale.set(1,1,1);
                     eventobjs[i].geometryNeedsUpdate = true;
                     eventobjs[i].material.color.r = 0;
                     eventobjs[i].material.color.g = 0;

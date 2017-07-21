@@ -170,24 +170,28 @@ function makeGUI(scene){
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackVis(eventobjs,1,value);
+
         });
 
     positiveTrackgui.add( config, 'positive_track_line', config.positive_track_lineOptions )
         .name('Track Lines')
         .onFinishChange(function(value) {
             //console.log(value);
+            config.TimingsNeedsUpdate=true;
         });
 
     negativeTrackgui.add(config, 'negative_tracks', config.negative_tracks).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             gui_TrackVis(eventobjs,-1,value);
+
         });
 
     negativeTrackgui.add( config, 'negative_track_line', config.negative_track_lineOptions )
         .name('Track Lines')
         .onFinishChange(function(value) {
             //console.log(value);
+            config.TimingsNeedsUpdate=true;
         });
 
     neutralTrackgui.add(config, 'neutral_tracks', config.neutral_tracks).name('Show Swim Points')
@@ -200,6 +204,7 @@ function makeGUI(scene){
         .name('Track Lines')
         .onFinishChange(function(value) {
             // console.log(value);
+            config.TimingsNeedsUpdate=true;
         });
 
     Trackinggui.add(config, 'TrackingChiSq_NDF_cut', 0, 10).name("ChiSq/NDF cut").onChange(function(value) { this.TrackingChiSq_NDF_cut=value;

@@ -153,7 +153,7 @@ THREE.GluexEventLoader.prototype = {
             geometry.name = "FCALHit_" + hit.id;
 
             var box=new THREE.BoxGeometry(2,2,1/*hit.E*FCAL_EScale*/);
-            var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7});
+            var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7, visible: scope.Configuration.FCALHitVis});
 
             var redness=Math.abs(hit.t)*(6);
             if (redness < 255.) {
@@ -217,7 +217,7 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "TOFPoint_" + point.id;
 
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8});
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.FCALHitVis});
             var tofpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
 
             var pointmesh= new THREE.Mesh(tofpoint,material);
