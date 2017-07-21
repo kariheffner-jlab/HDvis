@@ -39,6 +39,7 @@ var HDVisConfig = function() {
 
     this.FCAL_EScale = 100.;
     this.TrackingChiSq_NDF_cut = 0.;
+    this.TimingsNeedsUpdate=true;
     //this.SceneTimeMessage=""
 
     // Thomas, here is GUI examples:
@@ -98,6 +99,7 @@ function makeGUI(scene){
             }
 
         }
+        config.TimingsNeedsUpdate=true;
     });
 
     tofGuiFolder
@@ -137,24 +139,25 @@ function makeGUI(scene){
 
     tofGuiFolder.add( config, 'TOFPointVis', config.TOFPoint_Options )
         .name('TOF Points').onFinishChange(function(value) {
-            if(value==="Off") {
-                var eventobjs = scene.getObjectByName("GluexEvent").children;
-                for (var i = 0; i < eventobjs.length; i++) {
-                    if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
-                        eventobjs[i].material.visible = 0;
-                    }
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
+                    eventobjs[i].material.visible = 0;
                 }
             }
-            else
-            {
-                var eventobjs = scene.getObjectByName("GluexEvent").children;
-                for (var i = 0; i < eventobjs.length; i++) {
-                    if (eventobjs[i].name.split('_')[0] === "TOFPoint" && eventobjs[i].material.visible===0) {
-                        eventobjs[i].material.visible = 1;
-                    }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "TOFPoint" && eventobjs[i].material.visible===0) {
+                    eventobjs[i].material.visible = 1;
                 }
+            }
 
-            }
+        }
+        config.TimingsNeedsUpdate=true;
     });
 
     var Trackinggui= gui.addFolder('Tracking');
@@ -173,7 +176,7 @@ function makeGUI(scene){
         .name('Track Lines')
         .onFinishChange(function(value) {
             //console.log(value);
-            });
+        });
 
     negativeTrackgui.add(config, 'negative_tracks', config.negative_tracks).name('Show Swim Points')
         .onFinishChange(function(value) {
@@ -196,7 +199,7 @@ function makeGUI(scene){
     neutralTrackgui.add( config, 'neutral_track_line', config.neutral_track_lineOptions )
         .name('Track Lines')
         .onFinishChange(function(value) {
-           // console.log(value);
+            // console.log(value);
         });
 
     Trackinggui.add(config, 'TrackingChiSq_NDF_cut', 0, 10).name("ChiSq/NDF cut").onChange(function(value) { this.TrackingChiSq_NDF_cut=value;
@@ -249,8 +252,8 @@ function makeGUI(scene){
             gui_TrackColor(eventobjs,0,colorChosen);
         });
 
-        gui.open();
-        return config;
+    gui.open();
+    return config;
 }
 
 

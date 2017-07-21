@@ -210,6 +210,13 @@
 
     var gluexGeometry = null;
 
+    var max_swim_steps=0;
+    var max_swim_time=0;
+    var min_start_time=99999999999;
+    var max_total_time=-9999999999;
+
+    var animationTimings=[min_start_time,max_swim_steps,max_swim_time,max_total_time];
+
     keyState: new Array();
 
 
@@ -257,6 +264,12 @@
             scene.add(loadedEvent);
         });
         firstShowing=true;
+        max_swim_steps=0;
+        max_swim_time=0;
+        min_start_time=99999999999;
+        max_total_time=-9999999999;
+        ViewerConfig.TimingsNeedUpdate=true;
+
         clock.stop();
         clock.start();
     }
@@ -554,6 +567,58 @@
             }
         }
     }
+
+    function UpdateAnimationTriggers(eventobjs)
+    {
+        max_swim_steps=0;
+        max_swim_time=0;
+        min_start_time=99999999999;
+        max_total_time=-9999999999;
+        for (var i = 0; i < eventobjs.length; i++)
+        {
+            if (eventobjs[i].name.split('_')[0] === "track") {
+                var last_step=(eventobjs[i].userData.steps.length)-1;
+                if((eventobjs[i].userData.steps[last_step][3]) > max_swim_time)
+                {
+                    max_swim_time=(eventobjs[i].userData.steps[last_step][3]);
+                }
+                if(eventobjs[i].userData.start_time < min_start_time)
+                {
+                    min_start_time=eventobjs[i].userData.start_time;
+                }
+                if(eventobjs[i].geometry.vertices.length > max_swim_steps)
+                {
+                    max_swim_steps=eventobjs[i].geometry.vertices.length;
+                }
+                if((eventobjs[i].userData.steps[last_step][3])+eventobjs[i].userData.start_time > max_total_time)
+                {
+                    max_total_time=(eventobjs[i].userData.steps[last_step][3])+eventobjs[i].userData.start_time
+                }
+            }
+            //two tof point classes (in track time...or out) so don't let them contribute to min/max time
+            if(ViewerConfig.TOFPointVis !== "Off" && ViewerConfig.TOFPointVis !=="Static" ) {
+                if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
+                    if (eventobjs[i].userData.t < min_start_time) {
+                        min_start_time = eventobjs[i].userData.t;
+                    }
+                    if (eventobjs[i].userData.t > max_total_time) {
+                        max_total_time = eventobjs[i].userData.t;
+                    }
+                }
+            }
+            if(ViewerConfig.FCALHitVis !== "Off" && ViewerConfig.FCALHitVis !=="Static" ) {
+                if (eventobjs[i].name.split('_')[0] === "FCALHit") {
+                    if (eventobjs[i].userData.t < min_start_time) {
+                        min_start_time = eventobjs[i].userData.t;
+                    }
+                    if (eventobjs[i].userData.t > max_total_time) {
+                        max_total_time = eventobjs[i].userData.t;
+                    }
+                }
+            }
+        }
+    }
+
     function animate() {
 
         requestAnimationFrame( animate );
@@ -571,43 +636,10 @@
         var eventObj = scene.getObjectByName("GluexEvent");
         if( eventObj ) {
             var eventobjs = eventObj.children;
-            var max_swim_steps=0;
-            var max_swim_time=0;
-            var min_start_time=99999999999;
-            var max_total_time=-9999999999;
 
-            for (var i = 0; i < eventobjs.length; i++)
-            {
-                if (eventobjs[i].name.split('_')[0] === "track") {
-                    var last_step=(eventObj.children[i].userData.steps.length)-1;
-                    if((eventObj.children[i].userData.steps[last_step][3]) > max_swim_time)
-                    {
-                        max_swim_time=(eventObj.children[i].userData.steps[last_step][3]);
-                    }
-                    if(eventObj.children[i].userData.start_time < min_start_time)
-                    {
-                        min_start_time=eventObj.children[i].userData.start_time;
-                    }
-                    if(eventObj.children[i].geometry.vertices.length > max_swim_steps)
-                    {
-                        max_swim_steps=eventObj.children[i].geometry.vertices.length;
-                    }
-                    if((eventObj.children[i].userData.steps[last_step][3])+eventObj.children[i].userData.start_time > max_total_time)
-                    {
-                        max_total_time=(eventObj.children[i].userData.steps[last_step][3])+eventObj.children[i].userData.start_time
-                    }
-                }
-                //two tof point classes (in track time...or out) so don't let them contribute to min/max time
-                if(ViewerConfig.TOFPointVis !== "Off" && ViewerConfig.TOFPointVis !=="Static" ) {
-                    if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
-                        if (eventObj.children[i].userData.t < min_start_time) {
-                            min_start_time = eventObj.children[i].userData.t;
-                        }
-                        if (eventObj.children[i].userData.t > max_total_time) {
-                            max_total_time = eventObj.children[i].userData.t;
-                        }
-                    }
-                }
+            if(ViewerConfig.TimingsNeedsUpdate===true) {
+                UpdateAnimationTriggers(eventobjs);
+                ViewerConfig.TimingsNeedsUpdate = false;
             }
 
             if((SceneTime+min_start_time>(max_total_time+2*time_scale)) || firstShowing)//includes a 2 second delay at the end
