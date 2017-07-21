@@ -430,15 +430,14 @@
             if (eventobjs[i].name.split('_')[0] === "FCALHit") {
                 if (ViewerConfig.TOFPointVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t) {
-                        //console.log( "start: "+eventobjs[i].geometry.parameters.depth);
-                        eventobjs[i].geometry=new THREE.BoxGeometry(2,2,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
+                        eventobjs[i].scale.set(1,1,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
                         eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2));//(655+((SceneTime/max_total_time)*eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)/2);
                         eventobjs[i].geometryNeedsUpdate=true;
 
                     }
                     else if (SceneTime + min_start_time < eventobjs[i].userData.t && eventobjs[i].geometry.parameters.depth !== 0 ) {
-                        eventobjs[i].geometry=new THREE.BoxGeometry(2,2,0);
-                        eventobjs[i].position.z= (655+0);
+                        eventobjs[i].scale.set(1,1,1);
+                        eventobjs[i].position.z= (655+1);
                         eventobjs[i].geometryNeedsUpdate=true;
                     }
                 }
@@ -465,7 +464,7 @@
             if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
                 if (ViewerConfig.TOFPointVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t && eventobjs[i].material.color.b === 1) {
-                        eventobjs[i].geometry = new THREE.SphereGeometry(6, 32, 32, 0, 6.3, 0, 6.3);
+                        eventobjs[i].scale.set(3,3,3);
                         eventobjs[i].geometryNeedsUpdate = true;
                         eventobjs[i].material.color.r = 1;
                         eventobjs[i].material.color.g = 0;
@@ -473,7 +472,7 @@
                         eventobjs[i].colorsNeedUpdate = true;
                     }
                     else if (SceneTime + min_start_time < eventobjs[i].userData.t && eventobjs[i].material.color.r === 1) {
-                        eventobjs[i].geometry = new THREE.SphereGeometry(2, 32, 32, 0, 6.3, 0, 6.3);
+                        eventobjs[i].scale.set(1,1,1);
                         eventobjs[i].geometryNeedsUpdate = true;
                         eventobjs[i].material.color.r = 0;
                         eventobjs[i].material.color.g = 0;
