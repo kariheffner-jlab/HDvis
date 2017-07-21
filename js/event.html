@@ -148,6 +148,7 @@
         xhr.open('GET', "/api/v1/next", true);
         xhr.send();
 
+
     }
 
     function autoplay_click() {
@@ -241,7 +242,7 @@
 
     function loadEventFromFile() {
         if(!gluexGeometry){
-            console.info("Can't load event because geometry is still not loaded")
+            console.info("Can't load event because geometry is still not loaded");
             return;
         }
 
@@ -262,13 +263,9 @@
         eventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
             scene.add(loadedEvent);
+            UpdateAnimationTriggers(loadedEvent.children);
         });
         firstShowing=true;
-        max_swim_steps=0;
-        max_swim_time=0;
-        min_start_time=99999999999;
-        max_total_time=-9999999999;
-        ViewerConfig.TimingsNeedUpdate=true;
 
         clock.stop();
         clock.start();
