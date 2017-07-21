@@ -155,25 +155,15 @@ THREE.GluexEventLoader.prototype = {
             var box=new THREE.BoxGeometry(2,2,1/*hit.E*FCAL_EScale*/);
             var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7, visible: scope.Configuration.FCALHitVis});
 
-            var redness=Math.abs(hit.t)*(6);
-            if (redness < 255.) {
-                //console.log("in if");
-                redness = Math.abs(hit.t) * (6);
-            }
-            else
-            {
-                redness=255;
-            }
-            redness=redness/255;
-            //console.log(redness);
+
             if (hit.t >= 0.0) {
-                material.color.r = redness;
+                material.color.r = 1;
                 material.color.g = 0;
                 material.color.b = 0;
             }
             else {
                 material.color.r = 0;
-                material.color.g = redness;
+                material.color.g = 1;
                 material.color.b = 0;
             }
 

@@ -73,7 +73,6 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     if (ACTIVATE_ALL) {
         toprint = factory_names;
     } else {
-
         // make sure factories exist fdor all requested data types
         // If a factory isn't found, but one with a "D" prefixed
         // is, go ahead and correct the name.
