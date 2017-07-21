@@ -186,7 +186,7 @@ THREE.GluexEventLoader.prototype = {
             geometry.name = "FCALShower_" + shower.id;
 
 
-            var cone=new THREE.ConeGeometry(10,20,60,60,0,0,2*Math.PI);
+            var cone=new THREE.ConeGeometry(1,1,60,60,0,0,2*Math.PI);//(10,20...)
             cone.userData="hi";
             var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4});
             material.side = THREE.DoubleSide;
@@ -196,6 +196,8 @@ THREE.GluexEventLoader.prototype = {
             conemesh.position.y=shower.y;
             conemesh.position.z=shower.z+20;//+30;//+40 May not be needed.....
             conemesh.rotation.x = -1*Math.PI/2;
+
+            conemesh.userData={fTime:shower.fTime};
 
             conemesh.name = geometry.name;
             scope.group.add(conemesh);

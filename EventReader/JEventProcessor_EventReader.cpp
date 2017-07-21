@@ -123,7 +123,6 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
 
     return NOERROR;
 }
-
 //------------------
 // evnt
 //------------------

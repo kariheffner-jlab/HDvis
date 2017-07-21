@@ -28,6 +28,9 @@ var HDVisConfig = function() {
     this.FCALHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FCALHitVis= 'Dynamic';
 
+    this.FCALShower_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.FCALShowerVis= 'Dynamic';
+
     this.positive_tracks=false;
     this.negative_tracks=false;
     this.neutral_tracks=false;
@@ -94,6 +97,28 @@ function makeGUI(scene){
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
                 if (eventobjs[i].name.split('_')[0] === "FCALHit" && eventobjs[i].material.visible===0) {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
+        }
+        config.TimingsNeedsUpdate=true;
+    });
+    fcalGuiFolder.add( config, 'FCALShowerVis', config.FCALShower_Options )
+        .name('FCAL Showers').onFinishChange(function(value) {
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FCALShower") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FCALShower" && eventobjs[i].material.visible===0) {
                     eventobjs[i].material.visible = 1;
                 }
             }
