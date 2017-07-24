@@ -273,13 +273,13 @@ THREE.GluexEventLoader.prototype = {
                     object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
                 }
 
-                object.userData.HitTimes.push(time);
-                object.userData.HitTimes.sort();
+                object.userData.HitTimes.push({end:end,time:time});
+                object.userData.HitTimes.sort('time');
                 object.material.vertexColors=THREE.VertexColors;
 
                 var numhits=0;
-                console.log(object);
-                if(end===0)
+                //console.log(object);
+                /*if(end===0)
                 {
                     //console.log(object.userData.end0h);
                     object.userData.end0h++;
@@ -292,7 +292,7 @@ THREE.GluexEventLoader.prototype = {
                     object.userData.end1h++;
                     //console.log(object.userData.end1h);
                     numhits=object.userData.end1h;
-                }
+                }*/
 
                 var color = new THREE.Color( 0xffffff );
 
