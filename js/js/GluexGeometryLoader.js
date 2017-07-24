@@ -161,7 +161,7 @@ THREE.GluexGeometryLoader.prototype = {
             module.position.set(0, 0 + i*moduleY, 0);
 
 
-            module.name = "TOF_" + planeNum + "_" + (startIndex+i);
+            module.name = "TOFBar_" + planeNum + "_" + (startIndex+i);
             if(isRight) module.name += "_r";
             section.add(module);
         }

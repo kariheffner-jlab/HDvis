@@ -18,7 +18,7 @@ THREE.GluexEventLoader.prototype = {
     setGeometry: function (geometry) {
         this.geometry = geometry;
         var tofMesh = geometry.getObjectByName("FTOF");
-        TOFReferenceColor= tofMesh.getObjectByName("TOF_p1_m1",true).material.color;
+        TOFReferenceColor= tofMesh.getObjectByName("TOFBar_p1_m1",true).material.color;
     },
     setConfiguration: function (config) {
         this.Configuration = config;
@@ -58,7 +58,7 @@ THREE.GluexEventLoader.prototype = {
 
                 //setRGB(track_color.r,track_color.g,track_color.b);
                 geometry.vertices.push( vertex );
-                });
+            });
 
             var trackcolor=new THREE.Color;
             var swim_vis=false;
@@ -81,7 +81,7 @@ THREE.GluexEventLoader.prototype = {
                 sizeAttenuation: false
             });
 
-             var trackMesh= new THREE.Points( geometry, material );
+            var trackMesh= new THREE.Points( geometry, material );
 
             trackMesh.userData={charge:track_charge, momentum:track.momentum, TrackChiSq_NDF:track.TrackChiSq_NDF,start_time:track.start_time,steps:track.points}
             trackMesh.name = geometry.name;
@@ -194,7 +194,7 @@ THREE.GluexEventLoader.prototype = {
             var conemesh= new THREE.Mesh(cone,material);
             conemesh.position.x=shower.x;
             conemesh.position.y=shower.y;
-            conemesh.position.z=shower.z+20;//+30;//+40 May not be needed.....
+            conemesh.position.z=shower.z;//+20;d May not be needed.....
             conemesh.rotation.x = -1*Math.PI/2;
 
             conemesh.userData={fTime:shower.fTime};
@@ -234,33 +234,30 @@ THREE.GluexEventLoader.prototype = {
                     //tofStrip.material.vertexColors=THREE.VertexColors;
                     tofStrip.userData.end0h=0;
                     tofStrip.userData.end1h=0;
+                    tofStrip.userData.HitTimes=[];
                     //tofStrip.geometry.colorsNeedUpdate = true;
                 });
             });
         });
 
         var TOFOneHitColor = new THREE.Color;
-
         TOFOneHitColor.setRGB(1,1,0);
 
         var TOFTwoHitColor = new THREE.Color;
-
         TOFTwoHitColor.setRGB(1,.66,0);
 
         var TOFThreeHitColor = new THREE.Color;
-
         TOFThreeHitColor.setRGB(1,0,0);
 
         this.EventData.TOF_hits.forEach(function (hit) {
             //get the object to change and change it
-           // console.log("hit id:"+hit.id);
+            // console.log("hit id:"+hit.id);
             var plane=hit.plane;
             var bar=hit.bar;
             var end = hit.end;
+            var time=hit.t;
 
-            var block="FTOB";
-
-            var geoName="TOF_p" + plane + "_m"+(bar-1);
+            var geoName="TOFBar_p" + plane + "_m"+(bar-1);
 
             if((bar-1===21 || bar-1===22) && end===0)
             {
@@ -271,16 +268,19 @@ THREE.GluexEventLoader.prototype = {
             //getObjectByName( "TestBox", true );
 
 
+
             if(object)
             {
                 if(object.geometry.type==="BufferGeometry") {
                     object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
                 }
 
+                object.userData.HitTimes.push(time);
+                object.userData.HitTimes.sort();
                 object.material.vertexColors=THREE.VertexColors;
 
                 var numhits=0;
-
+                console.log(object);
                 if(end===0)
                 {
                     //console.log(object.userData.end0h);
@@ -315,18 +315,18 @@ THREE.GluexEventLoader.prototype = {
                 }
                 else
                 {
-                 //   console.log("more hit");
+                    //   console.log("more hit");
                     color.setRGB(1,0,0);
                 }
 
-               /* var inside=glowMesh.insideMesh.material.uniforms;
-                inside.glowColor.value.setRGB(color.r,color.g,color.b);
-                inside.power.value=.5;
-                var outside=glowMesh.insideMesh.material.uniforms;
+                /* var inside=glowMesh.insideMesh.material.uniforms;
+                 inside.glowColor.value.setRGB(color.r,color.g,color.b);
+                 inside.power.value=.5;
+                 var outside=glowMesh.insideMesh.material.uniforms;
 
-                outside.glowColor.value.setRGB(color.r,color.g,color.b);
-                outside.power.value=.5;
-                console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
+                 outside.glowColor.value.setRGB(color.r,color.g,color.b);
+                 outside.power.value=.5;
+                 console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
 
                 var face_sent1=-1;
                 var face_sent2=-1;
