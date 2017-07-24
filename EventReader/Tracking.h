@@ -123,7 +123,7 @@ public:
             {
                 DVector3 step_loc=steps[j].origin;
                 //cout<<i<<"|"<<step_loc.X()<<","<<step_loc.Y()<<","<<step_loc.Z()<<endl;
-                if(step_loc.Z()>625 )
+                if(step_loc.Z()>645/*625*/ )
                     break;
 
                 if(step_loc.Z()<=0)
