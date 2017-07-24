@@ -483,6 +483,148 @@
         }
     }
 
+    function animateTOFHits(clock,time_scale,min_start_time,max_total_time)
+    {
+        var SceneTime=clock.getElapsedTime()*time_scale;
+
+        var eventObj = scene.getObjectByName("GluexGeometry");
+        if(eventObj) {
+
+
+
+            var TOFOneHitColor = new THREE.Color;
+            TOFOneHitColor.setRGB(1,1,0);
+
+            var TOFTwoHitColor = new THREE.Color;
+            TOFTwoHitColor.setRGB(1,.66,0);
+
+            var TOFThreeHitColor = new THREE.Color;
+            TOFThreeHitColor.setRGB(1,0,0);
+
+            var geoobjs=eventObj.getObjectByName("FTOF");
+
+            for(var plane=0;plane<geoobjs.children.length;plane++)
+            {
+                for(var block=0;block<geoobjs.children[plane].children.length;block++)
+                {
+                    for(var bar=0;bar<geoobjs.children[plane].children[block].children.length;bar++)
+                    {
+
+                        if (ViewerConfig.TOFHitVis === "Dynamic") {
+                            var j=0;
+                            for(;j<geoobjs.children[plane].children[block].children[bar].userData.HitTimes.length;j++)
+                            {
+                                if (SceneTime + min_start_time < geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j])
+                                    break;
+                            }
+                            var colorR=1;
+                            var colorG=1;
+                            var colorB=1;
+                            if(j===0)
+                            {
+                                colorR=1;
+                                colorG=1;
+                                colorB=1;
+
+                            }
+                            else if(j===1)
+                            {
+                                colorR=1;
+                                colorG=1;
+                                colorB=0;
+                                //console.log("first hit");
+                            }
+                            else if(j===2)
+                            {
+                                colorR=1;
+                                colorG=.66;
+                                colorB=0;
+                                //console.log("second hit");
+                            }
+                            else if(j===3)
+                            {
+                                colorR=1;
+                                colorG=0;
+                                colorB=0;
+                                //console.log("second hit");
+                            }
+                            else
+                            {
+                                colorR=1;
+                                colorG=0;
+                                colorB=0;
+                            }
+
+                            if(j===0)
+                            {
+                                continue;
+                            }
+                            var face_sent1=-1;
+                            var face_sent2=-1;
+
+                            var end=1;
+                            if(end===1) {
+                                face_sent1 = 2;
+                                face_sent2 = 3;
+                            }else
+                            {
+                                face_sent1 = 0;
+                                //face_sent2 = 0;
+                            }
+
+                            var half_length=false;
+
+                            if(bar - 1 === 21 || bar - 1 === 22)
+                                half_length=true;
+
+                            geoobjs.children[plane].children[block].children[bar].material.vertexColors=THREE.VertexColors;
+
+                            for ( var i = 0; i < geoobjs.children[plane].children[block].children[bar].geometry.faces.length; i ++ ) {
+
+                                if ((i === face_sent1 || i === face_sent2) && !half_length) {
+                                    for (var vjs = 0; vjs < 3; vjs++) {
+
+                                        //var sidecolor = new THREE.Color(0x00ff00);
+                                        //geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color=color;
+                                        geoobjs.children[plane].children[block].children[bar].geometry.faces[i].vertexColors[vjs].setRGB(colorR,colorG,colorB);// = color;//sidecolor;
+                                        geoobjs.children[plane].children[block].children[bar].geometry.colorsNeedUpdate = true;
+                                    }
+
+                                }
+                                else {
+                                    var sent = 0;
+                                    if (end === 1)
+                                        sent = 1;
+
+                                    if (i % 2 === sent || half_length) {
+                                        for (var vj = 0; vj < 3; vj++) {
+
+                                            //geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color=color;
+                                            geoobjs.children[plane].children[block].children[bar].geometry.faces[i].vertexColors[vj].setRGB(colorR,colorG,colorB);
+                                            geoobjs.children[plane].children[block].children[bar].geometry.colorsNeedUpdate = true;
+
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+                        else if (ViewerConfig.TOFHitVis === "Off" ) {
+                            //just chill
+                        }
+                        else if (ViewerConfig.TOFHitVis === "Static") {
+                            // set color based on length of HitTimes array
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
     function animateTOFPoints(clock,time_scale,eventobjs,min_start_time)
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
@@ -653,6 +795,26 @@
                     }
                 }
             }
+            if(ViewerConfig.TOFHitVis !== "Off" && ViewerConfig.TOFHitVis !=="Static" ) {
+
+                var geoobjs=scene.getObjectByName("FTOF",true);
+
+                for(var plane=0;plane<geoobjs.children.length;plane++) {
+                    for (var block = 0; block < geoobjs.children[plane].children.length; block++) {
+                        for (var bar = 0; bar < geoobjs.children[plane].children[block].children.length; bar++) {
+                            for(var hit=0;hit<geoobjs.children[plane].children[block].children[bar].userData.HitTimes.length;hit++) {
+
+                                if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit] < min_start_time) {
+                                    min_start_time = geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit];
+                                }
+                                if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit] > max_total_time) {
+                                    max_total_time = geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -700,6 +862,7 @@
             }
 
             animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
+            animateTOFHits(clock,time_scale,min_start_time,max_total_time);
             animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
             animateFCALHits(clock,time_scale,eventobjs,min_start_time);
             animateFCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time);

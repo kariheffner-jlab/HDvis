@@ -22,6 +22,9 @@ var HDVisConfig = function() {
     this.neutral_track_lineOptions ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.neutral_track_line= 'Dynamic';
 
+    this.TOFHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.TOFHitVis= 'Dynamic';
+
     this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
 

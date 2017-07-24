@@ -32,16 +32,13 @@ extern string OUTPUT_FILENAME;
 #include <mutex>
 
 extern DApplication *gDana;
-
 //------------------
 // JEventProcessor_EventReader (Constructor)
 //------------------
 JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::ApplicationContext &context):
     _context(context)
 {
-
 }
-
 //------------------
 // ~JEventProcessor_EventReader (Destructor)
 //------------------
@@ -57,7 +54,6 @@ jerror_t JEventProcessor_EventReader::init(void) {
 
     return NOERROR;
 }
-
 //------------------
 // brun
 //------------------
@@ -205,6 +201,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         try {
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
+
 
             //Will take the Charged Tracks given and visualize them
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);

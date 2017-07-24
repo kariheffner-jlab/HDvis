@@ -267,8 +267,6 @@ THREE.GluexEventLoader.prototype = {
             var object = tofMesh.getObjectByName(geoName,true);
             //getObjectByName( "TestBox", true );
 
-
-
             if(object)
             {
                 if(object.geometry.type==="BufferGeometry") {
@@ -298,26 +296,26 @@ THREE.GluexEventLoader.prototype = {
 
                 var color = new THREE.Color( 0xffffff );
 
-                if(numhits===1)
-                {
-                    //console.log("first hit");
-                    color=TOFOneHitColor;
-                }
-                else if(numhits===2)
-                {
-                    //console.log("second hit");
-                    color=TOFTwoHitColor;
-                }
-                else if(numhits===3)
-                {
-                    //console.log("second hit");
-                    color=TOFThreeHitColor;
-                }
-                else
-                {
-                    //   console.log("more hit");
-                    color.setRGB(1,0,0);
-                }
+                /* if(numhits===1)
+                 {
+                     //console.log("first hit");
+                     color=TOFOneHitColor;
+                 }
+                 else if(numhits===2)
+                 {
+                     //console.log("second hit");
+                     color=TOFTwoHitColor;
+                 }
+                 else if(numhits===3)
+                 {
+                     //console.log("second hit");
+                     color=TOFThreeHitColor;
+                 }
+                 else
+                 {
+                     //   console.log("more hit");
+                     color.setRGB(1,0,0);
+                 }*/
 
                 /* var inside=glowMesh.insideMesh.material.uniforms;
                  inside.glowColor.value.setRGB(color.r,color.g,color.b);
