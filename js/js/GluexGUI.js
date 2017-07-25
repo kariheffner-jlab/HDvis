@@ -165,6 +165,34 @@ function makeGUI(scene){
             //alert("The new value is " + value);
         });
 
+    tofGuiFolder.add( config, 'TOFHitVis', config.TOFHit_Options )
+        .name('TOF Hits').onFinishChange(function(value) {
+        if(value==="Off") {
+            var geoobjs = scene.getObjectByName("FTOF",true);
+
+            for (var plane = 0; plane < geoobjs.children.length; plane++) {
+                for (var block = 0; block < geoobjs.children[plane].children.length; block++) {
+                    for (var bar = 0; bar < geoobjs.children[plane].children[block].children.length; bar++) {
+
+                        for (var i = 0; i < geoobjs.children[plane].children[block].children[bar].geometry.faces.length; i++) {
+                            if(geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color.r!==1 ||
+                                geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color.g!==1 ||
+                                geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color.b!==1)
+                            {
+                                geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color.r=1;
+                                geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color.g=1;
+                                geoobjs.children[plane].children[block].children[bar].geometry.faces[i].color.b=1;
+                                geoobjs.children[plane].children[block].children[bar].geometry.colorsNeedUpdate = true;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        config.TimingsNeedsUpdate=true;
+    });
+
     tofGuiFolder.add( config, 'TOFPointVis', config.TOFPoint_Options )
         .name('TOF Points').onFinishChange(function(value) {
         if(value==="Off") {

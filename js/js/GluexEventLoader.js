@@ -230,7 +230,7 @@ THREE.GluexEventLoader.prototype = {
         tofMesh.children.forEach(function (tofPlane) {
             tofPlane.children.forEach(function (tofSector) {
                 tofSector.children.forEach(function (tofStrip) {
-                    tofStrip.material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5});
+                    tofStrip.material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, vertexColors: THREE.VertexColors});
                     //tofStrip.material.vertexColors=THREE.VertexColors;
                     tofStrip.userData.end0h=0;
                     tofStrip.userData.end1h=0;
@@ -277,46 +277,6 @@ THREE.GluexEventLoader.prototype = {
                 object.userData.HitTimes.sort('time');
                 object.material.vertexColors=THREE.VertexColors;
 
-                var numhits=0;
-                //console.log(object);
-                /*if(end===0)
-                {
-                    //console.log(object.userData.end0h);
-                    object.userData.end0h++;
-                    //console.log(object.userData.end0h);
-                    numhits=object.userData.end0h;
-                }
-                else if(end===1)
-                {
-                    //console.log(object.userData.end1h);
-                    object.userData.end1h++;
-                    //console.log(object.userData.end1h);
-                    numhits=object.userData.end1h;
-                }*/
-
-                var color = new THREE.Color( 0xffffff );
-
-                /* if(numhits===1)
-                 {
-                     //console.log("first hit");
-                     color=TOFOneHitColor;
-                 }
-                 else if(numhits===2)
-                 {
-                     //console.log("second hit");
-                     color=TOFTwoHitColor;
-                 }
-                 else if(numhits===3)
-                 {
-                     //console.log("second hit");
-                     color=TOFThreeHitColor;
-                 }
-                 else
-                 {
-                     //   console.log("more hit");
-                     color.setRGB(1,0,0);
-                 }*/
-
                 /* var inside=glowMesh.insideMesh.material.uniforms;
                  inside.glowColor.value.setRGB(color.r,color.g,color.b);
                  inside.power.value=.5;
@@ -326,51 +286,7 @@ THREE.GluexEventLoader.prototype = {
                  outside.power.value=.5;
                  console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
 
-                var face_sent1=-1;
-                var face_sent2=-1;
 
-                if(end===1) {
-                    face_sent1 = 2;
-                    face_sent2 = 3;
-                }else
-                {
-                    face_sent1 = 0;
-                    //face_sent2 = 0;
-                }
-
-                var half_length=false;
-
-                if(bar - 1 === 21 || bar - 1 === 22)
-                    half_length=true;
-
-                for ( var i = 0; i < object.geometry.faces.length; i ++ ) {
-
-                    if((i===face_sent1 || i===face_sent2) && !half_length) {
-                        for (var vjs = 0; vjs < 3; vjs++) {
-
-                            if (vjs !== 3) {
-                                //var sidecolor = new THREE.Color(0x00ff00);
-                                object.geometry.faces[i].vertexColors[vjs] = color;//sidecolor;
-                            }
-                        }
-
-                    }
-                    else {
-                        var sent = 0;
-                        if (end === 1)
-                            sent = 1;
-
-                        if (i % 2 === sent || half_length) {
-                            for (var vj = 0; vj < 3; vj++) {
-
-                                if (vj !== 3) {
-                                    object.geometry.faces[i].vertexColors[vj] = color;
-                                }
-                            }
-
-                        }
-                    }
-                }
                 object.geometry.colorsNeedUpdate = true;
 
             }

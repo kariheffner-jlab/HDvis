@@ -126,7 +126,7 @@ THREE.GluexGeometryLoader.prototype = {
         this.group.add(ftofMesh);
 
     },
-    
+
     buildTofSection: function (path, sectionName, planeNum, startIndex, isRight) {
         var scope = this;
 
@@ -152,10 +152,11 @@ THREE.GluexGeometryLoader.prototype = {
 
             var moduleGeo = new THREE.BoxGeometry(shape.x, moduleY, shape.z);
 
-            var material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshBasicMaterial({
                 color: scope.tofDefaultColor,
                 transparent: true,
-                opacity: 0.5});
+                opacity: 0.5,
+                vertexColors: THREE.VertexColors});
             var module = new THREE.Mesh(moduleGeo, material);
 
             module.position.set(0, 0 + i*moduleY, 0);
