@@ -175,7 +175,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         vector<const DFCALShower *> FCALShowers;
         //vector<const DFCALTruthShower *> FCALTruthShowers;
 
-
         vector<const DTOFHit *> TOFHits;
         vector<const DTOFPoint *> TOFPoints;
 
@@ -188,7 +187,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         //loop->Get(FCALDigiHits);
         //loop->Get(FCALClusters);
         loop->Get(FCALShowers);
-        //loop->Get(FCALTruthShowers);
+        //loop->Get(FCALTruthShowers);sssssssssssssss
         loop->Get(TrackCandidates);
         loop->Get(ChargedTracks);
         loop->Get(NeutralTracks);

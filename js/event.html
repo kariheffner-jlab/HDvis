@@ -296,6 +296,7 @@
         renderer.setClearColor( 0xff0f0 );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.shadowMapEnabled=false;
         container.appendChild( renderer.domElement );
 
         if(renderer.vr)
@@ -586,7 +587,7 @@
 
                                 var half_length = false;
 
-                                if (bar - 1 === 21 || bar - 1 === 22)
+                                if (geoobjs.children[plane].children[block].children[bar].name.split("_")[2]==="m21" || geoobjs.children[plane].children[block].children[bar].name.split("_")[2]==="m22")
                                     half_length = true;
 
                                 for (var i = 0; i < geoobjs.children[plane].children[block].children[bar].geometry.faces.length; i++) {
