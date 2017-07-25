@@ -462,11 +462,13 @@
                 if (ViewerConfig.FCALShowerVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.fTime) {
                         eventobjs[i].scale.set(10,20,10);
+                        eventobjs[i].position.z=eventobjs[i].userData.showerZ+10;
                         eventobjs[i].geometryNeedsUpdate=true;
 
                     }
                     else if (SceneTime + min_start_time < eventobjs[i].userData.fTime  && eventobjs[i].scale.z !== 1 ) {
                         eventobjs[i].scale.set(1,1,1);
+                        eventobjs[i].position.z=eventobjs[i].userData.showerZ+.5;
                         eventobjs[i].geometryNeedsUpdate=true;
                     }
                 }
@@ -477,6 +479,7 @@
                 else if(ViewerConfig.FCALShowerVis === "Static" && eventobjs[i].scale.z !== 10)
                 {
                     eventobjs[i].scale.set(10,20,10);
+                    ventobjs[i].position.z=eventobjs[i].userData.showerZ+5;
                     eventobjs[i].geometryNeedsUpdate=true;
                 }
             }

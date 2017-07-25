@@ -194,10 +194,10 @@ THREE.GluexEventLoader.prototype = {
             var conemesh= new THREE.Mesh(cone,material);
             conemesh.position.x=shower.x;
             conemesh.position.y=shower.y;
-            conemesh.position.z=shower.z;//+20;d May not be needed.....
+            conemesh.position.z=shower.z+.5;//+20;d May not be needed.....
             conemesh.rotation.x = -1*Math.PI/2;
 
-            conemesh.userData={fTime:shower.fTime};
+            conemesh.userData={fTime:shower.fTime, showerZ: shower.z};
 
             conemesh.name = geometry.name;
             scope.group.add(conemesh);
