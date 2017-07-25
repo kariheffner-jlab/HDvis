@@ -685,6 +685,7 @@
     }
     function animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time) {
 
+        var SceneTime = clock.getElapsedTime() * time_scale;
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "track") {
