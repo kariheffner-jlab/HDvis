@@ -274,8 +274,6 @@ THREE.GluexEventLoader.prototype = {
                 }
 
                 object.userData.HitTimes.push({end:end,time:time});
-                object.userData.HitTimes.sort('time');
-                object.material.vertexColors=THREE.VertexColors;
 
                 /* var inside=glowMesh.insideMesh.material.uniforms;
                  inside.glowColor.value.setRGB(color.r,color.g,color.b);
