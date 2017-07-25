@@ -375,17 +375,17 @@
         switch (event.keyCode) {
 
             case 86: VRbool = !VRbool;break;//v
-            case 87: camera.translateZ(-MoveDelta);camera.updateMatrixWorld();
+            case 87: event.preventDefault();camera.translateZ(-MoveDelta);camera.updateMatrixWorld();
                 resetOrbitPoint(controls,camera,camera_facing);break;//w
-            case 83: camera.translateZ(MoveDelta);camera.updateMatrixWorld();
+            case 83: event.preventDefault();camera.translateZ(MoveDelta);camera.updateMatrixWorld();
                 resetOrbitPoint(controls,camera,camera_facing);break;//s
-            case 65: camera.translateX(-MoveDelta);camera.updateMatrixWorld();
+            case 65: event.preventDefault();camera.translateX(-MoveDelta);camera.updateMatrixWorld();
                 resetOrbitPoint(controls,camera,camera_facing);break;//a
-            case 68: camera.translateX(MoveDelta);camera.updateMatrixWorld();
+            case 68: event.preventDefault();camera.translateX(MoveDelta);camera.updateMatrixWorld();
                 resetOrbitPoint(controls,camera,camera_facing);break;//d
-            case 32: camera.translateY(MoveDelta);camera.updateMatrixWorld();
+            case 32: event.preventDefault();camera.translateY(MoveDelta);camera.updateMatrixWorld();
                 resetOrbitPoint(controls,camera,camera_facing);break;//spacebar
-            case 90: camera.translateY(-MoveDelta);camera.updateMatrixWorld();
+            case 90: event.preventDefault();camera.translateY(-MoveDelta);camera.updateMatrixWorld();
                 resetOrbitPoint(controls,camera,camera_facing);break;//z
 
         }
