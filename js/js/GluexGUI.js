@@ -45,6 +45,7 @@ var HDVisConfig = function() {
 
     this.FCAL_EScale = 100.;
     this.TrackingChiSq_NDF_cut = 0.;
+    this.FCAL_HitEcut = 0.;
     this.TimingsNeedsUpdate=true;
     //this.SceneTimeMessage=""
 
@@ -73,6 +74,7 @@ function makeGUI(scene){
     var tofGuiFolder = gui.addFolder('TOF');
 
     var fcalGuiFolder= gui.addFolder('FCAL');
+
     fcalGuiFolder.add(config, 'FCAL_EScale', 1, 1000).name("Energy Scale").onChange(function(value) { this.FCAL_EScale=value;
         var eventobjs = scene.getObjectByName("GluexEvent").children;
         for(var i=0;i<eventobjs.length;i++) {
@@ -81,6 +83,21 @@ function makeGUI(scene){
                 eventobjs[i].scale.z=this.FCAL_EScale/100;
                 eventobjs[i].geometry.elementsNeedUpdate=true;
                 eventobjs[i].geometry.verticesNeedUpdate=true;
+            }
+        }
+    });
+    fcalGuiFolder.add(config, 'FCAL_HitEcut',0, 3).name("Hit Energy cut (GeV)").onChange(function(value) { this.FCAL_HitEcut=value;
+        var eventobjs = scene.getObjectByName("GluexEvent").children;
+        for(var i=0;i<eventobjs.length;i++) {
+            if (eventobjs[i].name.split('_')[0] === "FCALHit") {
+                if(eventobjs[i].userData.E<this.FCAL_HitEcut)
+                {
+                    eventobjs[i].material.visible=0;
+                }
+                else
+                {
+                    eventobjs[i].material.visible=1;
+                }
             }
         }
     });

@@ -745,6 +745,9 @@
         for (var i = 0; i < eventobjs.length; i++)
         {
             if (eventobjs[i].name.split('_')[0] === "track") {
+                if(eventobjs[i].userData.TrackChiSq_NDF>ViewerConfig.TrackingChiSq_NDF_cut)
+                {continue;}
+
                 var last_step=(eventobjs[i].userData.steps.length)-1;
                 if((eventobjs[i].userData.steps[last_step][3]) > max_swim_time)
                 {
@@ -776,6 +779,9 @@
             }
             if(ViewerConfig.FCALHitVis !== "Off" && ViewerConfig.FCALHitVis !=="Static" ) {
                 if (eventobjs[i].name.split('_')[0] === "FCALHit") {
+                    if(eventobjs[i].userData.E<ViewerConfig.FCAL_HitEcut)
+                    {continue;}
+
                     if (eventobjs[i].userData.t < min_start_time) {
                         min_start_time = eventobjs[i].userData.t;
                     }
