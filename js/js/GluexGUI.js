@@ -46,6 +46,7 @@ var HDVisConfig = function() {
     this.FCAL_EScale = 100.;
     this.TrackingChiSq_NDF_cut = 0.;
     this.FCAL_HitEcut = 0.;
+    this.FCAL_ShowerEcut = 0.;
     this.TimingsNeedsUpdate=true;
     //this.SceneTimeMessage=""
 
@@ -91,6 +92,21 @@ function makeGUI(scene){
         for(var i=0;i<eventobjs.length;i++) {
             if (eventobjs[i].name.split('_')[0] === "FCALHit") {
                 if(eventobjs[i].userData.E<this.FCAL_HitEcut)
+                {
+                    eventobjs[i].material.visible=0;
+                }
+                else
+                {
+                    eventobjs[i].material.visible=1;
+                }
+            }
+        }
+    });
+    fcalGuiFolder.add(config, 'FCAL_ShowerEcut',0, 6).name("Shower Energy cut (GeV)").onChange(function(value) { this.FCAL_ShowerEcut=value;
+        var eventobjs = scene.getObjectByName("GluexEvent").children;
+        for(var i=0;i<eventobjs.length;i++) {
+            if (eventobjs[i].name.split('_')[0] === "FCALShower") {
+                if(eventobjs[i].userData.fEnergy<this.FCAL_ShowerEcut)
                 {
                     eventobjs[i].material.visible=0;
                 }

@@ -197,7 +197,7 @@ THREE.GluexEventLoader.prototype = {
             conemesh.position.z=shower.z+.5;//+20;d May not be needed.....
             conemesh.rotation.x = -1*Math.PI/2;
 
-            conemesh.userData={fTime:shower.fTime, showerZ: shower.z};
+            conemesh.userData={fTime:shower.fTime, showerZ: shower.z,fEnergy:shower.fEnergy};
 
             conemesh.name = geometry.name;
             scope.group.add(conemesh);
