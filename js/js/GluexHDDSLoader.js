@@ -26,14 +26,11 @@ extractPlacement = function(xmlElement, posAttName, rotAttName){
 THREE.GluexHDDSLoader = function () {
     this.importedGeometry = null;
     this.HDDS = null;
-
 };
 
 THREE.GluexHDDSLoader.prototype = {
 
     constructor: THREE.GluexHDDSLoader,
-
-
 
     group: new THREE.Group(),
     toRad: Math.PI/180.0,
@@ -67,7 +64,6 @@ THREE.GluexHDDSLoader.prototype = {
             scope.xmlSections[xmlSection.getAttribute('name')] = xmlSection;
         });
 
-
         this.group.add(this.processFTOF());
 
         var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 10.0);
@@ -75,6 +71,20 @@ THREE.GluexHDDSLoader.prototype = {
         fcal.position.set(0.529, -0.002, 624.906 + 22.5);
         this.group.add(fcal);
         return this.group;
+    },
+
+    processBCAL: function() {
+        var xmlSection = this.xmlSections['BarrelEMcal'];
+
+        var bcal = new THREE.Group();
+        bcal.name = "BCAL";
+
+        // BCAL placement in the global main file
+        var xmlBcalGlobal = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="ForwardTOF"]');
+        var globalPlacement = extractPlacement(xmlBcalGlobal);
+        this.setMeshPlacement(bcal, globalPlacement);
+
+        return ftof;
     },
 
 

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Example 06.02 - Advanced 3D geometries - Lathe</title>
+    <script type="text/javascript" src="js/three.min.js"></script>
+    <script type="text/javascript" src="js/libs/stats.min.js"></script>
+    <script type="text/javascript" src="js/libs/dat.gui.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="Stats-output">
+</div>
+<!-- Div which will hold the Output -->
+<div id="WebGL-output">
+</div>
+<div id="container"></div>
+<!-- Javascript code that runs our Three.js examples -->
+<script type="text/javascript">
+
+    // once everything is loaded, we run our Three.js stuff.
+    function init() {
+
+        var stats = initStats();
+
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        var scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor( scene.fog.color );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        var container = document.getElementById( 'container' );
+        container.appendChild( renderer.domElement );
+
+        var camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
+        camera.position.z = 500;
+
+        controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.addEventListener( 'change', render ); // remove when using animation loop
+        // enable animation loop when using damping or autorotation
+        //controls.enableDamping = true;
+        //controls.dampingFactor = 0.25;
+        controls.enableZoom = false;
+        controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+        // lights
+        var light = new THREE.AmbientLight( 0x222222 );
+        scene.add( light );
+
+        var light = new THREE.DirectionalLight( 0x888888, 0.8 );
+        light.position.set( -1, -1, -1 );
+        scene.add( light );
+
+        var light = new THREE.AmbientLight( 0x222222 );
+
+        scene.add( light );
+
+        // add the output of the renderer to the html element
+        document.getElementById("WebGL-output").appendChild(renderer.domElement);
+
+        // call the render function
+        var step = 0;
+
+        // the points group
+        var spGroup;
+        // the mesh
+        var latheMesh;
+
+        var origData = [
+            [6.0325,   7.62 ,  -20.2106],
+            [6.0325,   7.62 ,  -18.9834],
+            [6.0325,   6.35 ,  -18.9834],
+            [6.0325,   6.35 ,  -8.3734],
+            [3.699 ,   4.118,  -5.5549],
+            [2.57  ,   4.699,  -5.5549],
+            [2.25  ,   4.699,  -5.2374]
+        ];
+
+        //        createPolyPlane(origData, 12, 0, 2 * Math.PI);
+        createPolyPlane([
+            [0.0, 0.29715, -14.7675],
+            [0.0, 0.5040 , -14.5912],
+            [0.0, 0.72389,  -14.2912],
+            [0.0, 0.78359, -13.9912],
+            [0.0, 1.2373 , -13.9912],
+            [0.0, 0.78359, 13.9912],
+            [0.0, 0.72389,  14.2912],
+            [0.0, 0.5040 , 14.5912],
+            [0.0, 0.29715, 14.775]
+        ], 12, 0, 2 * Math.PI);
+
+
+
+        render();
+
+        /**
+         * @param data points in form of [[innerR, outerR, z]]
+         *
+         * @example
+         * if the original HDDS record is
+         * <pcon name="TGBM" material="Aluminum">
+         *    <polyplane Rio_Z="6.0325 7.62 -20.2106"/>
+         *    <polyplane Rio_Z="6.0325 7.62 -18.9834"/>
+         *    <polyplane Rio_Z="6.0325 6.35 -18.9834"/>
+         *    <polyplane Rio_Z="6.0325 6.35 -8.3734"/>
+         *    <polyplane Rio_Z="3.699 4.118 -5.5549"/>
+         *    <polyplane Rio_Z="2.57 4.699 -5.5549"/>
+         *    <polyplane Rio_Z="2.25 4.699 -5.2374"/>
+         * </pcon>
+         * the data should be
+         * [
+         *    [6.0325,   7.62 ,  -20.2106],
+         *    [6.0325,   7.62 ,  -18.9834],
+         *    [6.0325,   6.35 ,  -18.9834],
+         *    [6.0325,   6.35 ,  -8.3734],
+         *    [3.699 ,   4.118,  -5.5549],
+         *    [2.57  ,   4.699,  -5.5549],
+         *    [2.25  ,   4.699,  -5.2374],
+         * ]
+         */
+        function createPolyPlane(data, segments, phiStart, phiLength) {
+
+            var points2d = []
+            for (var i = 0; i < data.length; i++) {
+                points2d.push(new THREE.Vector2(data[i][1], data[i][2]));
+            }
+
+            for (var i = data.length -1; i > 0; i--) {
+                points2d.push(new THREE.Vector2(data[i][0], data[i][2]));
+            }
+
+            points2d.push(new THREE.Vector2(data[0][1], data[0][2]));   // Closing the contour
+
+            // use the same points to create a LatheGeometry
+            var latheGeometry = new THREE.LatheGeometry(points2d, segments, phiStart, phiLength);
+            latheMesh = createMesh(latheGeometry);
+            scene.add(latheMesh);
+        }
+
+        function createMesh(geom) {
+
+            // assign two materials
+            //  var meshMaterial = new THREE.MeshBasicMaterial({color:0x00ff00, transparent:true, opacity:0.6});
+            var meshMaterial = new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
+            meshMaterial.side = THREE.DoubleSide;
+            //var wireFrameMat = new THREE.MeshBasicMaterial();
+            //wireFrameMat.wireframe = true;
+
+            //// create a multimaterial
+            //var mesh = THREE.SceneUtils.createMultiMaterialObject(geom, [meshMaterial, wireFrameMat]);
+            return new THREE.Mesh(geom, meshMaterial);
+        }
+
+        function render() {
+            stats.update();
+
+            //controls.update();
+
+            //spGroup.rotation.x = step;
+            //latheMesh.rotation.x = step += 0.01;
+
+            // render using requestAnimationFrame
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+
+        function initStats() {
+
+            var stats = new Stats();
+            stats.setMode(0); // 0: fps, 1: ms
+
+            // Align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            document.getElementById("Stats-output").appendChild(stats.domElement);
+
+            return stats;
+        }
+    }
+    window.onload = init;
+</script>
+</body>
+</html>
