@@ -64,12 +64,12 @@ THREE.GluexEventLoader.prototype = {
             var swim_vis=false;
             if(track_charge === 1) {
                 trackcolor= 0xff0000;
-                swim_vis=scope.Configuration.positive_tracks;
+                swim_vis=scope.Configuration.positive_track_swim;
 
             }//console.log(track_charge);
             else if(track_charge === -1) {
                 trackcolor= 0x00ff00;
-                swim_vis=scope.Configuration.negative_tracks;
+                swim_vis=scope.Configuration.negative_track_swim;
             }
             var material = new THREE.PointsMaterial({
                 color: trackcolor,
@@ -119,7 +119,7 @@ THREE.GluexEventLoader.prototype = {
                 color: 0xffff00,
                 size: 4,
                 opacity:.6,
-                visible: scope.Configuration.neutral_tracks,
+                visible: scope.Configuration.neutral_track_swim,
                 //blending: THREE.AdditiveBlending,
                 transparent: true,
                 sizeAttenuation: false

@@ -34,9 +34,9 @@ var HDVisConfig = function() {
     this.FCALShower_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FCALShowerVis= 'Dynamic';
 
-    this.positive_tracks=false;
-    this.negative_tracks=false;
-    this.neutral_tracks=false;
+    this.positive_track_swim=false;
+    this.negative_track_swim=false;
+    this.neutral_track_swim=false;
     this.positive_track_color = [255, 0, 0]; // RGB array
     this.negative_track_color = [0, 255, 0]; // RGB array
     this.neutral_track_color = [255, 255, 0]; // RGB array
@@ -222,10 +222,10 @@ function makeGUI(scene){
     var negativeTrackgui=Trackinggui.addFolder('Negative Tracks');
     var neutralTrackgui=Trackinggui.addFolder('Neutral Tracks');
 
-    positiveTrackgui.add(config, 'positive_tracks', config.positive_tracks).name('Show Swim Points')
+    positiveTrackgui.add(config, 'positive_track_swim', config.positive_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,1,value);
+            gui_TrackVis(eventobjs,1,value,config);
 
         });
 
@@ -236,10 +236,10 @@ function makeGUI(scene){
             config.TimingsNeedsUpdate=true;
         });
 
-    negativeTrackgui.add(config, 'negative_tracks', config.negative_tracks).name('Show Swim Points')
+    negativeTrackgui.add(config, 'negative_track_swim', config.negative_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,-1,value);
+            gui_TrackVis(eventobjs,-1,value,config);
 
         });
 
@@ -250,10 +250,10 @@ function makeGUI(scene){
             config.TimingsNeedsUpdate=true;
         });
 
-    neutralTrackgui.add(config, 'neutral_tracks', config.neutral_tracks).name('Show Swim Points')
+    neutralTrackgui.add(config, 'neutral_track_swim', config.neutral_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,0,value);
+            gui_TrackVis(eventobjs,0,value,config);
         });
 
     neutralTrackgui.add( config, 'neutral_track_line', config.neutral_track_lineOptions )
@@ -278,14 +278,14 @@ function makeGUI(scene){
                     }
                     else
                     {
-                        if((config.positive_tracks===true && eventobjs[i].userData.charge===1) || (config.negative_tracks===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0)) {
+                        if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0)) {
                             eventobjs[i].material.visible = true;
                             eventobjs[i].children[0].material.visible=true;
                         }
                     }
                 }
                 else {
-                    if((config.positive_tracks===true && eventobjs[i].userData.charge===1) || (config.negative_tracks===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0))
+                    if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0))
                     {
                         eventobjs[i].material.visible = true;
                         eventobjs[i].children[0].material.visible=true;
@@ -318,13 +318,18 @@ function makeGUI(scene){
 }
 
 
-function gui_TrackVis(eventobjs,Trackq,isVis) {
+function gui_TrackVis(eventobjs,Trackq,isVis,config) {
 
     for(var i=0;i<eventobjs.length;i++)
     {
-        if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq)
+
+        if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq )
         {
             eventobjs[i].material.visible=isVis;
+        }
+        if(eventobjs[i].userData.TrackChiSq_NDF >= config.TrackingChiSq_NDF_cut && config.TrackingChiSq_NDF_cut !==0 && Trackq!==0)
+        {
+            eventobjs[i].material.visible=0;
         }
     }
 }
