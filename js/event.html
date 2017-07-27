@@ -423,10 +423,11 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
-        /* if(SceneTime>=ViewerConfig.max_clock_time)
-         {
-             SceneTime=ViewerConfig.max_clock_time;
-         }*/
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "FCALHit") {
@@ -437,7 +438,7 @@
                     continue;
                 }//RESPECT THE CLOCK BOUNDS FCALHits
                 else
-                {
+                {   if(eventobjs[i].userData.E>ViewerConfig.FCAL_HitEcut)
                     eventobjs[i].material.visible=true;
                 }
 
@@ -472,10 +473,11 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
-        /*if(SceneTime>=ViewerConfig.max_clock_time)
+        if(SceneTime>max_total_time-min_start_time)
         {
-            SceneTime=ViewerConfig.max_clock_time;
-        }*/
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "FCALShower") {
@@ -487,7 +489,8 @@
                 }//RESPECT THE CLOCK BOUNDS FCAL Shower
                 else
                 {
-                    eventobjs[i].material.visible=true;
+                    if(eventobjs[i].userData.fEnergy>ViewerConfig.FCAL_ShowerEcut)
+                        eventobjs[i].material.visible=true;
                 }
                 if (ViewerConfig.FCALShowerVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.fTime) {
@@ -520,10 +523,11 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
-        /* if(SceneTime>=ViewerConfig.max_clock_time)
-         {
-             SceneTime=ViewerConfig.max_clock_time;
-         }*/
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
 
         var eventObj = scene.getObjectByName("GluexGeometry");
         if(eventObj) {
@@ -669,10 +673,11 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
-        /* if(SceneTime>=ViewerConfig.max_clock_time)
-         {
-             SceneTime=ViewerConfig.max_clock_time;
-         }*/
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
@@ -753,15 +758,16 @@
 
         var SceneTime = clock.getElapsedTime() * time_scale;
 
-        /* if(SceneTime>=ViewerConfig.max_clock_time)
-         {
-             SceneTime=ViewerConfig.max_clock_time;
-         }*/
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "track") {
                 var thisGeo = eventobjs[i].children[0].geometry;
-                var track_start=(eventobjs[i].userData.start_time)-min_start_time;
+                var track_start=(eventobjs[i].userData.start_time);//-min_start_time;
                 var draw_count=0;
 
                 for(;draw_count<max_swim_steps;draw_count++)
@@ -774,7 +780,7 @@
                     {
                         break;
                     }
-                    if((((eventobjs[i].userData.steps[draw_count])[3])+track_start)>SceneTime )
+                    if((((eventobjs[i].userData.steps[draw_count])[3])+track_start)>SceneTime+min_start_time )
                     {
                         break;
                     }
@@ -816,7 +822,8 @@
         for (var i = 0; i < eventobjs.length; i++)
         {
             if (eventobjs[i].name.split('_')[0] === "track") {
-                if(eventobjs[i].userData.TrackChiSq_NDF>ViewerConfig.TrackingChiSq_NDF_cut)
+                if(eventobjs[i].userData.TrackChiSq_NDF>ViewerConfig.TrackingChiSq_NDF_cut
+                    && ViewerConfig.TrackingChiSq_NDF_cut !==0)
                 {continue;}
 
                 var last_step=(eventobjs[i].userData.steps.length)-1;
@@ -932,14 +939,20 @@
                 ViewerConfig.TimingsNeedsUpdate = false;
             }
 
-            /*if(SceneTime>=max_total_time)
+            if(SceneTime>max_total_time-min_start_time)
             {
-                RealTime=SceneTime;
-                SceneTime=max_total_time;
+                //RealTime=SceneTime;
+                SceneTime=max_total_time-min_start_time;
+            }
 
-            }*/
 
-            if((SceneTime+min_start_time>(max_total_time+2) || firstShowing /*|| RealTime+min_start_time>=max_total_time+2*/))//includes a delay at the end
+            animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
+            animateTOFHits(clock,time_scale,min_start_time,max_total_time);
+            animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
+            animateFCALHits(clock,time_scale,eventobjs,min_start_time);
+            animateFCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time);
+
+            if((SceneTime+min_start_time>(max_total_time) || firstShowing || RealTime+min_start_time>=max_total_time+2*time_scale))//includes a delay at the end
             {
                 if(firstShowing)
                 {
@@ -961,11 +974,7 @@
                 clock.start();
             }
 
-            animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
-            animateTOFHits(clock,time_scale,min_start_time,max_total_time);
-            animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
-            animateFCALHits(clock,time_scale,eventobjs,min_start_time);
-            animateFCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time);
+
         }
 
         //renderer.animate( render );
