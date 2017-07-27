@@ -49,8 +49,8 @@ var HDVisConfig = function() {
     this.FCAL_ShowerEcut = 0.;
     this.TimingsNeedsUpdate=true;
 
-    this.min_clock_time=-1000;
-    this.max_clock_time=1000;
+    this.min_clock_time=-100;
+    this.max_clock_time=100;
     //this.SceneTimeMessage=""
 
     // Thomas, here is GUI examples:
