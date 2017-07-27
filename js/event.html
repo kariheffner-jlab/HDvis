@@ -423,9 +423,24 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
+        if(SceneTime>=ViewerConfig.max_clock_time)
+        {
+            SceneTime=ViewerConfig.max_clock_time;
+        }
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "FCALHit") {
+                if(eventobjs[i].userData.t>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.t<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    continue;
+                }//RESPECT THE CLOCK BOUNDS FCALHits
+                else
+                {
+                    eventobjs[i].material.visible=true;
+                }
+
                 if (ViewerConfig.FCALHitVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t) {
                         eventobjs[i].scale.set(1,1,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
@@ -457,9 +472,23 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
+        if(SceneTime>=ViewerConfig.max_clock_time)
+        {
+            SceneTime=ViewerConfig.max_clock_time;
+        }
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "FCALShower") {
+                if(eventobjs[i].userData.fTime>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.fTime<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    continue;
+                }//RESPECT THE CLOCK BOUNDS FCAL Shower
+                else
+                {
+                    eventobjs[i].material.visible=true;
+                }
                 if (ViewerConfig.FCALShowerVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.fTime) {
                         eventobjs[i].scale.set(10,20,10);
@@ -491,6 +520,11 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
+        if(SceneTime>=ViewerConfig.max_clock_time)
+        {
+            SceneTime=ViewerConfig.max_clock_time;
+        }
+
         var eventObj = scene.getObjectByName("GluexGeometry");
         if(eventObj) {
 
@@ -509,6 +543,12 @@
                             var numhits0 = 0;
                             var numhits1 = 0;
                             for (var j = 0; j < geoobjs.children[plane].children[block].children[bar].userData.HitTimes.length; j++) {
+                                if(geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time']>ViewerConfig.max_total_time ||
+                                    geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time']<ViewerConfig.min_clock_time)
+                                {
+                                    continue;
+                                }//RESPECT THE CLOCK BOUNDS TOF
+
                                 if (SceneTime + min_start_time >= geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] || ViewerConfig.TOFHitVis === "Static") {
 
                                     if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['end'] === 0) {
@@ -629,9 +669,23 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
+        if(SceneTime>=ViewerConfig.max_clock_time)
+        {
+            SceneTime=ViewerConfig.max_clock_time;
+        }
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "TOFPoint") {
+                if(eventobjs[i].userData.t>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.t<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    continue;
+                }//RESPECT THE CLOCK BOUNDS TOF POINTS
+                else
+                {
+                    eventobjs[i].material.visible=true;
+                }
                 if (ViewerConfig.TOFPointVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t && eventobjs[i].material.color.b === 1) {
                         eventobjs[i].scale.set(3,3,3);
@@ -652,7 +706,7 @@
                 }
                 else if(ViewerConfig.TOFPointVis === "Off" && eventobjs[i].material.visibile===true)
                 {
-                    eventobjs[i].material.visibile=false;
+                    eventobjs[i].material.visible=false;
                 }
                 else if(ViewerConfig.TOFPointVis === "Static"&& eventobjs[i].material.color.r===1)
                 {
@@ -676,6 +730,14 @@
         if (timeToShow > (max_total_time)) {
             timeToShow = max_total_time;
         }
+        if(timeToShow<ViewerConfig.min_clock_time)
+        {
+            timeToShow=ViewerConfig.min_clock_time;
+        }
+        else if( timeToShow>ViewerConfig.max_clock_time )
+        {
+            timeToShow=ViewerConfig.max_clock_time;
+        }
 
         var errNum = 99999999999;
         if (ViewerConfig.SceneTimeMessage === errNum.toFixed(3)) {
@@ -691,6 +753,11 @@
 
         var SceneTime = clock.getElapsedTime() * time_scale;
 
+        if(SceneTime>=ViewerConfig.max_clock_time)
+        {
+            SceneTime=ViewerConfig.max_clock_time;
+        }
+
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "track") {
                 var thisGeo = eventobjs[i].children[0].geometry;
@@ -699,6 +766,10 @@
 
                 for(;draw_count<max_swim_steps;draw_count++)
                 {
+                    if(SceneTime>ViewerConfig.max_clock_time)
+                    {
+                        break;
+                    }
                     if(draw_count>=eventobjs[i].userData.steps.length)
                     {
                         break;
@@ -842,9 +913,14 @@
             clock.stop();
             clock.start();
         }
+
+
         updateClockMessage(clock,time_scale);
 
         var SceneTime=clock.getElapsedTime()*time_scale;
+
+        var RealTime=SceneTime;
+
         // console.log(SceneTime);
         controls.update();
         var eventObj = scene.getObjectByName("GluexEvent");
@@ -856,7 +932,14 @@
                 ViewerConfig.TimingsNeedsUpdate = false;
             }
 
-            if((SceneTime+min_start_time>(max_total_time+2*time_scale)) || firstShowing)//includes a 2 second delay at the end
+            if(SceneTime>=max_total_time)
+            {
+                RealTime=SceneTime;
+                SceneTime=max_total_time;
+
+            }
+
+            if((SceneTime+min_start_time>(max_total_time) || firstShowing || RealTime+min_start_time>=max_total_time+12))//includes a delay at the end
             {
                 if(firstShowing)
                 {
@@ -873,6 +956,8 @@
                         thisGeo.attributes.position.needsUpdate = true;
                     }
                 }
+
+
                 clock.start();
             }
 
@@ -984,6 +1069,16 @@
             renderer.render(scene, camera);
 
         }
+    }
+
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+                break;
+            }
+        }
+        //alert("woke up!");
     }
 
 </script>
