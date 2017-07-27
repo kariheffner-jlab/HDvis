@@ -472,10 +472,10 @@
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
-        if(SceneTime>=ViewerConfig.max_clock_time)
+        /*if(SceneTime>=ViewerConfig.max_clock_time)
         {
             SceneTime=ViewerConfig.max_clock_time;
-        }
+        }*/
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "FCALShower") {

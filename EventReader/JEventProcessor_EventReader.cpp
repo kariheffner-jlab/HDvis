@@ -19,7 +19,6 @@
 
 using namespace jana;
 
-
 vector<string> toprint;
 bool ACTIVATE_ALL = false;
 extern string OUTPUT_FILENAME;
