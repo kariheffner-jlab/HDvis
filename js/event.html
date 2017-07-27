@@ -753,10 +753,10 @@
 
         var SceneTime = clock.getElapsedTime() * time_scale;
 
-        if(SceneTime>=ViewerConfig.max_clock_time)
-        {
-            SceneTime=ViewerConfig.max_clock_time;
-        }
+        /* if(SceneTime>=ViewerConfig.max_clock_time)
+         {
+             SceneTime=ViewerConfig.max_clock_time;
+         }*/
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].name.split('_')[0] === "track") {
@@ -766,10 +766,10 @@
 
                 for(;draw_count<max_swim_steps;draw_count++)
                 {
-                    if(SceneTime>ViewerConfig.max_clock_time)
+                    /*if(SceneTime>ViewerConfig.max_clock_time)
                     {
                         break;
-                    }
+                    }*/
                     if(draw_count>=eventobjs[i].userData.steps.length)
                     {
                         break;
@@ -939,7 +939,7 @@
 
             }
 
-            if((SceneTime+min_start_time>(max_total_time) || firstShowing || RealTime+min_start_time>=max_total_time+12))//includes a delay at the end
+            if((SceneTime+min_start_time>(max_total_time) || firstShowing || RealTime+min_start_time>=max_total_time+2))//includes a delay at the end
             {
                 if(firstShowing)
                 {
