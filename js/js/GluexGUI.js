@@ -48,6 +48,9 @@ var HDVisConfig = function() {
     this.FCAL_HitEcut = 0.;
     this.FCAL_ShowerEcut = 0.;
     this.TimingsNeedsUpdate=true;
+
+    this.min_clock_time=-1000;
+    this.max_clock_time=1000;
     //this.SceneTimeMessage=""
 
     // Thomas, here is GUI examples:
@@ -69,6 +72,8 @@ function makeGUI(scene){
     //gui.add(config, 'SceneTimeMessage').name("Event Time (ns)").listen();
 
     gui.add(config, 'time_scale', .1, 20).name("Time Scale (ns/s)").onChange(function(value) { this.time_scale=value;});
+    gui.add(config, 'min_clock_time', -1000, 0).name("Min. Clock (RF)").onChange(function(value) { this.min_clock_time=value;config.TimingsNeedsUpdate=true;});
+    gui.add(config, 'max_clock_time', 0,1000).name("Max. Clock (RF)").onChange(function(value) { this.max_clock_time=value;config.TimingsNeedsUpdate=true;});
 
     gui.addFolder('CDC');
 

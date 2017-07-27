@@ -821,6 +821,14 @@
                 }
             }
         }
+        if(min_start_time<ViewerConfig.min_clock_time)
+        {
+            min_start_time=ViewerConfig.min_clock_time;
+        }
+        if(max_total_time>ViewerConfig.max_clock_time)
+        {
+            max_total_time=ViewerConfig.max_clock_time;
+        }
 
     }
 
