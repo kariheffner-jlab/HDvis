@@ -87,7 +87,6 @@ THREE.GluexHDDSLoader.prototype = {
         return ftof;
     },
 
-
     processFTOF: function () {
         var xmlSection = this.xmlSections['ForwardTOF'];
 
