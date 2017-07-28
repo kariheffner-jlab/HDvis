@@ -727,6 +727,64 @@
         }
     }
 
+    function animateBCALPoints(clock,time_scale,eventobjs,min_start_time)
+    {
+        var SceneTime=clock.getElapsedTime()*time_scale;
+
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
+
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].name.split('_')[0] === "BCALPoint") {
+                if(eventobjs[i].userData.t>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.t<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    continue;
+                }//RESPECT THE CLOCK BOUNDS TOF POINTS
+                else
+                {
+                    if(ViewerConfig.BCALPointVis !== "Off")
+                        eventobjs[i].material.visible=true;
+                }
+                if (ViewerConfig.BCALPointVis === "Dynamic") {
+                    if (SceneTime + min_start_time > eventobjs[i].userData.t && eventobjs[i].material.color.b === 1) {
+                        eventobjs[i].scale.set(3,3,3);
+                        eventobjs[i].geometryNeedsUpdate = true;
+                        eventobjs[i].material.color.r = 1;
+                        eventobjs[i].material.color.g = 0;
+                        eventobjs[i].material.color.b = 0;
+                        eventobjs[i].colorsNeedUpdate = true;
+                    }
+                    else if (SceneTime + min_start_time < eventobjs[i].userData.t && eventobjs[i].material.color.r === 1) {
+                        eventobjs[i].scale.set(1,1,1);
+                        eventobjs[i].geometryNeedsUpdate = true;
+                        eventobjs[i].material.color.r = 0;
+                        eventobjs[i].material.color.g = 0;
+                        eventobjs[i].material.color.b = 1;
+                        eventobjs[i].colorsNeedUpdate = true;
+                    }
+                }
+                else if(ViewerConfig.BCALPointVis === "Off" && eventobjs[i].material.visibile===true)
+                {
+                    eventobjs[i].material.visible=false;
+                }
+                else if(ViewerConfig.BCALPointVis === "Static"&& eventobjs[i].material.color.r===1)
+                {
+                    eventobjs[i].scale.set(1,1,1);
+                    eventobjs[i].geometryNeedsUpdate = true;
+                    eventobjs[i].material.color.r = 0;
+                    eventobjs[i].material.color.g = 0;
+                    eventobjs[i].material.color.b = 1;
+                    eventobjs[i].colorsNeedUpdate = true;
+                }
+            }
+        }
+    }
+
     function updateClockMessage(clock,time_scale) {
 
         var SceneTime = clock.getElapsedTime() * time_scale;
@@ -856,6 +914,18 @@
                     }
                 }
             }
+
+            if(ViewerConfig.BCALPointVis !== "Off" && ViewerConfig.BCALPointVis !=="Static" ) {
+                if (eventobjs[i].name.split('_')[0] === "BCALPoint") {
+                    if (eventobjs[i].userData.t < min_start_time) {
+                        min_start_time = eventobjs[i].userData.t;
+                    }
+                    if (eventobjs[i].userData.t > max_total_time) {
+                        max_total_time = eventobjs[i].userData.t;
+                    }
+                }
+            }
+
             if(ViewerConfig.FCALHitVis !== "Off" && ViewerConfig.FCALHitVis !=="Static" ) {
                 if (eventobjs[i].name.split('_')[0] === "FCALHit") {
                     if(eventobjs[i].userData.E<ViewerConfig.FCAL_HitEcut)
@@ -948,6 +1018,7 @@
 
 
             animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
+            animateBCALPoints(clock,time_scale,eventobjs,min_start_time);
             animateTOFHits(clock,time_scale,min_start_time,max_total_time);
             animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
             animateFCALHits(clock,time_scale,eventobjs,min_start_time);
