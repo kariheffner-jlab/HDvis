@@ -152,7 +152,8 @@ THREE.GluexEventLoader.prototype = {
             geometry.name = "BCALPoint_" + "BCALpoint "+bpoint.id;
 
             var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.BCALPointVis});
-            var bcalpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
+            var radius=.5*Math.log(bpoint.E);
+            var bcalpoint=new THREE.SphereGeometry(radius,32,32,0,6.3,0,6.3);
 
             var bpointmesh= new THREE.Mesh(bcalpoint,material);
             bpointmesh.position.x=bpoint.r*Math.cos(bpoint.theta);
