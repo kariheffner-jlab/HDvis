@@ -157,7 +157,7 @@ THREE.GluexEventLoader.prototype = {
             var bpointmesh= new THREE.Mesh(bcalpoint,material);
             bpointmesh.position.x=bpoint.r*Math.cos(bpoint.theta);
             bpointmesh.position.y=bpoint.r*Math.sin(bpoint.theta);
-            bpointmesh.position.z=bpoint.z-29.3/2;//align by 1/2 target length
+            bpointmesh.position.z=bpoint.z+65;//align by 1/2 target length
 
             bpointmesh.userData={t:bpoint.t,E:bpoint.E};
 

@@ -203,7 +203,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(FDCHits);
         loop->Get(SCHits);
 
-
         try {
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
@@ -214,6 +213,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             // StartCounter
             auto scdHitsJson = StartC::Add_SCHits(SCHits);
+
 
             //TOF
             auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
