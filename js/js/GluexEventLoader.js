@@ -149,7 +149,7 @@ THREE.GluexEventLoader.prototype = {
         this.EventData.BCAL_points.forEach(function (bpoint) {
             //console.log(hit.id);
             var geometry = new THREE.Geometry();
-            geometry.name = "BCALPoint_" + bpoint.id;
+            geometry.name = "BCALPoint_" + "BCALpoint "+bpoint.id;
 
             var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.BCALPointVis});
             var bcalpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);

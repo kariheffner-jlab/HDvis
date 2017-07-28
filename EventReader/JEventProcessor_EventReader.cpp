@@ -203,6 +203,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(FDCHits);
         loop->Get(SCHits);
 
+
         try {
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
