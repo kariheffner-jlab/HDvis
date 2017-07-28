@@ -28,6 +28,9 @@ var HDVisConfig = function() {
     this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
 
+    this.BCALPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.BCALPointVis= 'Dynamic';
+
     this.FCALHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FCALHitVis= 'Dynamic';
 
@@ -76,6 +79,8 @@ function makeGUI(scene){
     gui.add(config, 'max_clock_time', 0,1000).name("Max. Clock (RF)").onChange(function(value) { this.max_clock_time=value;config.TimingsNeedsUpdate=true;});
 
     gui.addFolder('CDC');
+
+    var bcalGuiFolder = gui.addFolder('BCAL');
 
     var tofGuiFolder = gui.addFolder('TOF');
 
@@ -246,6 +251,29 @@ function makeGUI(scene){
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
                 if (eventobjs[i].name.split('_')[0] === "TOFPoint" && eventobjs[i].material.visible===0) {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
+        }
+        config.TimingsNeedsUpdate=true;
+    });
+
+    bcalGuiFolder.add( config, 'BCALPointVis', config.BCALPoint_Options )
+        .name('BCAL Points').onFinishChange(function(value) {
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "BCALPoint") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "BCALPoint" && eventobjs[i].material.visible===0) {
                     eventobjs[i].material.visible = 1;
                 }
             }

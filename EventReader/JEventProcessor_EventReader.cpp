@@ -179,6 +179,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         vector<const DTOFPoint *> TOFPoints;
 
         vector<const DBCALHit *> BCALHits;
+        vector<const DBCALPoint *> BCALPoints;
+
         vector<const DCDCHit *> CDCHits;
         vector<const DFDCHit *> FDCHits;
         vector<const DSCHit *> SCHits;
@@ -196,6 +198,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TOFPoints);
         loop->Get(TOFHits);
         loop->Get(BCALHits);
+        loop->Get(BCALPoints);
         loop->Get(CDCHits);
         loop->Get(FDCHits);
         loop->Get(SCHits);
@@ -220,6 +223,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             // BCAL
             auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
+            auto bcalPointsJson = BCAL::Add_BCALPoints(BCALPoints);
 
             // CDC
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
@@ -236,6 +240,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             { "FCAL_hits", fcalHitsJson },
                                             { "FCAL_showers", fcalShowersJson },
                                             { "BCAL_hits", bcalHitsJson },
+                                            { "BCAL_points", bcalPointsJson },
                                             { "CDC_hits", cdcHitsJson },
                                             { "FDC_hits", fdcHitsJson },
                                             {"event_number",eventnumber}

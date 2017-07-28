@@ -146,6 +146,27 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
+        this.EventData.BCAL_points.forEach(function (bpoint) {
+            //console.log(hit.id);
+            var geometry = new THREE.Geometry();
+            geometry.name = "BCALPoint_" + bpoint.id;
+
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.BCALPointVis});
+            var bcalpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
+
+            var bpointmesh= new THREE.Mesh(bcalpoint,material);
+            bpointmesh.position.x=bpoint.r*Math.cos(bpoint.theta);
+            bpointmesh.position.y=bpoint.r*Math.sin(bpoint.theta);
+            bpointmesh.position.z=bpoint.z-29.3/2;//align by 1/2 target length
+
+            bpointmesh.userData={t:bpoint.t,E:bpoint.E};
+
+            bpointmesh.name = geometry.name;
+            scope.group.add(bpointmesh);
+            //console.log(track.charge);
+        });
+
+
         var FCAL_EScale=ViewerConfig.FCAL_EScale;
         this.EventData.FCAL_hits.forEach(function (hit) {
             //console.log(hit.id);
@@ -209,7 +230,7 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "TOFPoint_" + point.id;
 
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.FCALHitVis});
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.TOFPointVis});
             var tofpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
 
             var pointmesh= new THREE.Mesh(tofpoint,material);

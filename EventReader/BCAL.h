@@ -7,6 +7,7 @@
 
 #include <BCAL/DBCALHit.h>
 #include <BCAL/DBCALShower.h>
+#include <BCAL/DBCALPoint.h>
 
 class BCAL
 {
@@ -19,6 +20,18 @@ public:
         for(uint i=0;i<BCALHits.size();i++)
         {
             arr.emplace_back(WriteHitJSON(i, BCALHits[i]->module, BCALHits[i]->layer, BCALHits[i]->sector, BCALHits[i]->end, BCALHits[i]->pulse_peak, BCALHits[i]->E, BCALHits[i]->t, BCALHits[i]->t_raw, BCALHits[i]->cellId));
+
+        }
+        return arr;
+    }
+    static tao::json::value Add_BCALPoints(vector<const DBCALPoint*> BCALPoints)
+    {
+        auto arr = tao::json::value::array({});
+
+        for(uint i=0;i<BCALPoints.size();i++)
+        {
+
+            arr.emplace_back(WritePointJSON(i,BCALPoints[i]->r(), BCALPoints[i]->phi(), BCALPoints[i]->z(), BCALPoints[i]->E(), BCALPoints[i]->t() ));
 
         }
         return arr;
@@ -37,6 +50,19 @@ public:
                                         {"t", t},
                                         {"t_raw", t_raw},
                                         {"cellId", cellId}
+                                });
+    }
+    static tao::json::value WritePointJSON(int id,double r, double theta, double z, double E, double t )
+    {
+
+        return tao::json::value({
+                                        {"id", id},
+                                        {"z", z},
+                                        {"r", r},
+                                        {"theta", theta},
+                                        {"E", E},
+                                        {"t", t}
+
                                 });
     }
 
