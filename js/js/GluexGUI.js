@@ -264,7 +264,7 @@ function makeGUI(scene){
         config.TimingsNeedsUpdate=true;
     });
 
-    bcalGuiFolder.add(config, 'BCAL_ShowerEcut',0, 6).name("Shower Energy cut (GeV)").onChange(function(value) { this.BCAL_ShowerEcut=value;
+    bcalGuiFolder.add(config, 'BCAL_ShowerEcut',0, 2).name("Shower Energy cut (GeV)").onChange(function(value) { this.BCAL_ShowerEcut=value;
         var eventobjs = scene.getObjectByName("GluexEvent").children;
         for(var i=0;i<eventobjs.length;i++) {
             if (eventobjs[i].name.split('_')[0] === "BCALShower") {
