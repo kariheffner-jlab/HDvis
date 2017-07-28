@@ -6,6 +6,7 @@
 #define EVESTANDALONE_BCAL_H
 
 #include <BCAL/DBCALHit.h>
+#include <BCAL/DBCALShower.h>
 
 class BCAL
 {

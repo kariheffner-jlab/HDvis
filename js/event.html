@@ -438,7 +438,7 @@
                     continue;
                 }//RESPECT THE CLOCK BOUNDS FCALHits
                 else
-                {   if(eventobjs[i].userData.E>ViewerConfig.FCAL_HitEcut)
+                {   if(eventobjs[i].userData.E>ViewerConfig.FCAL_HitEcut && ViewerConfig.FCALHitVis !== "Off")
                     eventobjs[i].material.visible=true;
                 }
 
@@ -489,7 +489,7 @@
                 }//RESPECT THE CLOCK BOUNDS FCAL Shower
                 else
                 {
-                    if(eventobjs[i].userData.fEnergy>ViewerConfig.FCAL_ShowerEcut)
+                    if(eventobjs[i].userData.fEnergy>ViewerConfig.FCAL_ShowerEcut && ViewerConfig.FCALShowerVis !== "Off")
                         eventobjs[i].material.visible=true;
                 }
                 if (ViewerConfig.FCALShowerVis === "Dynamic") {
@@ -689,7 +689,8 @@
                 }//RESPECT THE CLOCK BOUNDS TOF POINTS
                 else
                 {
-                    eventobjs[i].material.visible=true;
+                    if(ViewerConfig.TOFPointVis !== "Off")
+                        eventobjs[i].material.visible=true;
                 }
                 if (ViewerConfig.TOFPointVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t && eventobjs[i].material.color.b === 1) {
