@@ -225,6 +225,31 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
+        this.EventData.BCAL_showers.forEach(function (bshower) {
+            //console.log(hit.id);
+            var geometry = new THREE.Geometry();
+            geometry.name = "BCALShower_" + "BCAL Shower "+bshower.id;
+
+
+            var bcone=new THREE.ConeGeometry(1,1,60,60,0,0,2*Math.PI);//(10,20...)
+
+            var bmaterial = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4});
+            bmaterial.side = THREE.DoubleSide;
+
+            var bconemesh= new THREE.Mesh(bcone,bmaterial);
+            bconemesh.position.x=bshower.x;
+            bconemesh.position.y=bshower.y;
+            bconemesh.position.z=bshower.z;//Need to shift radially by 1/2 length
+
+            bconemesh.rotation.x = -1*Math.PI/2;//Need rotation of showers....but maybe not
+
+            bconemesh.userData={t:bshower.t, E:bshower.E, z:bshower.z};
+
+            bconemesh.name = geometry.name;
+            scope.group.add(bconemesh);
+            //console.log(track.charge);
+        });
+
         this.EventData.TOF_points.forEach(function (point) {
             //console.log(hit.id);
             var geometry = new THREE.Geometry();

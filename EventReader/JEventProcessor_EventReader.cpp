@@ -180,6 +180,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         vector<const DBCALHit *> BCALHits;
         vector<const DBCALPoint *> BCALPoints;
+        vector<const DBCALShower *> BCALShowers;
 
         vector<const DCDCHit *> CDCHits;
         vector<const DFDCHit *> FDCHits;
@@ -199,6 +200,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(TOFHits);
         loop->Get(BCALHits);
         loop->Get(BCALPoints);
+        loop->Get(BCALShowers);
         loop->Get(CDCHits);
         loop->Get(FDCHits);
         loop->Get(SCHits);
@@ -211,9 +213,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
             auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
 
+
             // StartCounter
             auto scdHitsJson = StartC::Add_SCHits(SCHits);
-
 
             //TOF
             auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
@@ -226,6 +228,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             // BCAL
             auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
             auto bcalPointsJson = BCAL::Add_BCALPoints(BCALPoints);
+            auto bcalShowersJson = BCAL::Add_BCALShowers(BCALShowers);
 
             // CDC
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
@@ -243,6 +246,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             { "FCAL_showers", fcalShowersJson },
                                             { "BCAL_hits", bcalHitsJson },
                                             { "BCAL_points", bcalPointsJson },
+                                            { "BCAL_showers", bcalShowersJson },
                                             { "CDC_hits", cdcHitsJson },
                                             { "FDC_hits", fdcHitsJson },
                                             {"event_number",eventnumber}

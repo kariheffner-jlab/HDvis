@@ -785,6 +785,57 @@
         }
     }
 
+    function animateBCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time)
+    {
+        var SceneTime=clock.getElapsedTime()*time_scale;
+
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
+
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].name.split('_')[0] === "BCALShower") {
+                if(eventobjs[i].userData.t>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.t<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    continue;
+                }//RESPECT THE CLOCK BOUNDS BCAL Shower
+                else
+                {
+                    if(eventobjs[i].userData.E>ViewerConfig.BCAL_ShowerEcut && ViewerConfig.BCALShowerVis !== "Off")
+                        eventobjs[i].material.visible=true;
+                }
+                if (ViewerConfig.BCALShowerVis === "Dynamic") {
+                    if (SceneTime + min_start_time > eventobjs[i].userData.t) {
+                        eventobjs[i].scale.set(10,20,10);
+                        eventobjs[i].position.z=eventobjs[i].userData.z+5;
+                        eventobjs[i].geometryNeedsUpdate=true;
+
+                    }
+                    else if (SceneTime + min_start_time < eventobjs[i].userData.t  && eventobjs[i].scale.z !== 1 ) {
+                        eventobjs[i].scale.set(1,1,1);
+                        eventobjs[i].position.z=eventobjs[i].userData.z+.5;
+                        eventobjs[i].geometryNeedsUpdate=true;
+                    }
+                }
+                else if(ViewerConfig.BCALShowerVis === "Off" && eventobjs[i].material.visibile===true)
+                {
+                    eventobjs[i].material.visible=false;
+                }
+                else if(ViewerConfig.BCALShowerVis === "Static" && eventobjs[i].scale.z !== 10)
+                {
+                    eventobjs[i].scale.set(10,20,10);
+                    eventobjs[i].position.z=eventobjs[i].userData.z+5;
+                    eventobjs[i].geometryNeedsUpdate=true;
+                }
+            }
+        }
+    }
+
+
     function updateClockMessage(clock,time_scale) {
 
         var SceneTime = clock.getElapsedTime() * time_scale;
@@ -949,6 +1000,16 @@
                     }
                 }
             }
+            if(ViewerConfig.BCALShowerVis !== "Off" && ViewerConfig.BCALShowerVis !=="Static" ) {
+                if (eventobjs[i].name.split('_')[0] === "BCALShower") {
+                    if (eventobjs[i].userData.t < min_start_time) {
+                        min_start_time = eventobjs[i].userData.t;
+                    }
+                    if (eventobjs[i].userData.t > max_total_time) {
+                        max_total_time = eventobjs[i].userData.t;
+                    }
+                }
+            }
         }
         if(ViewerConfig.TOFHitVis !== "Off" && ViewerConfig.TOFHitVis !=="Static" ) {
 
@@ -1019,6 +1080,7 @@
 
             animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
             animateBCALPoints(clock,time_scale,eventobjs,min_start_time);
+            animateBCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time);
             animateTOFHits(clock,time_scale,min_start_time,max_total_time);
             animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
             animateFCALHits(clock,time_scale,eventobjs,min_start_time);

@@ -36,6 +36,17 @@ public:
         }
         return arr;
     }
+    static tao::json::value Add_BCALShowers(vector<const DBCALShower*> BCALShowers)
+    {
+        auto arr = tao::json::value::array({});
+
+        for(uint i=0;i<BCALShowers.size();i++)
+        {
+
+            arr.emplace_back(WriteShowerJSON(i,BCALShowers[i]->x, BCALShowers[i]->y, BCALShowers[i]->z, BCALShowers[i]->E,  BCALShowers[i]->t ));
+        }
+        return arr;
+    }
 
     static tao::json::value WriteHitJSON(int id, int module, int layer, int sector, DBCALGeometry::End end, int pulse_peak, float E, float t, float t_raw, int cellId)
     {
@@ -65,6 +76,20 @@ public:
 
                                 });
     }
+
+static tao::json::value WriteShowerJSON(int id,double x, double y, double z, double E, double t )
+{
+
+    return tao::json::value({
+                                    {"id", id},
+                                    {"z", z},
+                                    {"x", x},
+                                    {"y", y},
+                                    {"E", E},
+                                    {"t", t}
+
+                            });
+}
 
 };
 #endif //EVESTANDALONE_BCAL_H

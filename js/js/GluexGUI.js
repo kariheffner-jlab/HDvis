@@ -31,6 +31,9 @@ var HDVisConfig = function() {
     this.BCALPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.BCALPointVis= 'Dynamic';
 
+    this.BCALShower_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.BCALShowerVis= 'Dynamic';
+
     this.FCALHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FCALHitVis= 'Dynamic';
 
@@ -54,6 +57,8 @@ var HDVisConfig = function() {
 
     this.min_clock_time=-100;
     this.max_clock_time=100;
+
+    this.BCAL_ShowerEcut = 0.;
     //this.SceneTimeMessage=""
 
     // Thomas, here is GUI examples:
@@ -259,6 +264,22 @@ function makeGUI(scene){
         config.TimingsNeedsUpdate=true;
     });
 
+    bcalGuiFolder.add(config, 'BCAL_ShowerEcut',0, 6).name("Shower Energy cut (GeV)").onChange(function(value) { this.BCAL_ShowerEcut=value;
+        var eventobjs = scene.getObjectByName("GluexEvent").children;
+        for(var i=0;i<eventobjs.length;i++) {
+            if (eventobjs[i].name.split('_')[0] === "BCALShower") {
+                if(eventobjs[i].userData.E<this.BCAL_ShowerEcut)
+                {
+                    eventobjs[i].material.visible=0;
+                }
+                else
+                {
+                    eventobjs[i].material.visible=1;
+                }
+            }
+        }
+    });
+
     bcalGuiFolder.add( config, 'BCALPointVis', config.BCALPoint_Options )
         .name('BCAL Points').onFinishChange(function(value) {
         if(value==="Off") {
@@ -274,6 +295,29 @@ function makeGUI(scene){
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
                 if (eventobjs[i].name.split('_')[0] === "BCALPoint" && eventobjs[i].material.visible===0) {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
+        }
+        config.TimingsNeedsUpdate=true;
+    });
+
+    bcalGuiFolder.add( config, 'BCALShowerVis', config.BCALShower_Options )
+        .name('BCAL Showers').onFinishChange(function(value) {
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "BCALShower") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "BCALShower" && eventobjs[i].material.visible===0) {
                     eventobjs[i].material.visible = 1;
                 }
             }
