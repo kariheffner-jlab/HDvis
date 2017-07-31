@@ -265,15 +265,16 @@ THREE.GluexEventLoader.prototype = {
 
             if((fhit.gPlane-1)%3===0 || (fhit.gPlane-1)%3===2 )
             {
-                hit_color.r=0;
-                hit_color.g=1;
-                hit_color.b=0;
+                hit_color.r=144./255.;
+                hit_color.g=249./255.;
+                hit_color.b=164./255.;
+
             }
             else
             {
-                hit_color.r=1;
-                hit_color.g=0;
-                hit_color.b=0;
+                hit_color.r=244./255.;
+                hit_color.g=66./255.;
+                hit_color.b=223./255.;
             }
 
             var hitmaterial = new THREE.LineBasicMaterial({color:hit_color, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
