@@ -1164,7 +1164,6 @@
                     }
                 }
 
-
                 clock.start();
             }
 
@@ -1196,23 +1195,35 @@
 
         if ( intersects.length > 0  ) {
 
-            if (intersects[0].object.material.visible !== false) {
-                if (INTERSECTED !== intersects[0].object) //you are over an object and it isn't the same one as before (otherwise do nothing)
+            var visible_intersect=false;
+            var depth_index=0;
+            for(;depth_index<intersects.length;depth_index++)
+            {
+
+                if(intersects[depth_index].object.material.visible);
+                {
+                    visible_intersect=true;
+                    break;
+                }
+            }
+
+            if (intersects[depth_index].object.material.visible) {
+                if (INTERSECTED !== intersects[depth_index].object) //you are over an object and it isn't the same one as before (otherwise do nothing)
                 {
                     if (INTERSECTED) {
                         //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
                         INTERSECTED.material.wireframe = false;
                     }
-                    INTERSECTED = intersects[0].object;  //set the intersected object
+                    INTERSECTED = intersects[depth_index].object;  //set the intersected object
 
                     //INTERSECTED.material.opacity=0;
                     INTERSECTED.material.wireframe = true;
 
-                    if (intersects[0].object.name) {
+                    if (intersects[depth_index].object.name) {
 
                         context1.clearRect(0, 0, 1024, 512);
-                        var objType = intersects[0].object.name.split("_")[0];
-                        var message = intersects[0].object.name.split("_")[1];
+                        var objType = intersects[depth_index].object.name.split("_")[0];
+                        var message = intersects[depth_index].object.name.split("_")[1];
                         var userDataList = Object.keys(intersects[0].object.userData);
                         var total_data = userDataList.length;
 
@@ -1223,7 +1234,7 @@
                         for (var i = 0; i < total_data; i++) {
                             message += ",";
                             message += userDataList[i] + ":";
-                            message += intersects[0].object.userData[userDataList[i]];
+                            message += intersects[depth_index].object.userData[userDataList[i]];
                         }
                         console.log(message);
                         var metrics = context1.measureText(message);
@@ -1248,6 +1259,7 @@
                 INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;
+            visible_intersect=false;
             context1.clearRect(0,0,300,300);
             texture1.needsUpdate = true;
         }
