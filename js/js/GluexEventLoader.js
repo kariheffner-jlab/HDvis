@@ -254,23 +254,58 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "FDCHit_" + "FDC Hit "+fhit.id;
 
-            var start=new THREE.Vector3(0,0,0);
-            var end=new THREE.Vector3(0,fhit.t,fhit.q);
+            var start=new THREE.Vector3(0,-64,175.548+(fhit.gLayer-1)*2.611);
+            var end=new THREE.Vector3(0,64,175.548+(fhit.gLayer-1)*2.611);
+
             geometry.vertices.push(
                 start,end
             );
 
-            var hitmaterial = new THREE.LineBasicMaterial({color:0xff49e6, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
+            var hit_color=new THREE.Color();
+
+            if((fhit.gLayer-1)%3===0 || (fhit.gLayer-1)%3===2 )
+            {
+                hit_color.r=0;
+                hit_color.g=1;
+                hit_color.b=0;
+            }
+            else
+            {
+                hit_color.r=1;
+                hit_color.g=0;
+                hit_color.b=0;
+            }
+
+            var hitmaterial = new THREE.LineBasicMaterial({color:hit_color, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
             hitmaterial.side = THREE.DoubleSide;
 
             var linemesh= new THREE.LineSegments(geometry,hitmaterial);
             linemesh.frustumCulled = false;
-            //linemesh.position.x=hit.x;
-            //linemesh.position.y=hit.y;
-            //linemesh.position.z=hit.z;//Need to shift radially by 1/2 length
 
-            //linemesh.rotation.x = -1*Math.PI/2;//Need rotation of showers....but maybe not
+            var base_angle = 0;
 
+            if((fhit.gLayer-1)%3===1)
+            {
+                base_angle=20*(fhit.gLayer-2);
+            }
+            else if((fhit.gLayer-1)%3===0)
+            {
+                base_angle=20*(fhit.gLayer-1);
+            }
+            else if((fhit.gLayer-1)%3===2)
+            {
+                base_angle=20*(fhit.gLayer-3);
+            }
+
+            var angle=0;
+            if((fhit.gLayer-1)%3===0)
+                angle=base_angle-75;
+            else if((fhit.gLayer-1)%3===1)
+                angle=base_angle;
+            else if((fhit.gLayer-1)%3===2)
+                angle=base_angle+75;
+
+            linemesh.rotation.z = (angle)*Math.PI/180;
             linemesh.userData={"q":fhit.q,"t":fhit.t};
 
             linemesh.name = geometry.name;
