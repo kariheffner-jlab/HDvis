@@ -254,8 +254,8 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "FDCHit_" + "FDC Hit "+fhit.id;
 
-            var start=new THREE.Vector3(0,-64,175.548+(fhit.gLayer-1)*2.611);
-            var end=new THREE.Vector3(0,64,175.548+(fhit.gLayer-1)*2.611);
+            var start=new THREE.Vector3(0,-64,175.548+(fhit.gPlane-1)*2.611);
+            var end=new THREE.Vector3(0,64,175.548+(fhit.gPlane-1)*2.611);
 
             geometry.vertices.push(
                 start,end
@@ -263,7 +263,7 @@ THREE.GluexEventLoader.prototype = {
 
             var hit_color=new THREE.Color();
 
-            if((fhit.gLayer-1)%3===0 || (fhit.gLayer-1)%3===2 )
+            if((fhit.gPlane-1)%3===0 || (fhit.gPlane-1)%3===2 )
             {
                 hit_color.r=0;
                 hit_color.g=1;
@@ -284,25 +284,25 @@ THREE.GluexEventLoader.prototype = {
 
             var base_angle = 0;
 
-            if((fhit.gLayer-1)%3===1)
+            if((fhit.gPlane-1)%3===1)
             {
-                base_angle=20*(fhit.gLayer-2);
+                base_angle=20*(fhit.gPlane-2);
             }
-            else if((fhit.gLayer-1)%3===0)
+            else if((fhit.gPlane-1)%3===0)
             {
-                base_angle=20*(fhit.gLayer-1);
+                base_angle=20*(fhit.gPlane-1);
             }
-            else if((fhit.gLayer-1)%3===2)
+            else if((fhit.gPlane-1)%3===2)
             {
-                base_angle=20*(fhit.gLayer-3);
+                base_angle=20*(fhit.gPlane-3);
             }
 
             var angle=0;
-            if((fhit.gLayer-1)%3===0)
+            if((fhit.gPlane-1)%3===0)
                 angle=base_angle-75;
-            else if((fhit.gLayer-1)%3===1)
+            else if((fhit.gPlane-1)%3===1)
                 angle=base_angle;
-            else if((fhit.gLayer-1)%3===2)
+            else if((fhit.gPlane-1)%3===2)
                 angle=base_angle+75;
 
             linemesh.rotation.z = (angle)*Math.PI/180;
