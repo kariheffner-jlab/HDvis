@@ -167,7 +167,6 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
-
         var FCAL_EScale=ViewerConfig.FCAL_EScale;
         this.EventData.FCAL_hits.forEach(function (hit) {
             //console.log(hit.id);
@@ -200,7 +199,6 @@ THREE.GluexEventLoader.prototype = {
             scope.group.add(boxmesh);
             //console.log(track.charge);
         });
-
 
         this.EventData.FCAL_showers.forEach(function (shower) {
             //console.log(hit.id);
@@ -248,6 +246,35 @@ THREE.GluexEventLoader.prototype = {
 
             bconemesh.name = geometry.name;
             scope.group.add(bconemesh);
+            //console.log(track.charge);
+        });
+
+        this.EventData.FDC_hits.forEach(function (fhit) {
+            //console.log(hit.id);
+            var geometry = new THREE.Geometry();
+            geometry.name = "FDCHit_" + "FDC Hit "+fhit.id;
+
+            var start=new THREE.Vector3(0,0,0);
+            var end=new THREE.Vector3(0,fhit.t,fhit.q);
+            geometry.vertices.push(
+                start,end
+            );
+
+            var hitmaterial = new THREE.LineBasicMaterial({color:0xff49e6, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
+            hitmaterial.side = THREE.DoubleSide;
+
+            var linemesh= new THREE.LineSegments(geometry,hitmaterial);
+            linemesh.frustumCulled = false;
+            //linemesh.position.x=hit.x;
+            //linemesh.position.y=hit.y;
+            //linemesh.position.z=hit.z;//Need to shift radially by 1/2 length
+
+            //linemesh.rotation.x = -1*Math.PI/2;//Need rotation of showers....but maybe not
+
+            linemesh.userData={"q":fhit.q,"t":fhit.t};
+
+            linemesh.name = geometry.name;
+            scope.group.add(linemesh);
             //console.log(track.charge);
         });
 

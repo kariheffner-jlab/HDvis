@@ -25,6 +25,9 @@ var HDVisConfig = function() {
     this.TOFHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFHitVis= 'Dynamic';
 
+    this.FDCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.FDCHitVis= 'Dynamic';
+
     this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
 
@@ -87,9 +90,35 @@ function makeGUI(scene){
 
     var bcalGuiFolder = gui.addFolder('BCAL');
 
+    var fdcGuiFolder = gui.addFolder('FDC');
+
     var tofGuiFolder = gui.addFolder('TOF');
 
     var fcalGuiFolder= gui.addFolder('FCAL');
+
+
+    fdcGuiFolder.add( config, 'FDCHitVis', config.FDCHit_Options )
+        .name('FDC Hits').onFinishChange(function(value) {
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit" && eventobjs[i].material.visible===0) {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
+        }
+        config.TimingsNeedsUpdate=true;
+    });
 
     fcalGuiFolder.add(config, 'FCAL_EScale', 1, 1000).name("Energy Scale").onChange(function(value) { this.FCAL_EScale=value;
         var eventobjs = scene.getObjectByName("GluexEvent").children;
