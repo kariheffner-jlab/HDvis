@@ -66,6 +66,8 @@ THREE.GluexHDDSLoader.prototype = {
 
         this.group.add(this.processFTOF());
 
+        this.group.add(this.processFDC());
+
         var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 10.0);
         var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0x436280, transparent: true, opacity: 0.3, side: THREE.DoubleSide }));
         fcal.position.set(0.529, -0.002, 624.906 + 22.5);
@@ -85,6 +87,18 @@ THREE.GluexHDDSLoader.prototype = {
         this.setMeshPlacement(bcal, globalPlacement);
 
         return ftof;
+    },
+
+    processFDC: function () {
+        var xmlSection = this.xmlSections['ForwardDC'];
+        var fdc = new THREE.Group();
+        fdc.name = "FDC";
+
+        "58.05 64.0485 -99.0"
+        "58.05 64.0485 -97.5"
+        "0.0 64.0485 -97.5"
+        "0.0 64.0485 99.0"
+
     },
 
 
