@@ -94,10 +94,6 @@ THREE.GluexHDDSLoader.prototype = {
         var fdc = new THREE.Group();
         fdc.name = "FDC";
 
-        "58.05 64.0485 -99.0"
-        "58.05 64.0485 -97.5"
-        "0.0 64.0485 -97.5"
-        "0.0 64.0485 99.0"
 
     },
 
