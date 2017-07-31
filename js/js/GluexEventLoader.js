@@ -306,6 +306,7 @@ THREE.GluexEventLoader.prototype = {
                 angle=base_angle+75;
 
             linemesh.rotation.z = (angle)*Math.PI/180;
+            linemesh.translateY(-50+fhit.element*100/192);
             linemesh.userData={"q":fhit.q,"t":fhit.t};
 
             linemesh.name = geometry.name;
