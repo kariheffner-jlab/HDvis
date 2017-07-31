@@ -23,6 +23,27 @@ extractPlacement = function(xmlElement, posAttName, rotAttName){
     };
 };
 
+createPolyPlaneGeometry = function(data, segments, phiStart, phiLength) {
+
+    segments = typeof segments !== 'undefined' ? segments : 20;
+    phiStart = typeof phiStart !== 'undefined' ? phiStart : 0;
+    phiLength = typeof phiLength !== 'undefined' ? phiLength : 2*Math.PI;
+
+    var points2d = []
+    for (var i = 0; i < data.length; i++) {
+        points2d.push(new THREE.Vector2(data[i][1], data[i][2]));
+    }
+
+    for (var i = data.length -1; i >= 0; i--) {
+        points2d.push(new THREE.Vector2(data[i][0], data[i][2]));
+    }
+
+    points2d.push(new THREE.Vector2(data[0][1], data[0][2]));   // Closing the contour
+
+    // use the same points to create a LatheGeometry
+    return new THREE.LatheGeometry(points2d, segments, phiStart, phiLength);
+};
+
 THREE.GluexHDDSLoader = function () {
     this.importedGeometry = null;
     this.HDDS = null;
@@ -65,9 +86,10 @@ THREE.GluexHDDSLoader.prototype = {
         });
 
         this.group.add(this.processFTOF());
+        this.group.add(this.processFDC());
 
         var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 10.0);
-        var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0x436280, transparent: true, opacity: 0.3, side: THREE.DoubleSide }));
+        var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0x436280, transparent: false, opacity: 1, side: THREE.DoubleSide }));
         fcal.position.set(0.529, -0.002, 624.906 + 22.5);
         this.group.add(fcal);
         return this.group;
@@ -84,7 +106,34 @@ THREE.GluexHDDSLoader.prototype = {
         var globalPlacement = extractPlacement(xmlBcalGlobal);
         this.setMeshPlacement(bcal, globalPlacement);
 
-        return ftof;
+        return bcal;
+    },
+
+    processFDC: function() {
+        var xmlSection = this.xmlSections['ForwardDC'];
+
+        var motherVolumeCoords = [
+            [58.05 ,64.0485 ,-99.0],
+            [58.05 ,64.0485 ,-97.5],
+            [0.0 ,64.0485 ,-97.5],
+            [0.0 ,64.0485 ,99.0]
+        ];
+
+        var fdcMotherGeom = new THREE.CylinderGeometry( 64.0485, 64.0485, 188, 32 );
+
+
+        var fdc = new THREE.Mesh(fdcMotherGeom, new THREE.MeshLambertMaterial({ color: 0x436280, transparent:true, opacity: 0.3, side: THREE.DoubleSide }));
+
+
+        var xmlGlobalPlacement = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="ForwardDC"]');
+        var globalPlacement = extractPlacement(xmlGlobalPlacement);
+        var xmlLocalPlacement = xmlSection.querySelector('composition[name="ForwardDC"] > posXYZ[volume="forwardDC"]');
+        var localPlacement = extractPlacement(xmlLocalPlacement);
+        this.setMeshPlacement(fdc, this.sumPlacements(localPlacement, globalPlacement));
+        fdc.rotateX(Math.PI/2.0);
+        fdc.name="FDC";
+
+        return fdc;
     },
 
     processFTOF: function () {
