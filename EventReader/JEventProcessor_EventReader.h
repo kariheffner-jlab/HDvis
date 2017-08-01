@@ -34,6 +34,8 @@ class JEventProcessor_EventReader:public jana::JEventProcessor{
 
 		DMagneticFieldMap* Bfield;
         DGeometry* Geom;
+		vector<vector<DFDCWire*> >FDCwires;
+		vector<vector<DFDCCathode*> >FDCcathodes;
 
 
 

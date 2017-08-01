@@ -315,6 +315,27 @@ THREE.GluexEventLoader.prototype = {
             //console.log(track.charge);
         });
 
+        this.EventData.FDC_pseudos.forEach(function (fpseudo) {
+            //console.log(hit.id);
+            var geometry = new THREE.Geometry();
+            geometry.name = "FDCPseudo_" + "FDCPseudo "+fpseudo.id;
+
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:.8, visible: scope.Configuration.FDCPseudoVis});
+            var radius=2;
+            var fdcpoint=new THREE.SphereGeometry(radius,32,32,0,6.3,0,6.3);
+
+            var fdcpseudomesh= new THREE.Mesh(fdcpoint,material);
+            fdcpseudomesh.position.x=fpseudo.x;
+            fdcpseudomesh.position.y=fpseudo.y;
+            fdcpseudomesh.position.z=fpseudo.z;
+
+            fdcpseudomesh.userData={time:fpseudo.time,x:fpseudo.x,y:fpseudo.y,z:fpseudo.z};
+
+            fdcpseudomesh.name = geometry.name;
+            scope.group.add(fdcpseudomesh);
+            //console.log(track.charge);
+        });
+
         this.EventData.TOF_points.forEach(function (point) {
             //console.log(hit.id);
             var geometry = new THREE.Geometry();

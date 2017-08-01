@@ -4,7 +4,6 @@
 // Created: Fri Apr  7 14:45:08 EDT 2017
 // Creator: tbritton (on Linux ifarm1401.jlab.org 3.10.0-327.el7.x86_64 x86_64)
 //
-
 #include <thread>
 #include "JEventProcessor_EventReader.h"
 #include "Tracking.h"
@@ -116,6 +115,10 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
 
     Bfield=gDana->GetBfield(uint(runnumber));
     Geom=gDana->GetDGeometry(uint(runnumber));
+
+    Geom->GetFDCWires(FDCwires);
+    Geom->GetFDCCathodes(FDCcathodes);
+
     cout << endl;
 
     return NOERROR;
@@ -184,6 +187,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         vector<const DCDCHit *> CDCHits;
         vector<const DFDCHit *> FDCHits;
+        vector<const DFDCPseudo *> FDCPseudos;
         vector<const DSCHit *> SCHits;
 
         loop->Get(FCALHits);
@@ -203,6 +207,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(BCALShowers);
         loop->Get(CDCHits);
         loop->Get(FDCHits);
+        loop->Get(FDCPseudos);
         loop->Get(SCHits);
 
 
@@ -235,7 +240,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
             // FDC
-            auto fdcHitsJson = FDC::Add_FDCHits(FDCHits);
+            auto fdcHitsJson = FDC::Add_FDCHits(FDCHits,FDCwires,FDCcathodes);
+            auto fdcPseudosJson = FDC::Add_FDCPseudos(FDCPseudos);
+
 
             tao::json::value eventJson ({
                                             { "charged_tracks", chargedTracksJson },
@@ -250,6 +257,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             { "BCAL_showers", bcalShowersJson },
                                             { "CDC_hits", cdcHitsJson },
                                             { "FDC_hits", fdcHitsJson },
+                                            { "FDC_pseudos", fdcPseudosJson },
                                             {"event_number",eventnumber}
                                         });
 

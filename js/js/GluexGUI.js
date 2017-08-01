@@ -43,6 +43,9 @@ var HDVisConfig = function() {
     this.FCALShower_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FCALShowerVis= 'Dynamic';
 
+    this.FDCPseudo_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.FDCPseudoVis= 'Dynamic';
+
     this.positive_track_swim=false;
     this.negative_track_swim=false;
     this.neutral_track_swim=false;
@@ -112,6 +115,28 @@ function makeGUI(scene){
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
                 if (eventobjs[i].name.split('_')[0] === "FDCHit" && eventobjs[i].material.visible===0) {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
+        }
+        config.TimingsNeedsUpdate=true;
+    });
+    fdcGuiFolder.add( config, 'FDCPseudoVis', config.FDCPseudo_Options )
+        .name('FDC Pseudos').onFinishChange(function(value) {
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCPseudo") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCPseudo" && eventobjs[i].material.visible===0) {
                     eventobjs[i].material.visible = 1;
                 }
             }

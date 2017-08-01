@@ -727,6 +727,64 @@
         }
     }
 
+    function animateFDCPseudos(clock,time_scale,eventobjs,min_start_time)
+    {
+        var SceneTime=clock.getElapsedTime()*time_scale;
+
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
+
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].name.split('_')[0] === "FDCPseudo") {
+                if(eventobjs[i].userData.time>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.time<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    continue;
+                }//RESPECT THE CLOCK BOUNDS TOF POINTS
+                else
+                {
+                    if(ViewerConfig.FDCPseudoVis !== "Off")
+                        eventobjs[i].material.visible=true;
+                }
+                if (ViewerConfig.FDCPseudoVis === "Dynamic") {
+                    if (SceneTime + min_start_time > eventobjs[i].userData.time && eventobjs[i].material.color.b === 1) {
+                        eventobjs[i].scale.set(2,2,2);
+                        eventobjs[i].geometryNeedsUpdate = true;
+                        eventobjs[i].material.color.r = 1;
+                        eventobjs[i].material.color.g = 0;
+                        eventobjs[i].material.color.b = 0;
+                        eventobjs[i].colorsNeedUpdate = true;
+                    }
+                    else if (SceneTime + min_start_time < eventobjs[i].userData.time && eventobjs[i].material.color.r === 1) {
+                        eventobjs[i].scale.set(1,1,1);
+                        eventobjs[i].geometryNeedsUpdate = true;
+                        eventobjs[i].material.color.r = 0;
+                        eventobjs[i].material.color.g = 0;
+                        eventobjs[i].material.color.b = 1;
+                        eventobjs[i].colorsNeedUpdate = true;
+                    }
+                }
+                else if(ViewerConfig.FDCPseudoVis === "Off" && eventobjs[i].material.visible===true)
+                {
+                    eventobjs[i].material.visible=false;
+                }
+                else if(ViewerConfig.FDCPseudoVis === "Static"&& eventobjs[i].material.color.r===1)
+                {
+                    eventobjs[i].scale.set(1,1,1);
+                    eventobjs[i].geometryNeedsUpdate = true;
+                    eventobjs[i].material.color.r = 0;
+                    eventobjs[i].material.color.g = 0;
+                    eventobjs[i].material.color.b = 1;
+                    eventobjs[i].colorsNeedUpdate = true;
+                }
+            }
+        }
+    }
+
     function animateBCALPoints(clock,time_scale,eventobjs,min_start_time)
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
@@ -1037,15 +1095,24 @@
             }
 
             if(ViewerConfig.FDCHitVis !== "Off" && ViewerConfig.FDCHitVis !=="Static" ) {
-                if (eventobjs[i].name.split('_')[0] === "FDCHitVis") {
-                   // if(eventobjs[i].userData.E<ViewerConfig.FCAL_HitEcut)
-                    //{continue;}
+                if (eventobjs[i].name.split('_')[0] === "FDCHit") {
 
                     if (eventobjs[i].userData.t < min_start_time) {
                         min_start_time = eventobjs[i].userData.t;
                     }
                     if (eventobjs[i].userData.t > max_total_time) {
                         max_total_time = eventobjs[i].userData.t;
+                    }
+                }
+            }
+            if(ViewerConfig.FDCPseudoVis !== "Off" && ViewerConfig.FDCPseudoVis !=="Static" ) {
+                if (eventobjs[i].name.split('_')[0] === "FDCPseudo") {
+
+                    if (eventobjs[i].userData.time < min_start_time) {
+                        min_start_time = eventobjs[i].userData.time;
+                    }
+                    if (eventobjs[i].userData.time > max_total_time) {
+                        max_total_time = eventobjs[i].userData.time;
                     }
                 }
             }
@@ -1141,6 +1208,7 @@
             animateBCALPoints(clock,time_scale,eventobjs,min_start_time);
             animateBCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time);
             animateFDCHits(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
+            animateFDCPseudos(clock,time_scale,eventobjs,min_start_time);
             animateTOFHits(clock,time_scale,min_start_time,max_total_time);
             animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
             animateFCALHits(clock,time_scale,eventobjs,min_start_time);
