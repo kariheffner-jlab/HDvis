@@ -23,14 +23,21 @@ public:
             double wire_strip_midx=0;
             double wire_strip_midy=0;
             double wire_strip_midz=0;
+            double xdispl=0;
 
             //if cathode
             if(FDCHits[i]->layer==1 || FDCHits[i]->layer==3)
             {
                // 2*((*peak)->gLayer-1)+(1-(*peak)->plane/2
-                //wire_strip_midx=FDCcathodes[(2*FDCHits[i]->gLayer-1)+(1-FDCHits[i]->plane/2)][FDCHits[i]->element-1]->origin.x();
-                //wire_strip_midy=FDCcathodes[(2*FDCHits[i]->gLayer-1)+(1-FDCHits[i]->plane/2)][FDCHits[i]->element-1]->origin.y();
-                //wire_strip_midz=FDCcathodes[(2*FDCHits[i]->gLayer-1)+(1-FDCHits[i]->plane/2)][FDCHits[i]->element-1]->origin.z();
+                //std::cout<<"finding strip "<< (2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2)) << ","<<FDCcathodes.size()<<std::endl;
+                //std::cout<<FDCHits[i]->gLayer<<","<<FDCHits[i]->layer<<","<<FDCHits[i]->plane<<std::endl;
+                xdispl=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->u;
+
+               // wire_strip_midx=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->origin.x();
+               // wire_strip_midy=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->origin.y();
+               // wire_strip_midz=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->origin.z();
+
+                //std::cout<<wire_strip_midx<<","<<wire_strip_midy<<","<<wire_strip_midz<<endl;
             }
             else
             {
@@ -42,7 +49,7 @@ public:
 
 
 
-            arr.emplace_back(WriteHitJSON(i, FDCHits[i]->layer, FDCHits[i]->module, FDCHits[i]->element, FDCHits[i]->plane, FDCHits[i]->gPlane, FDCHits[i]->gLayer, FDCHits[i]->q, FDCHits[i]->pulse_height, FDCHits[i]->pulse_height_raw, FDCHits[i]->t, FDCHits[i]->r, FDCHits[i]->d, FDCHits[i]->type,wire_strip_midx,wire_strip_midy,wire_strip_midz));
+            arr.emplace_back(WriteHitJSON(i, FDCHits[i]->layer, FDCHits[i]->module, FDCHits[i]->element, FDCHits[i]->plane, FDCHits[i]->gPlane, FDCHits[i]->gLayer, FDCHits[i]->q, FDCHits[i]->pulse_height, FDCHits[i]->pulse_height_raw, FDCHits[i]->t, FDCHits[i]->r, FDCHits[i]->d, FDCHits[i]->type,wire_strip_midx,wire_strip_midy,wire_strip_midz,xdispl));
         }
 
         return arr;
@@ -60,7 +67,7 @@ public:
         return arr;
     }
 
-    static tao::json::value WriteHitJSON(int id, int layer, int module, int element, int plane, int gPlane, int gLayer, float q, float pulse_height, float pulse_height_raw, float t, float r, float d, int type,double wire_strip_midx, double wire_strip_midy, double wire_strip_midz)
+    static tao::json::value WriteHitJSON(int id, int layer, int module, int element, int plane, int gPlane, int gLayer, float q, float pulse_height, float pulse_height_raw, float t, float r, float d, int type,double wire_strip_midx, double wire_strip_midy, double wire_strip_midz, double xdispl)
     {
         tao::json::value FDCHit({
                                         {"id", id},
@@ -79,7 +86,8 @@ public:
                                         {"type", type},
                                         {"midx", wire_strip_midx},
                                         {"midy", wire_strip_midy},
-                                        {"midz", wire_strip_midz}
+                                        {"midz", wire_strip_midz},
+                                        {"u", xdispl}
 
                                 });
 

@@ -116,6 +116,7 @@ jerror_t JEventProcessor_EventReader::brun(JEventLoop *eventLoop, int32_t runnum
     Bfield=gDana->GetBfield(uint(runnumber));
     Geom=gDana->GetDGeometry(uint(runnumber));
 
+
     Geom->GetFDCWires(FDCwires);
     Geom->GetFDCCathodes(FDCcathodes);
 
