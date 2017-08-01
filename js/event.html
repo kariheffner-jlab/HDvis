@@ -727,6 +727,64 @@
         }
     }
 
+    function animateFDCPseudos(clock,time_scale,eventobjs,min_start_time)
+    {
+        var SceneTime=clock.getElapsedTime()*time_scale;
+
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
+
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].name.split('_')[0] === "FDCPseudo") {
+                if(eventobjs[i].userData.time>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.time<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    continue;
+                }//RESPECT THE CLOCK BOUNDS TOF POINTS
+                else
+                {
+                    if(ViewerConfig.FDCPseudoVis !== "Off")
+                        eventobjs[i].material.visible=true;
+                }
+                if (ViewerConfig.FDCPseudoVis === "Dynamic") {
+                    if (SceneTime + min_start_time > eventobjs[i].userData.time && eventobjs[i].material.color.b === 1) {
+                        eventobjs[i].scale.set(2,2,2);
+                        eventobjs[i].geometryNeedsUpdate = true;
+                        eventobjs[i].material.color.r = 1;
+                        eventobjs[i].material.color.g = 0;
+                        eventobjs[i].material.color.b = 0;
+                        eventobjs[i].colorsNeedUpdate = true;
+                    }
+                    else if (SceneTime + min_start_time < eventobjs[i].userData.time && eventobjs[i].material.color.r === 1) {
+                        eventobjs[i].scale.set(1,1,1);
+                        eventobjs[i].geometryNeedsUpdate = true;
+                        eventobjs[i].material.color.r = 0;
+                        eventobjs[i].material.color.g = 0;
+                        eventobjs[i].material.color.b = 1;
+                        eventobjs[i].colorsNeedUpdate = true;
+                    }
+                }
+                else if(ViewerConfig.FDCPseudoVis === "Off" && eventobjs[i].material.visible===true)
+                {
+                    eventobjs[i].material.visible=false;
+                }
+                else if(ViewerConfig.FDCPseudoVis === "Static"&& eventobjs[i].material.color.r===1)
+                {
+                    eventobjs[i].scale.set(1,1,1);
+                    eventobjs[i].geometryNeedsUpdate = true;
+                    eventobjs[i].material.color.r = 0;
+                    eventobjs[i].material.color.g = 0;
+                    eventobjs[i].material.color.b = 1;
+                    eventobjs[i].colorsNeedUpdate = true;
+                }
+            }
+        }
+    }
+
     function animateBCALPoints(clock,time_scale,eventobjs,min_start_time)
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
@@ -1037,15 +1095,24 @@
             }
 
             if(ViewerConfig.FDCHitVis !== "Off" && ViewerConfig.FDCHitVis !=="Static" ) {
-                if (eventobjs[i].name.split('_')[0] === "FDCHitVis") {
-                   // if(eventobjs[i].userData.E<ViewerConfig.FCAL_HitEcut)
-                    //{continue;}
+                if (eventobjs[i].name.split('_')[0] === "FDCHit") {
 
                     if (eventobjs[i].userData.t < min_start_time) {
                         min_start_time = eventobjs[i].userData.t;
                     }
                     if (eventobjs[i].userData.t > max_total_time) {
                         max_total_time = eventobjs[i].userData.t;
+                    }
+                }
+            }
+            if(ViewerConfig.FDCPseudoVis !== "Off" && ViewerConfig.FDCPseudoVis !=="Static" ) {
+                if (eventobjs[i].name.split('_')[0] === "FDCPseudo") {
+
+                    if (eventobjs[i].userData.time < min_start_time) {
+                        min_start_time = eventobjs[i].userData.time;
+                    }
+                    if (eventobjs[i].userData.time > max_total_time) {
+                        max_total_time = eventobjs[i].userData.time;
                     }
                 }
             }
@@ -1141,6 +1208,7 @@
             animateBCALPoints(clock,time_scale,eventobjs,min_start_time);
             animateBCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time);
             animateFDCHits(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
+            animateFDCPseudos(clock,time_scale,eventobjs,min_start_time);
             animateTOFHits(clock,time_scale,min_start_time,max_total_time);
             animateTOFPoints(clock,time_scale,eventobjs,min_start_time);
             animateFCALHits(clock,time_scale,eventobjs,min_start_time);
@@ -1163,7 +1231,6 @@
                         thisGeo.attributes.position.needsUpdate = true;
                     }
                 }
-
 
                 clock.start();
             }
@@ -1196,23 +1263,35 @@
 
         if ( intersects.length > 0  ) {
 
-            if (intersects[0].object.material.visible !== false) {
-                if (INTERSECTED !== intersects[0].object) //you are over an object and it isn't the same one as before (otherwise do nothing)
+            var visible_intersect=false;
+            var depth_index=0;
+            for(;depth_index<intersects.length;depth_index++)
+            {
+
+                if(intersects[depth_index].object.material.visible);
+                {
+                    visible_intersect=true;
+                    break;
+                }
+            }
+
+            if (intersects[depth_index].object.material.visible) {
+                if (INTERSECTED !== intersects[depth_index].object) //you are over an object and it isn't the same one as before (otherwise do nothing)
                 {
                     if (INTERSECTED) {
                         //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
                         INTERSECTED.material.wireframe = false;
                     }
-                    INTERSECTED = intersects[0].object;  //set the intersected object
+                    INTERSECTED = intersects[depth_index].object;  //set the intersected object
 
                     //INTERSECTED.material.opacity=0;
                     INTERSECTED.material.wireframe = true;
 
-                    if (intersects[0].object.name) {
+                    if (intersects[depth_index].object.name) {
 
                         context1.clearRect(0, 0, 1024, 512);
-                        var objType = intersects[0].object.name.split("_")[0];
-                        var message = intersects[0].object.name.split("_")[1];
+                        var objType = intersects[depth_index].object.name.split("_")[0];
+                        var message = intersects[depth_index].object.name.split("_")[1];
                         var userDataList = Object.keys(intersects[0].object.userData);
                         var total_data = userDataList.length;
 
@@ -1223,7 +1302,7 @@
                         for (var i = 0; i < total_data; i++) {
                             message += ",";
                             message += userDataList[i] + ":";
-                            message += intersects[0].object.userData[userDataList[i]];
+                            message += intersects[depth_index].object.userData[userDataList[i]];
                         }
                         console.log(message);
                         var metrics = context1.measureText(message);
@@ -1248,6 +1327,7 @@
                 INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;
+            visible_intersect=false;
             context1.clearRect(0,0,300,300);
             texture1.needsUpdate = true;
         }
@@ -1279,7 +1359,7 @@
                 break;
             }
         }
-        //alert("woke up!");
+        //alert("woke up!");d
     }
 
 </script>

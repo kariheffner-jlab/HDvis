@@ -254,27 +254,85 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "FDCHit_" + "FDC Hit "+fhit.id;
 
-            var start=new THREE.Vector3(0,0,0);
-            var end=new THREE.Vector3(0,fhit.t,fhit.q);
+            var start=new THREE.Vector3(0,-64,175.548+(fhit.gPlane-1)*2.611);
+            var end=new THREE.Vector3(0,64,175.548+(fhit.gPlane-1)*2.611);
+
             geometry.vertices.push(
                 start,end
             );
 
-            var hitmaterial = new THREE.LineBasicMaterial({color:0xff49e6, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
+            var hit_color=new THREE.Color();
+
+            if((fhit.gPlane-1)%3===0 || (fhit.gPlane-1)%3===2 )
+            {
+                hit_color.r=144./255.;
+                hit_color.g=249./255.;
+                hit_color.b=164./255.;
+
+            }
+            else
+            {
+                hit_color.r=244./255.;
+                hit_color.g=66./255.;
+                hit_color.b=223./255.;
+            }
+
+            var hitmaterial = new THREE.LineBasicMaterial({color:hit_color, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
             hitmaterial.side = THREE.DoubleSide;
 
             var linemesh= new THREE.LineSegments(geometry,hitmaterial);
             linemesh.frustumCulled = false;
-            //linemesh.position.x=hit.x;
-            //linemesh.position.y=hit.y;
-            //linemesh.position.z=hit.z;//Need to shift radially by 1/2 length
 
-            //linemesh.rotation.x = -1*Math.PI/2;//Need rotation of showers....but maybe not
+            var base_angle = 0;
 
+            if((fhit.gPlane-1)%3===1)
+            {
+                base_angle=20*(fhit.gPlane-2);
+            }
+            else if((fhit.gPlane-1)%3===0)
+            {
+                base_angle=20*(fhit.gPlane-1);
+            }
+            else if((fhit.gPlane-1)%3===2)
+            {
+                base_angle=20*(fhit.gPlane-3);
+            }
+
+            var angle=0;
+            if((fhit.gPlane-1)%3===0)
+                angle=base_angle-75;
+            else if((fhit.gPlane-1)%3===1)
+                angle=base_angle;
+            else if((fhit.gPlane-1)%3===2)
+                angle=base_angle+75;
+
+            linemesh.rotation.z = (angle)*Math.PI/180;
+            linemesh.translateY(-50+fhit.element*100/192);
             linemesh.userData={"q":fhit.q,"t":fhit.t};
 
             linemesh.name = geometry.name;
             scope.group.add(linemesh);
+            //console.log(track.charge);
+        });
+
+        this.EventData.FDC_pseudos.forEach(function (fpseudo) {
+            //console.log(hit.id);
+            var geometry = new THREE.Geometry();
+            geometry.name = "FDCPseudo_" + "FDCPseudo "+fpseudo.id;
+
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:.8, visible: scope.Configuration.FDCPseudoVis});
+            var radius=2;
+            var fdcpoint=new THREE.SphereGeometry(radius,32,32,0,6.3,0,6.3);
+
+            var fdcpseudomesh= new THREE.Mesh(fdcpoint,material);
+            fdcpseudomesh.position.x=fpseudo.x;
+            fdcpseudomesh.position.y=fpseudo.y;
+            fdcpseudomesh.position.z=fpseudo.z;
+
+            fdcpseudomesh.userData={time:fpseudo.time,x:fpseudo.x,y:fpseudo.y,z:fpseudo.z};
+
+            fdcpseudomesh.name = geometry.name;
+            scope.group.add(fdcpseudomesh);
             //console.log(track.charge);
         });
 
