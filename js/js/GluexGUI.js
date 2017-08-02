@@ -297,6 +297,7 @@ function makeGUI(scene){
 
     tofGuiFolder.add( config, 'TOFPointVis', config.TOFPoint_Options )
         .name('TOF Points').onFinishChange(function(value) {
+            config.TOFPointVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -336,6 +337,7 @@ function makeGUI(scene){
 
     bcalGuiFolder.add( config, 'BCALPointVis', config.BCALPoint_Options )
         .name('BCAL Points').onFinishChange(function(value) {
+            config.BCALPointVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
