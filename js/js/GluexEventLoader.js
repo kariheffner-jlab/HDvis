@@ -262,11 +262,13 @@ THREE.GluexEventLoader.prototype = {
 
             //var start=new THREE.Vector3(0,-64,175.548+(fhit.gPlane-1)*2.611);
             //var end=new THREE.Vector3(0,64,175.548+(fhit.gPlane-1)*2.611);
-            var zpos=fhit.midz;
 
-            var len=120;
-            var start=new THREE.Vector3(fhit.midx,fhit.midy-.5*len,zpos);
-            var end=new THREE.Vector3(fhit.midx,fhit.midy+.5*len,zpos);
+
+
+
+            var len=520;
+            var start=new THREE.Vector3(0,0-.5*len,fhit.midz);
+            var end=new THREE.Vector3(0,0+5*len,fhit.midz);
 
 
             geometry.vertices.push(
@@ -309,37 +311,58 @@ THREE.GluexEventLoader.prototype = {
 
             var base_angle = 0;
 
-            if((fhit.gPlane-1)%3===1)
+            if(fhit.gLayer%6==0)
             {
-                base_angle=20*(fhit.gPlane-2);
+                base_angle = -120
             }
-            else if((fhit.gPlane-1)%3===0)
+            else if(fhit.gLayer%6==1)
             {
-                base_angle=20*(fhit.gPlane-1);
+                base_angle = 180
             }
-            else if((fhit.gPlane-1)%3===2)
+            else if(fhit.gLayer%6==2)
             {
-                base_angle=20*(fhit.gPlane-3);
+                base_angle = 120
             }
+            else if(fhit.gLayer%6==3)
+            {
+                base_angle = 60
+            }
+            else if(fhit.gLayer%6==4)
+            {
+                base_angle = 0
+            }
+            else if(fhit.gLayer%6==5)
+            {
+                base_angle = -60
+            }
+
 
             var angle=0;
-            if((fhit.gPlane-1)%3===0)
-                angle=base_angle-75;
-            else if((fhit.gPlane-1)%3===1)
-                angle=base_angle;
-            else if((fhit.gPlane-1)%3===2)
+            if((fhit.gPlane)%3===1)
                 angle=base_angle+75;
+            else if((fhit.gPlane)%3===2)
+                angle=base_angle;
+            else if((fhit.gPlane)%3===0)
+                angle=base_angle-75;
 
-            var radAngle=(angle)*Math.PI/180;
+            var radAngle=(angle)*Math.PI/180.;
+
+            linemesh.rotation.z = radAngle;//+Math.PI/2.;
+            // linemesh.rotateZ(radAngle);
+
+
+
             if(fhit.type!=0) {
-
-                linemesh.translateX(1*Math.cos(Math.PI/2-radAngle)*fhit.u);
-                linemesh.translateY(1*Math.sin(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateY(Math.cos(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateX(Math.sin(Math.PI/2-radAngle)*fhit.u);
+            }
+            else
+            {
+                //linemesh.rotation.z+=Math.PI;
             }
 
-            linemesh.rotation.z = radAngle;
 
-            linemesh.userData={"q":fhit.q,"t":fhit.t};
+            linemesh.userData={"q":fhit.q,"t":fhit.t,"gLayer":fhit.gLayer};
 
             linemesh.name = geometry.name;
             scope.group.add(linemesh);
