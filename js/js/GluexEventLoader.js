@@ -264,11 +264,6 @@ THREE.GluexEventLoader.prototype = {
             //var end=new THREE.Vector3(0,64,175.548+(fhit.gPlane-1)*2.611);
             var zpos=fhit.midz;
 
-            if(fhit.type!=0)
-            {
-                //zpos=175.548+(fhit.gPlane-1)*2.611;
-            }
-
             var len=120;
             var start=new THREE.Vector3(fhit.midx,fhit.midy-.5*len,zpos);
             var end=new THREE.Vector3(fhit.midx,fhit.midy+.5*len,zpos);
@@ -338,8 +333,8 @@ THREE.GluexEventLoader.prototype = {
             var radAngle=(angle)*Math.PI/180;
             if(fhit.type!=0) {
 
-                linemesh.translateX(Math.cos(Math.PI/2-radAngle)*fhit.u);
-                linemesh.translateY(Math.sin(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateX(1*Math.cos(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateY(1*Math.sin(Math.PI/2-radAngle)*fhit.u);
             }
 
             linemesh.rotation.z = radAngle;
