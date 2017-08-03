@@ -7,6 +7,8 @@ import {
   Mesh,
   AmbientLight,
   DirectionalLight } from 'three'
+
+
 export default class HDvis {
   constructor () {
     this._rootElementName = ''

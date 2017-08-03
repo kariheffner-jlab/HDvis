@@ -22,6 +22,8 @@ module.exports = {
     // allow async-await
     'generator-star-spacing': 0,
     // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
-  }
+    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+    // allow 2 empty lines in the code but no more than 1 in the beginning or the end of a file
+    'no-multiple-empty-lines': [2, { "max": 2, maxEOF: 1, maxBOF: 1  }],
+}
 }
