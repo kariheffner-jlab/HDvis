@@ -151,7 +151,13 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "BCALPoint_" + "BCALpoint "+bpoint.id;
 
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.BCALPointVis});
+            var vis=true;
+            if(scope.Configuration.BCALPointVis === "Off")
+            {
+                vis=false
+            }
+
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: vis});
             var radius=.5*Math.log(bpoint.E);
             var bcalpoint=new THREE.SphereGeometry(radius,32,32,0,6.3,0,6.3);
 
@@ -254,27 +260,46 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "FDCHit_" + "FDC Hit "+fhit.id;
 
-            var start=new THREE.Vector3(0,-64,175.548+(fhit.gPlane-1)*2.611);
-            var end=new THREE.Vector3(0,64,175.548+(fhit.gPlane-1)*2.611);
+            //var start=new THREE.Vector3(0,-64,175.548+(fhit.gPlane-1)*2.611);
+            //var end=new THREE.Vector3(0,64,175.548+(fhit.gPlane-1)*2.611);
+
+
+
+
+            var len=520;
+            var start=new THREE.Vector3(0,0-.5*len,fhit.midz);
+            var end=new THREE.Vector3(0,0+5*len,fhit.midz);
+
 
             geometry.vertices.push(
                 start,end
             );
 
-            var hit_color=new THREE.Color();
+            var hit_color=new THREE.Color(0,0,0);
 
-            if((fhit.gPlane-1)%3===0 || (fhit.gPlane-1)%3===2 )
-            {
-                hit_color.r=144./255.;
-                hit_color.g=249./255.;
-                hit_color.b=164./255.;
 
-            }
-            else
+            // if(fhit.layer!=fhit.plane)
+            //    console.log("WTF: "+fhit.layer+","+fhit.type+","+fhit.gPlane % 3)
+            //if(Math.floor(fhit.gPlane % 3) == 2 )
+            // if(fhit.layer==2)
+            if(fhit.type==0)
             {
+                //console.log(fhit.gPlane+"|"+fhit.gPlane%3)
+                //console.log(fhit.layer)
+                //console.log(fhit.type);
+                //console.log("red");
+
                 hit_color.r=244./255.;
                 hit_color.g=66./255.;
                 hit_color.b=223./255.;
+            }
+            else
+            {
+
+                // console.log("green")
+                hit_color.r=144./255.;
+                hit_color.g=249./255.;
+                hit_color.b=164./255.;
             }
 
             var hitmaterial = new THREE.LineBasicMaterial({color:hit_color, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
@@ -283,32 +308,61 @@ THREE.GluexEventLoader.prototype = {
             var linemesh= new THREE.LineSegments(geometry,hitmaterial);
             linemesh.frustumCulled = false;
 
+
             var base_angle = 0;
 
-            if((fhit.gPlane-1)%3===1)
+            if(fhit.gLayer%6==0)
             {
-                base_angle=20*(fhit.gPlane-2);
+                base_angle = -120
             }
-            else if((fhit.gPlane-1)%3===0)
+            else if(fhit.gLayer%6==1)
             {
-                base_angle=20*(fhit.gPlane-1);
+                base_angle = 180
             }
-            else if((fhit.gPlane-1)%3===2)
+            else if(fhit.gLayer%6==2)
             {
-                base_angle=20*(fhit.gPlane-3);
+                base_angle = 120
             }
+            else if(fhit.gLayer%6==3)
+            {
+                base_angle = 60
+            }
+            else if(fhit.gLayer%6==4)
+            {
+                base_angle = 0
+            }
+            else if(fhit.gLayer%6==5)
+            {
+                base_angle = -60
+            }
+
 
             var angle=0;
-            if((fhit.gPlane-1)%3===0)
-                angle=base_angle-75;
-            else if((fhit.gPlane-1)%3===1)
-                angle=base_angle;
-            else if((fhit.gPlane-1)%3===2)
+            if((fhit.gPlane)%3===1)
                 angle=base_angle+75;
+            else if((fhit.gPlane)%3===2)
+                angle=base_angle;
+            else if((fhit.gPlane)%3===0)
+                angle=base_angle-75;
 
-            linemesh.rotation.z = (angle)*Math.PI/180;
-            linemesh.translateY(-50+fhit.element*100/192);
-            linemesh.userData={"q":fhit.q,"t":fhit.t};
+            var radAngle=(angle)*Math.PI/180.;
+
+            linemesh.rotation.z = radAngle;//+Math.PI/2.;
+            // linemesh.rotateZ(radAngle);
+
+
+
+            if(fhit.type!=0) {
+                linemesh.translateY(Math.cos(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateX(Math.sin(Math.PI/2-radAngle)*fhit.u);
+            }
+            else
+            {
+                //linemesh.rotation.z+=Math.PI;
+            }
+
+
+            linemesh.userData={"q":fhit.q,"t":fhit.t,"gLayer":fhit.gLayer};
 
             linemesh.name = geometry.name;
             scope.group.add(linemesh);
@@ -341,7 +395,13 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "TOFPoint_" + point.id;
 
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: scope.Configuration.TOFPointVis});
+            var vis=true;
+            if(scope.Configuration.TOFPointVis === "Off")
+            {
+                vis=false
+            }
+
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:.8, visible: vis});
             var tofpoint=new THREE.SphereGeometry(2,32,32,0,6.3,0,6.3);
 
             var pointmesh= new THREE.Mesh(tofpoint,material);
