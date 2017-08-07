@@ -262,11 +262,17 @@ THREE.GluexEventLoader.prototype = {
 
             //var start=new THREE.Vector3(0,-64,175.548+(fhit.gPlane-1)*2.611);
             //var end=new THREE.Vector3(0,64,175.548+(fhit.gPlane-1)*2.611);
+            var rdisp=fhit.u;
 
+            if(fhit.type === 0 )
+            {
+                rdisp=Math.sqrt(fhit.midx*fhit.midx+fhit.midy*fhit.midy);
 
-            var len=100;
-            var start=new THREE.Vector3(0,-.5*len,0);
-            var end=new THREE.Vector3(0,.5*len,0);
+            }
+            thetaChord=Math.acos(rdisp/64.0485);
+            var len=rdisp*Math.sin(thetaChord);
+            var start=new THREE.Vector3(0,-2*len,0);
+            var end=new THREE.Vector3(0,2*len,0);
 
 
             geometry.vertices.push(
@@ -350,11 +356,11 @@ THREE.GluexEventLoader.prototype = {
             linemesh.position.z=fhit.midz;
 
             if(fhit.type!==0) {
-                linemesh.position.y=Math.cos(Math.PI/2-radAngle)*fhit.u;
-                linemesh.position.x=Math.sin(Math.PI/2-radAngle)*fhit.u;
+                //linemesh.position.y=Math.cos(Math.PI/2-radAngle)*fhit.u;
+               // linemesh.position.x=Math.sin(Math.PI/2-radAngle)*fhit.u;
 
-                //linemesh.translateY(Math.cos(Math.PI/2-radAngle)*fhit.u);
-                //linemesh.translateX(Math.sin(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateY(Math.cos(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateX(Math.sin(Math.PI/2-radAngle)*fhit.u);
             }
 
             linemesh.rotation.z = radAngle;//+Math.PI/2.;
