@@ -269,10 +269,10 @@ THREE.GluexEventLoader.prototype = {
                 rdisp=Math.sqrt(fhit.midx*fhit.midx+fhit.midy*fhit.midy);
 
             }
-            thetaChord=Math.acos(rdisp/64.0485);
-            var len=rdisp*Math.sin(thetaChord);
-            var start=new THREE.Vector3(0,-2*len,0);
-            var end=new THREE.Vector3(0,2*len,0);
+
+            var len=Math.sqrt(64.0485*64.0485-rdisp*rdisp);
+            var start=new THREE.Vector3(0,-1*len,0);
+            var end=new THREE.Vector3(0,len,0);
 
 
             geometry.vertices.push(
