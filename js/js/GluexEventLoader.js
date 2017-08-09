@@ -275,6 +275,7 @@ THREE.GluexEventLoader.prototype = {
             var end=new THREE.Vector3(0,len,0);
 
 
+
             geometry.vertices.push(
                 start,end
             );
@@ -312,7 +313,6 @@ THREE.GluexEventLoader.prototype = {
             var linemesh= new THREE.LineSegments(geometry,hitmaterial);
             linemesh.frustumCulled = false;
 
-
             var base_angle = 0;
 
             if(fhit.gLayer%6==0)
@@ -341,13 +341,14 @@ THREE.GluexEventLoader.prototype = {
             }
 
 
+            linemesh.rotateZ((base_angle)*Math.PI/180.);
             var angle=0;
             if((fhit.gPlane)%3===1)
-                angle=base_angle+75;
+                linemesh.rotateZ((75)*Math.PI/180.);
             else if((fhit.gPlane)%3===2)
-                angle=base_angle;
+                linemesh.rotateZ((0)*Math.PI/180.)  ;
             else if((fhit.gPlane)%3===0)
-                angle=base_angle-75;
+                linemesh.rotateZ((-75)*Math.PI/180.);
 
             var radAngle=(angle)*Math.PI/180.;
 
@@ -359,12 +360,18 @@ THREE.GluexEventLoader.prototype = {
                 //linemesh.position.y=Math.cos(Math.PI/2-radAngle)*fhit.u;
                // linemesh.position.x=Math.sin(Math.PI/2-radAngle)*fhit.u;
 
-                linemesh.translateY(Math.cos(Math.PI/2-radAngle)*fhit.u);
-                linemesh.translateX(Math.sin(Math.PI/2-radAngle)*fhit.u);
+                linemesh.translateY(Math.cos(Math.PI/2.-radAngle)*fhit.u);
+                linemesh.translateX(Math.sin(Math.PI/2.-radAngle)*fhit.u);
             }
 
-            linemesh.rotation.z = radAngle;//+Math.PI/2.;
-            // linemesh.rotateZ(radAngle);
+           // if(fhit.type===0) {
+                //linemesh.rotation.z = radAngle;//+Math.PI/2.;
+            /*}
+            else
+            {
+                linemesh.rotation.z = radAngle+Math.PI/2.;
+            }*/
+
 
 
             linemesh.userData={"q":fhit.q,"t":fhit.t,"gLayer":fhit.gLayer};
