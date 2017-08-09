@@ -372,8 +372,6 @@ THREE.GluexEventLoader.prototype = {
                 linemesh.rotation.z = radAngle+Math.PI/2.;
             }*/
 
-
-
             linemesh.userData={"q":fhit.q,"t":fhit.t,"gLayer":fhit.gLayer};
 
             linemesh.name = geometry.name;
