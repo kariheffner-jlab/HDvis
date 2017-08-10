@@ -8,6 +8,7 @@
 #include <FDC/DFDCHit.h>
 #include <FDC/DFDCPseudo.h>
 #include <FDC/DFDCWire.h>
+#include <FDC/DFDCGeometry.h>
 
 
 class FDC
@@ -24,6 +25,7 @@ public:
             double wire_strip_midy=0;
             double wire_strip_midz=0;
             float ucoord=0;
+            double angle=0;
             //double uaxis_x=0;
             //double uaxis_y=0;
             //double uaxis_z=0;
@@ -35,6 +37,8 @@ public:
                 //std::cout<<"finding strip "<< (2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2)) << ","<<FDCcathodes.size()<<std::endl;
                 //std::cout<<FDCHits[i]->gLayer<<","<<FDCHits[i]->layer<<","<<FDCHits[i]->plane<<std::endl;
                 ucoord=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->u;
+                angle=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->angle;
+
                 /*uaxis_x=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->udir.X();
                 uaxis_y=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->udir.Y();
                 uaxis_z=FDCcathodes[(2*(FDCHits[i]->gLayer-1)+(FDCHits[i]->plane/2))][FDCHits[i]->element-1]->udir.Z();*/
@@ -71,9 +75,17 @@ public:
             }
 
 
-            arr.emplace_back(WriteHitJSON(i, FDCHits[i]->layer, FDCHits[i]->module, FDCHits[i]->element, FDCHits[i]->plane, FDCHits[i]->gPlane, FDCHits[i]->gLayer, FDCHits[i]->q, FDCHits[i]->pulse_height, FDCHits[i]->pulse_height_raw, FDCHits[i]->t, FDCHits[i]->r, FDCHits[i]->d, FDCHits[i]->type,wire_strip_midx,wire_strip_midy,wire_strip_midz,ucoord/*,uaxis_x,uaxis_y,uaxis_z*/));
+            arr.emplace_back(WriteHitJSON(i, FDCHits[i]->layer, FDCHits[i]->module, FDCHits[i]->element, FDCHits[i]->plane, FDCHits[i]->gPlane, FDCHits[i]->gLayer, FDCHits[i]->q, FDCHits[i]->pulse_height, FDCHits[i]->pulse_height_raw, FDCHits[i]->t, FDCHits[i]->r, FDCHits[i]->d, FDCHits[i]->type,wire_strip_midx,wire_strip_midy,wire_strip_midz,ucoord,angle));
+
+
         }
 
+      /*  for(int j=0;j<192;j++)
+        {
+            double wire_strip_midz=FDCwires[0][0]->origin.z()-.5;
+            float ucoord=FDCcathodes[0][j]->u;
+            arr.emplace_back(WriteHitJSON(j, 1, 0, j+1,1, 1, 1, 0, 0, 0, 0, 0, 0, 1,0,0,wire_strip_midz,ucoord/*,uaxis_x,uaxis_y,uaxis_z));
+        }*/
         return arr;
     }
 
@@ -83,13 +95,13 @@ public:
 
         for(uint i=0;i<FDCPseudos.size();i++)
         {
-            arr.emplace_back(WritePseudoJSON(i,FDCPseudos[i]->time,FDCPseudos[i]->xy.X(),FDCPseudos[i]->xy.Y(),FDCPseudos[i]->wire->origin.Z()));
+            arr.emplace_back(WritePseudoJSON(i,FDCPseudos[i]->time,FDCPseudos[i]->xy.X(),FDCPseudos[i]->xy.Y(),FDCPseudos[i]->wire->origin.Z(),FDCPseudos[i]->u,FDCPseudos[i]->v));
         }
 
         return arr;
     }
 
-    static tao::json::value WriteHitJSON(int id, int layer, int module, int element, int plane, int gPlane, int gLayer, float q, float pulse_height, float pulse_height_raw, float t, float r, float d, int type,double wire_strip_midx, double wire_strip_midy, double wire_strip_midz, float xdispl/*, double uaxis_x,double uaxis_y,double uaxis_z*/)
+    static tao::json::value WriteHitJSON(int id, int layer, int module, int element, int plane, int gPlane, int gLayer, float q, float pulse_height, float pulse_height_raw, float t, float r, float d, int type,double wire_strip_midx, double wire_strip_midy, double wire_strip_midz, float xdispl,double angle)
     {
         tao::json::value FDCHit({
                                         {"id", id},
@@ -109,24 +121,25 @@ public:
                                         {"midx", wire_strip_midx},
                                         {"midy", wire_strip_midy},
                                         {"midz", wire_strip_midz},
-                                        {"u", xdispl}/*,
-                                        {"uaxis_x", uaxis_x},
-                                        {"uaxis_y", uaxis_y},
-                                        {"uaxis_z", uaxis_z},*/
+                                        {"u", xdispl},
+                                        {"angle", angle}
+
 
                                 });
 
         return FDCHit;//event_out << tao::json::to_string(FDCHit, 4);
     }
 
-    static tao::json::value WritePseudoJSON(int id,double time,double x,double y,double z)
+    static tao::json::value WritePseudoJSON(int id,double time,double x,double y,double z, double u, double v)
     {
         tao::json::value FDCPseudo({
                                         {"id", id},
                                         {"time", time},
                                         {"x", x},
                                         {"y", y},
-                                        {"z", z}
+                                        {"z", z},
+                                        {"u", u},
+                                        {"v", v}
 
                                 });
 
