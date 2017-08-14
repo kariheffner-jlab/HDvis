@@ -300,13 +300,11 @@ THREE.GluexEventLoader.prototype = {
             if(fhit.type === 0 )
             {
                 rdisp=Math.sqrt(fhit.midx*fhit.midx+fhit.midy*fhit.midy);
-
             }
 
             var len=Math.sqrt(64.0485*64.0485-rdisp*rdisp);
             var start=new THREE.Vector3(0,-1*len,fhit.midz);
             var end=new THREE.Vector3(0,len,fhit.midz);
-
 
             geometry.vertices.push(
                 start,end
@@ -330,11 +328,19 @@ THREE.GluexEventLoader.prototype = {
                 hit_color.b=164./255.;
             }
 
-            var vis=true;
-            if(scope.Configuration.FDCHitVis === "Off")
+            var vis=false;
+            if(scope.Configuration.FDCHitVis !== "Off")
             {
-                vis=false;
+                if(scope.Configuration.FDCHitTypeVis==="Cathodes" && fhit.type!==0)
+                {   vis=true;}
+                else if(scope.Configuration.FDCHitTypeVis==="Anodes" && fhit.type===0)
+                {   vis=true;}
+                else
+                {
+                    vis=true;
+                }
             }
+
 
             var hitmaterial = new THREE.LineBasicMaterial({color:hit_color, transparent:false, opacity:.4, visible:vis});
             hitmaterial.side = THREE.DoubleSide;
@@ -432,7 +438,7 @@ THREE.GluexEventLoader.prototype = {
             linemesh.geometry.vertices[1].y=newY1;
 
 
-            linemesh.userData={"q":fhit.q,"t":fhit.t,"gLayer":fhit.gLayer,"plane":fhit.plane, "u":fhit.u};
+            linemesh.userData={"q":fhit.q,"t":fhit.t,"gLayer":fhit.gLayer,"plane":fhit.plane, "u":fhit.u, "type":fhit.type};
 
             linemesh.name = geometry.name;
             scope.group.add(linemesh);

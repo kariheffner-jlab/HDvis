@@ -28,6 +28,9 @@ var HDVisConfig = function() {
     this.FDCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FDCHitVis= 'Dynamic';
 
+    this.FDCHitType_Options ={"Both": 'Both',"Cathodes": 'Cathodes', "Anodes": 'Anodes'};
+    this.FDCHitTypeVis= 'Both';
+
     this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
 
@@ -99,6 +102,50 @@ function makeGUI(scene){
 
     var fcalGuiFolder= gui.addFolder('FCAL');
 
+    fdcGuiFolder.add( config, 'FDCHitTypeVis', config.FDCHitType_Options )
+        .name('FDC Hits to Show').onFinishChange(function(value) { this.FDCHitTypeVis=value;
+        if(value==="Cathodes") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit") {
+                    if(eventobjs[i].userData.type===0) {
+                        eventobjs[i].material.visible = 0;
+                    }
+                    else
+                    {
+                        if( config.FDCHitVis !=="Off")
+                            eventobjs[i].material.visible = 1;
+                    }
+                }
+            }
+        }
+        else if(value==="Anodes") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit") {
+                    if(eventobjs[i].userData.type!==0) {
+                        eventobjs[i].material.visible = 0;
+                    }
+                    else
+                    {
+                        if( config.FDCHitVis !=="Off")
+                            eventobjs[i].material.visible = 1;
+                    }
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit" && eventobjs[i].material.visible===0 && config.FDCHitVis !=="Off") {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
+        }
+        config.TimingsNeedsUpdate=true;
+    });
 
     fdcGuiFolder.add( config, 'FDCHitVis', config.FDCHit_Options )
         .name('FDC Hits').onFinishChange(function(value) { this.FDCHitVis=value;
@@ -122,6 +169,7 @@ function makeGUI(scene){
         }
         config.TimingsNeedsUpdate=true;
     });
+
     fdcGuiFolder.add( config, 'FDCPseudoVis', config.FDCPseudo_Options )
         .name('FDC Pseudos').onFinishChange(function(value) { this.FDCPseudoVis=value;
         if(value==="Off") {

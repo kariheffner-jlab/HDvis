@@ -112,6 +112,7 @@ public:
             //rt.SetMass(TrackCandidates[i]->mass());
             auto start_time = NeutralTracks[i]->Get_BestFOM()->t0();
             auto momentum=NeutralTracks[i]->Get_BestFOM()->momentum();
+
             rt->Swim(NeutralTracks[i]->Get_BestFOM()->position(), momentum, NeutralTracks[i]->Get_BestFOM()->charge());
             //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
             DReferenceTrajectory::swim_step_t* steps =rt->swim_steps;
@@ -152,7 +153,10 @@ public:
                         {"TrackChiSq_NDF", TrackChiSq_NDF},
                         {"momentum", momentum.Mag()},
                         {"mass", momentum.Mag()},
-                        {"start_time", start_time}
+                        {"start_time", start_time},
+                        {"px",momentum.X()},
+                        {"py",momentum.Y()},
+                        {"pz",momentum.Z()}
 
                 });
 

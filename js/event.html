@@ -1003,13 +1003,19 @@
                 }//RESPECT THE CLOCK BOUNDS FDCHit
                 else
                 {
-                    if(ViewerConfig.FDCHitVis !== "Off")
+                    if(ViewerConfig.FDCHitVis !== "Off") {
                         eventobjs[i].material.visible=true;
+                    }
                 }
 
                 if (ViewerConfig.FDCHitVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t) {
-                        eventobjs[i].material.visible=true;
+                        if((ViewerConfig.FDCHitTypeVis==="Cathodes" && eventobjs[i].userData.type!==0) || (ViewerConfig.FDCHitTypeVis==="Anodes" && eventobjs[i].userData.type===0) || ViewerConfig.FDCHitTypeVis==="Both")
+                        {   eventobjs[i].material.visible=true;}
+                        else
+                        {
+                            eventobjs[i].material.visible=false;
+                        }
                     }
                     else if (SceneTime + min_start_time < eventobjs[i].userData.t  && eventobjs[i].material.visible !== false ) {
                         eventobjs[i].material.visible=false;
@@ -1019,9 +1025,15 @@
                 {
                     eventobjs[i].material.visible=false;
                 }
-                else if(ViewerConfig.FDCHitVis === "Static" && eventobjs[i].material.visible!==true)
+                else if(ViewerConfig.FDCHitVis === "Static")
                 {
-                    eventobjs[i].material.visible=true;
+                    if((ViewerConfig.FDCHitTypeVis==="Cathodes" && eventobjs[i].userData.type!==0) || (ViewerConfig.FDCHitTypeVis==="Anodes" && eventobjs[i].userData.type===0) || ViewerConfig.FDCHitTypeVis==="Both")
+                    {   eventobjs[i].material.visible=true;}
+                    else
+                    {
+                        eventobjs[i].material.visible=false;
+                    }
+
                 }
             }
         }
