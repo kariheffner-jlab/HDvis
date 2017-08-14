@@ -101,7 +101,7 @@ function makeGUI(scene){
 
 
     fdcGuiFolder.add( config, 'FDCHitVis', config.FDCHit_Options )
-        .name('FDC Hits').onFinishChange(function(value) {
+        .name('FDC Hits').onFinishChange(function(value) { this.FDCHitVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -123,7 +123,7 @@ function makeGUI(scene){
         config.TimingsNeedsUpdate=true;
     });
     fdcGuiFolder.add( config, 'FDCPseudoVis', config.FDCPseudo_Options )
-        .name('FDC Pseudos').onFinishChange(function(value) {
+        .name('FDC Pseudos').onFinishChange(function(value) { this.FDCPseudoVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -189,6 +189,7 @@ function makeGUI(scene){
 
     fcalGuiFolder.add( config, 'FCALHitVis', config.FCALHit_Options )
         .name('FCAL Hits').onFinishChange(function(value) {
+        this.FCALHitVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -211,6 +212,7 @@ function makeGUI(scene){
     });
     fcalGuiFolder.add( config, 'FCALShowerVis', config.FCALShower_Options )
         .name('FCAL Showers').onFinishChange(function(value) {
+        this.FCALShowerVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -269,6 +271,7 @@ function makeGUI(scene){
 
     tofGuiFolder.add( config, 'TOFHitVis', config.TOFHit_Options )
         .name('TOF Hits').onFinishChange(function(value) {
+        this.TOFHitVis=value;
         if(value==="Off") {
             var geoobjs = scene.getObjectByName("FTOF",true);
 
@@ -297,7 +300,7 @@ function makeGUI(scene){
 
     tofGuiFolder.add( config, 'TOFPointVis', config.TOFPoint_Options )
         .name('TOF Points').onFinishChange(function(value) {
-            config.TOFPointVis=value;
+        config.TOFPointVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -337,7 +340,7 @@ function makeGUI(scene){
 
     bcalGuiFolder.add( config, 'BCALPointVis', config.BCALPoint_Options )
         .name('BCAL Points').onFinishChange(function(value) {
-            config.BCALPointVis=value;
+        config.BCALPointVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -361,6 +364,7 @@ function makeGUI(scene){
 
     bcalGuiFolder.add( config, 'BCALShowerVis', config.BCALShower_Options )
         .name('BCAL Showers').onFinishChange(function(value) {
+        this.BCALShowerVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -391,7 +395,12 @@ function makeGUI(scene){
     positiveTrackgui.add(config, 'positive_track_swim', config.positive_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,1,value,config);
+            var value_conv="Off";
+            if(value==true)
+            {
+                value_conv="On";
+            }
+            gui_TrackVis(eventobjs,1,value_conv,config);
 
         });
 
@@ -405,7 +414,12 @@ function makeGUI(scene){
     negativeTrackgui.add(config, 'negative_track_swim', config.negative_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,-1,value,config);
+            var value_conv="Off";
+            if(value==true)
+            {
+                value_conv="On";
+            }
+            gui_TrackVis(eventobjs,-1,value_conv,config);
 
         });
 
@@ -419,7 +433,12 @@ function makeGUI(scene){
     neutralTrackgui.add(config, 'neutral_track_swim', config.neutral_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,0,value,config);
+            var value_conv="Off";
+            if(value==true)
+            {
+                value_conv="On";
+            }
+            gui_TrackVis(eventobjs,0,value_conv,config);
         });
 
     neutralTrackgui.add( config, 'neutral_track_line', config.neutral_track_lineOptions )
@@ -486,16 +505,22 @@ function makeGUI(scene){
 
 function gui_TrackVis(eventobjs,Trackq,isVis,config) {
 
+    var vis=false;
+    if(isVis !== "Off")
+    {
+        vis=true;
+    }
+
     for(var i=0;i<eventobjs.length;i++)
     {
 
         if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq )
         {
-            eventobjs[i].material.visible=isVis;
+            eventobjs[i].material.visible=vis;
         }
         if(eventobjs[i].userData.TrackChiSq_NDF >= config.TrackingChiSq_NDF_cut && config.TrackingChiSq_NDF_cut !==0 && Trackq!==0)
         {
-            eventobjs[i].material.visible=0;
+            eventobjs[i].material.visible=false;
         }
     }
 }

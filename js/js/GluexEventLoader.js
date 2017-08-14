@@ -62,14 +62,22 @@ THREE.GluexEventLoader.prototype = {
 
             var trackcolor=new THREE.Color;
             var swim_vis=false;
+
+
             if(track_charge === 1) {
                 trackcolor= 0xff0000;
-                swim_vis=scope.Configuration.positive_track_swim;
+                if(scope.Configuration.positive_track_swim !== false)
+                {
+                    swim_vis=true;
+                }
 
             }//console.log(track_charge);
             else if(track_charge === -1) {
                 trackcolor= 0x00ff00;
-                swim_vis=scope.Configuration.negative_track_swim;
+                if(scope.Configuration.negative_track_swim !== false)
+                {
+                    swim_vis=true;
+                }
             }
             var material = new THREE.PointsMaterial({
                 color: trackcolor,
@@ -115,11 +123,17 @@ THREE.GluexEventLoader.prototype = {
                 geometry.vertices.push( vertex );
             });
 
+            var swim_vis=false;
+            if(scope.Configuration.neutral_track_swim !== false)
+            {
+                swim_vis=true;
+            }
+
             var material = new THREE.PointsMaterial( {
                 color: 0xffff00,
                 size: 4,
                 opacity:.6,
-                visible: scope.Configuration.neutral_track_swim,
+                visible: swim_vis,
                 //blending: THREE.AdditiveBlending,
                 transparent: true,
                 sizeAttenuation: false
@@ -180,7 +194,14 @@ THREE.GluexEventLoader.prototype = {
             geometry.name = "FCALHit_" + hit.id;
 
             var box=new THREE.BoxGeometry(2,2,1/*hit.E*FCAL_EScale*/);
-            var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7, visible: scope.Configuration.FCALHitVis});
+
+            var vis=true;
+            if(scope.Configuration.FCALHitVis === "Off")
+            {
+                vis=false
+            }
+
+            var material = new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:.7, visible: vis});
 
 
             if (hit.t >= 0.0) {
@@ -213,8 +234,14 @@ THREE.GluexEventLoader.prototype = {
 
 
             var cone=new THREE.ConeGeometry(1,1,60,60,0,0,2*Math.PI);//(10,20...)
-            cone.userData="hi";
-            var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4});
+
+            var vis=true;
+            if(scope.Configuration.FCALShowerVis === "Off")
+            {
+                vis=false
+            }
+
+            var material = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4, visible:vis});
             material.side = THREE.DoubleSide;
 
             var conemesh= new THREE.Mesh(cone,material);
@@ -238,7 +265,13 @@ THREE.GluexEventLoader.prototype = {
 
             var bcone=new THREE.ConeGeometry(1,1,60,60,0,0,2*Math.PI);//(10,20...)
 
-            var bmaterial = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4});
+            var vis=true;
+            if(scope.Configuration.BCALShowerVis === "Off")
+            {
+                vis=false
+            }
+
+            var bmaterial = new THREE.MeshBasicMaterial({color:0xffff00, transparent:false, opacity:.4, visible:vis});
             bmaterial.side = THREE.DoubleSide;
 
             var bconemesh= new THREE.Mesh(bcone,bmaterial);
@@ -297,7 +330,13 @@ THREE.GluexEventLoader.prototype = {
                 hit_color.b=164./255.;
             }
 
-            var hitmaterial = new THREE.LineBasicMaterial({color:hit_color, transparent:false, opacity:.4, visible:scope.Configuration.FDCHitVis});
+            var vis=true;
+            if(scope.Configuration.FDCHitVis === "Off")
+            {
+                vis=false;
+            }
+
+            var hitmaterial = new THREE.LineBasicMaterial({color:hit_color, transparent:false, opacity:.4, visible:vis});
             hitmaterial.side = THREE.DoubleSide;
 
             var linemesh= new THREE.LineSegments(geometry,hitmaterial);
@@ -405,7 +444,13 @@ THREE.GluexEventLoader.prototype = {
             var geometry = new THREE.Geometry();
             geometry.name = "FDCPseudo_" + "FDCPseudo "+fpseudo.id;
 
-            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:.8, visible: scope.Configuration.FDCPseudoVis});
+            var vis=true;
+            if(scope.Configuration.FDCPseudoVis === "Off")
+            {
+                vis=false;
+            }
+
+            var material = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:false, opacity:.8, visible: vis});
             var radius=2;
             var fdcpoint=new THREE.SphereGeometry(radius,32,32,0,6.3,0,6.3);
 

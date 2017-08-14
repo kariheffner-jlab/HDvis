@@ -1000,12 +1000,13 @@
                 {
                     eventobjs[i].material.visible=false;
                     continue;
-                }//RESPECT THE CLOCK BOUNDS FCAL Shower
+                }//RESPECT THE CLOCK BOUNDS FDCHit
                 else
                 {
                     if(ViewerConfig.FDCHitVis !== "Off")
                         eventobjs[i].material.visible=true;
                 }
+
                 if (ViewerConfig.FDCHitVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t) {
                         eventobjs[i].material.visible=true;
@@ -1014,13 +1015,13 @@
                         eventobjs[i].material.visible=false;
                     }
                 }
-                else if(ViewerConfig.FDCHitVis === "Off" && eventobjs[i].material.visibile===true)
+                else if(ViewerConfig.FDCHitVis === "Off" && eventobjs[i].material.visible===true)
                 {
-                    eventobjs[i].material.visibile=false;
+                    eventobjs[i].material.visible=false;
                 }
-                else if(ViewerConfig.FDCHitVis === "Static" && eventobjs[i].material.visibile!==true)
+                else if(ViewerConfig.FDCHitVis === "Static" && eventobjs[i].material.visible!==true)
                 {
-                    eventobjs[i].material.visibile=true;
+                    eventobjs[i].material.visible=true;
                 }
             }
         }
