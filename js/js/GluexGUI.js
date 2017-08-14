@@ -29,7 +29,7 @@ var HDVisConfig = function() {
     this.FDCHitVis= 'Dynamic';
 
     this.FDCHitType_Options ={"Both": 'Both',"Cathodes": 'Cathodes', "Anodes": 'Anodes'};
-    this.FDCHitTypeVis= 'Both';
+    this.FDCHitTypeVis= 'Anodes';
 
     this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
@@ -511,14 +511,14 @@ function makeGUI(scene){
                     }
                     else
                     {
-                        if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0)) {
+                        if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_track_swim===true && eventobjs[i].userData.charge===0)) {
                             eventobjs[i].material.visible = true;
                             eventobjs[i].children[0].material.visible=true;
                         }
                     }
                 }
                 else {
-                    if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0))
+                    if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_track_swim===true && eventobjs[i].userData.charge===0))
                     {
                         eventobjs[i].material.visible = true;
                         eventobjs[i].children[0].material.visible=true;
