@@ -237,6 +237,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto bcalPointsJson = BCAL::Add_BCALPoints(BCALPoints);
             auto bcalShowersJson = BCAL::Add_BCALShowers(BCALShowers);
 
+
             // CDC
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
