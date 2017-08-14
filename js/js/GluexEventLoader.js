@@ -330,62 +330,68 @@ THREE.GluexEventLoader.prototype = {
                 base_angle = -60
             }
 
+            var radAngle=fhit.angle+(base_angle)*Math.PI/180.;
 
-
-            var angle=base_angle;
-
-            var radAngle=(angle)*Math.PI/180.;
-
-            if((fhit.gPlane)%3!==2)
+            if(fhit.plane===3/*(fhit.gPlane===3 || fhit.gPlane===6 || fhit.gPlane===9 || fhit.gPlane===12)*/)
             {
-                radAngle=(fhit.angle)*Math.PI/180.;
+                radAngle=radAngle-Math.PI+(150./180.)*Math.PI;
             }
+            else if(fhit.plane===1)
+            {
+                radAngle=radAngle-(150./180.)*Math.PI
+            }
+
+            console.log(fhit.gPlane+" "+base_angle+" "+fhit.plane+": "+radAngle*180./Math.PI);
 
             if(fhit.type==0) {
                 linemesh.position.x = fhit.midx;
                 linemesh.position.y = fhit.midy;
             }
-           // linemesh.position.z= fhit.midz;
+            else {
+                /*if(fhit.plane==1)
+                {
+                    radAngle= fhit.angle+base_angle*Math.PI/180.;
 
+                    console.log(fhit.gPlane+" "+fhit.gLayer+" "+fhit.plane+" "+base_angle+": "+ radAngle * 180. / Math.PI);
+                }
+                else if(fhit.plane==3){
 
-            if(fhit.type !==0) {
+                    radAngle = /*Math.PI/2.-fhit.angle;/* + (base_angle)*Math.PI/180.;
+
+                    console.log(fhit.gPlane+" "+fhit.gLayer+" "+fhit.plane+" "+base_angle+": "+ radAngle * 180. / Math.PI);
+                }*/
+
                 if (fhit.plane == 3) {
                     // linemesh.translateX(fhit.u);
                     // linemesh.position.x=fhit.u;
-                    linemesh.geometry.vertices[0].x = fhit.u;
-                    linemesh.geometry.vertices[1].x = fhit.u;
+                    linemesh.geometry.vertices[0].x = -1*fhit.u;
+                    linemesh.geometry.vertices[1].x = -1*fhit.u;
                 }
                 else if (fhit.plane == 1) {
                     //linemesh.translateX(fhit.u);
                     //linemesh.position.x=-1*fhit.u;
-                    linemesh.geometry.vertices[0].x = -1 * fhit.u;
-                    linemesh.geometry.vertices[1].x = -1 * fhit.u;
+                    linemesh.geometry.vertices[0].x = fhit.u;
+                    linemesh.geometry.vertices[1].x = fhit.u;
 
                 }//linemesh.position.x=fhit.u;
             }
 
-            if(fhit.type===0) {
-                linemesh.rotation.z = radAngle;
-            }
-            else
-            {
 
-                var rotationMatrix = new THREE.Matrix4();
+            // console.log(linemesh.geometry.vertices[0]);
+            var newX0=linemesh.geometry.vertices[0].x*Math.cos(radAngle)-linemesh.geometry.vertices[0].y*Math.sin(radAngle);
+            var newY0=linemesh.geometry.vertices[0].x*Math.sin(radAngle)+linemesh.geometry.vertices[0].y*Math.cos(radAngle);
 
-                var Zaxis=new THREE.Vector3(0,0,1);
+            linemesh.geometry.vertices[0].x=newX0;
+            linemesh.geometry.vertices[0].y=newY0;
 
-                rotationMatrix.makeRotationAxis( Zaxis.normalize(), radAngle );
-               // console.log(linemesh.geometry.vertices[0])
-                linemesh.geometry.vertices[0].applyAxisAngle( Zaxis, radAngle );
-                linemesh.geometry.vertices[1].applyAxisAngle( Zaxis, radAngle );
-                // console.log(rotationMatrix);
-                //rotationMatrix.multiply( linemesh.matrix );                       // pre-multiply
-                //linemesh.matrix = rotationMatrix;
-                //console.log(linemesh.geometry.vertices[0])
-                //linemesh.rotation.setFromRotationMatrix( linemesh.matrix );
+            //console.log(linemesh.geometry.vertices[0]);
 
+            var newX1=linemesh.geometry.vertices[1].x*Math.cos(radAngle)-linemesh.geometry.vertices[1].y*Math.sin(radAngle);
+            var newY1=linemesh.geometry.vertices[1].x*Math.sin(radAngle)+linemesh.geometry.vertices[1].y*Math.cos(radAngle);
 
-            }
+            linemesh.geometry.vertices[1].x=newX1;
+            linemesh.geometry.vertices[1].y=newY1;
+
 
             linemesh.userData={"q":fhit.q,"t":fhit.t,"gLayer":fhit.gLayer,"plane":fhit.plane, "u":fhit.u};
 
