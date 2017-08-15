@@ -11,6 +11,7 @@
 #include <FDC/DFDCGeometry.h>
 
 
+
 class FDC
 {
 public:
@@ -73,7 +74,7 @@ public:
                 //ucoord=FDCwires[FDCHits[i]->gLayer-1][FDCHits[i]->element-1]->u;
 
             }
-            auto pulse_height_r = -1E9;
+            auto pulse_height_r = 0.0;
             if(!isnan((FDCHits[i]->pulse_height_raw)))
             {
                 pulse_height_r = FDCHits[i]->pulse_height_raw;

@@ -211,8 +211,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(FDCPseudos);
         loop->Get(SCHits);
 
+        const DFDCHit* myHit= FDCHits[2];
 
-        //try {
+        try {
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
 
@@ -271,12 +272,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
 
-       // }
-      //  catch (std::exception& ex)
-      //  {
-       //     std::cout<<"caught exception"<<endl;
-     //       std::cout<< ex.what() << std::endl;
-      //  }
+        }
+        catch (std::exception& ex)
+        {
+           std::cout<<"caught exception"<<endl;
+           std::cout<< ex.what() << std::endl;
+       }
     }   // <- unlock EventMutex
 
     _context.SetCurrentEventNumber(eventnumber);
