@@ -92,7 +92,7 @@ namespace hdvis
                 }
                 catch(...)
                 {
-                    std::cerr<<"InnerLoop exception is throwed"<<std::endl;
+                    std::cerr<<"InnerLoop exception is thrown"<<std::endl;
                 }
             }
         }

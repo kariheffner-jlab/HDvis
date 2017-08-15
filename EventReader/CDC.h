@@ -18,6 +18,7 @@ public:
 
         for(uint i=0;i<CDCHits.size();i++)
         {
+            //std::cout<<i<<","<< CDCHits[i]->ring<<","<< CDCHits[i]->straw<<","<< CDCHits[i]->q<<","<< CDCHits[i]->t<<","<< CDCHits[i]->d<<","<< CDCHits[i]->itrack<<","<< CDCHits[i]->ptype<<std::endl;
             arr.emplace_back(WriteHitJSON(i, CDCHits[i]->ring, CDCHits[i]->straw, CDCHits[i]->q, CDCHits[i]->t, CDCHits[i]->d, CDCHits[i]->itrack, CDCHits[i]->ptype));
         }
 

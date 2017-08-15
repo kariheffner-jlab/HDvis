@@ -73,9 +73,14 @@ public:
                 //ucoord=FDCwires[FDCHits[i]->gLayer-1][FDCHits[i]->element-1]->u;
 
             }
+            auto pulse_height_r = -1E9;
+            if(!isnan((FDCHits[i]->pulse_height_raw)))
+            {
+                pulse_height_r = FDCHits[i]->pulse_height_raw;
+            }
 
-
-            arr.emplace_back(WriteHitJSON(i, FDCHits[i]->layer, FDCHits[i]->module, FDCHits[i]->element, FDCHits[i]->plane, FDCHits[i]->gPlane, FDCHits[i]->gLayer, FDCHits[i]->q, FDCHits[i]->pulse_height, FDCHits[i]->pulse_height_raw, FDCHits[i]->t, FDCHits[i]->r, FDCHits[i]->d, FDCHits[i]->type,wire_strip_midx,wire_strip_midy,wire_strip_midz,ucoord,angle));
+            //std::cout<<i<<" , "<< FDCHits[i]->layer<<" , "<< FDCHits[i]->module<<" , "<< FDCHits[i]->element<<" , "<< FDCHits[i]->plane<<" , "<< FDCHits[i]->gPlane<<" , "<< FDCHits[i]->gLayer<<" , "<< FDCHits[i]->q<<" , "<< FDCHits[i]->pulse_height<<" , "<< FDCHits[i]->pulse_height_raw<<" , "<< FDCHits[i]->t<<" , "<< FDCHits[i]->r<<" , "<< FDCHits[i]->d<<" , "<< FDCHits[i]->type<<" , "<<wire_strip_midx<<" , "<<wire_strip_midy<<" , "<<wire_strip_midz<<" , "<<ucoord<<" , "<<angle<<std::endl;
+            arr.emplace_back(WriteHitJSON(i, FDCHits[i]->layer, FDCHits[i]->module, FDCHits[i]->element, FDCHits[i]->plane, FDCHits[i]->gPlane, FDCHits[i]->gLayer, FDCHits[i]->q, FDCHits[i]->pulse_height, pulse_height_r, FDCHits[i]->t, FDCHits[i]->r, FDCHits[i]->d, FDCHits[i]->type,wire_strip_midx,wire_strip_midy,wire_strip_midz,ucoord,angle));
 
 
         }

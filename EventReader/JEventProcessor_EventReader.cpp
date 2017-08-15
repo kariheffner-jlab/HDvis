@@ -212,14 +212,13 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(SCHits);
 
 
-        try {
+        //try {
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
 
             //Will take the Charged Tracks given and visualize them
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
             auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
-
 
             // StartCounter
             auto scdHitsJson = StartC::Add_SCHits(SCHits);
@@ -241,8 +240,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
             // FDC
-            auto fdcHitsJson = FDC::Add_FDCHits(FDCHits,FDCwires,FDCcathodes);
-            auto fdcPseudosJson = FDC::Add_FDCPseudos(FDCPseudos);
+           auto fdcHitsJson = FDC::Add_FDCHits(FDCHits,FDCwires,FDCcathodes);
+           auto fdcPseudosJson = FDC::Add_FDCPseudos(FDCPseudos);
 
             tao::json::value eventJson ({
                                             { "charged_tracks", chargedTracksJson },
@@ -261,8 +260,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             {"event_number",eventnumber}
                                         });
 
+
             std::ofstream eventFile;
-            eventFile.open("www/event.json");
+            eventFile.open("www/event.json", std::ofstream::trunc);
 
             std::cout<<"opened/created event json "<<endl;
             eventFile<< tao::json::to_string(eventJson, 4);
@@ -271,12 +271,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
             cout<<"EVENT JSON CLOSED.  PLEASE REFRESH BROWSER"<<endl;
 
-        }
-        catch (std::exception& ex)
-        {
-            std::cout<<"caught exception"<<endl;
-            std::cout<< ex.what() << std::endl;
-        }
+       // }
+      //  catch (std::exception& ex)
+      //  {
+       //     std::cout<<"caught exception"<<endl;
+     //       std::cout<< ex.what() << std::endl;
+      //  }
     }   // <- unlock EventMutex
 
     _context.SetCurrentEventNumber(eventnumber);
