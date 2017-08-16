@@ -125,9 +125,9 @@ protected:
             res.set_content(buf, "text/html");
         });
 
-        _server.set_logger([&](const Request &req, const Response &res) {
+        /*_server.set_logger([&](const Request &req, const Response &res) {
             printf("%s", Log(req, res).c_str());
-        });
+        });*/
 
         cout << "The server started at port " << port << "..." << endl;
 

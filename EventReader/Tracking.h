@@ -85,7 +85,7 @@ public:
             }
 
            // event_out<<WriteTrackJSON2(name, momentum,charge,TrackChiSq_NDF, track_points);
-            std::cout<<name<<" , "<< momentum.Mag()<<" , "<<charge<<" , "<<TrackChiSq_NDF<<" , "<<start_time<<" , "<< track_points.size()<<" , "<< track_point_times.size()<<std::endl;
+           // std::cout<<name<<" , "<< momentum.Mag()<<" , "<<charge<<" , "<<TrackChiSq_NDF<<" , "<<start_time<<" , "<< track_points.size()<<" , "<< track_point_times.size()<<std::endl;
             jsonTracks.emplace_back(WriteTrackJSON(name, momentum,charge,TrackChiSq_NDF,start_time, track_points, track_point_times));
             track_points.clear();
             track_point_times.clear();
@@ -115,8 +115,13 @@ public:
 
             rt->SetMass(NeutralTracks[i]->Get_BestFOM()->mass());
             //rt.SetMass(TrackCandidates[i]->mass());
-            auto start_time = NeutralTracks[i]->Get_BestFOM()->t0();
+
             auto momentum=NeutralTracks[i]->Get_BestFOM()->momentum();
+            auto start_time=-1E9;
+            if(!isnan(float(NeutralTracks[i]->Get_BestFOM()->t0())))
+            {
+                start_time = NeutralTracks[i]->Get_BestFOM()->t0();
+            }
 
             rt->Swim(NeutralTracks[i]->Get_BestFOM()->position(), momentum, NeutralTracks[i]->Get_BestFOM()->charge());
             //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
@@ -140,6 +145,7 @@ public:
             }
             //event_out<<tao::json::to_string(WriteTrackJSON2(name,momentum, 0,-1, track_points), 4);
 
+            //std::cout<<name<<" , "<< momentum.Mag()<<" , "<<0<<" , "<<-1<<" , "<<start_time<<" , "<< track_points.size()<<" , "<< track_point_times.size()<<std::endl;
             jsonTracks.emplace_back(WriteTrackJSON(name,momentum, 0,-1, start_time,track_points,track_point_times));
             track_points.clear();
             track_point_times.clear();
@@ -172,6 +178,7 @@ public:
 
         for (int j = 0; j<track_points.size(); j++) {
             vals.push_back(track_points[j].X());
+            //std::cout<<track_points[j].X()<<" , "<< track_points[j].Y()<<" , "<<track_points[j].Z()<<" , "<<track_point_times[j]<<std::endl;
             jsonArray.emplace_back(tao::json::value::array({track_points[j].X() , track_points[j].Y() , track_points[j].Z(), track_point_times[j]}));
 
         }

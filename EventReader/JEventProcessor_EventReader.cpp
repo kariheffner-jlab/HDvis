@@ -38,6 +38,7 @@ JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::ApplicationConte
     _context(context)
 {
 }
+
 //------------------
 // ~JEventProcessor_EventReader (Destructor)
 //------------------
@@ -211,33 +212,40 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(FDCPseudos);
         loop->Get(SCHits);
 
-        const DFDCHit* myHit= FDCHits[2];
-
         try {
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
 
             //Will take the Charged Tracks given and visualize them
+
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
             auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
+
 
             // StartCounter
             auto scdHitsJson = StartC::Add_SCHits(SCHits);
 
             //TOF
+
             auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
             auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
 
+
             // FCAL;
+
             auto fcalHitsJson = FCAL::Add_FCALHits(FCALHits);
             auto fcalShowersJson = FCAL::Add_FCALShowers(FCALShowers);
 
+
             // BCAL
+
             auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
             auto bcalPointsJson = BCAL::Add_BCALPoints(BCALPoints);
             auto bcalShowersJson = BCAL::Add_BCALShowers(BCALShowers);
 
+
             // CDC
+
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
             // FDC
