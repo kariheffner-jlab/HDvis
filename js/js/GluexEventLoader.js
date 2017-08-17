@@ -242,7 +242,7 @@ THREE.GluexEventLoader.prototype = {
                 var boxmesh = new THREE.Mesh(box, material);
                 boxmesh.position.x = hit.x;
                 boxmesh.position.y = hit.y;
-                boxmesh.position.z = (655 + 1);//(FCAL_EScale/2)*hit.E);//660
+                boxmesh.position.z = (655 + 15 + 1);//(FCAL_EScale/2)*hit.E);//660
 
                 boxmesh.userData = {
                     E: hit.E,

@@ -89,10 +89,11 @@ THREE.GluexHDDSLoader.prototype = {
         this.group.add(this.processFDC());
         this.group.add(this.processFCAL());
 
-        //var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 10.0);
-        //var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0x436280, transparent: true, opacity: .4, side: THREE.DoubleSide }));
-        //fcal.position.set(0.529, -0.002, 624.906 + 22.5);
-        //this.group.add(fcal);
+        var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 43.0);//was 45
+        var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .1, side: THREE.DoubleSide }));
+        fcal.position.set(0.529, -0.002, 624.906 + 22.5-1);
+        this.group.add(fcal);
+
         return this.group;
     },
 
@@ -137,14 +138,15 @@ THREE.GluexHDDSLoader.prototype = {
         // We use it as a reference geometry
         var xmlBox = xmlSection.querySelectorAll('box[name="LGBL"]')[0];
         var params = parseXYZ(xmlBox.getAttribute('X_Y_Z'));
-        var moduleBoxGeometry = new THREE.BoxBufferGeometry(params[0], params[1], params[2]);
+        var scale =.04;
+        var moduleBoxGeometry = new THREE.BoxBufferGeometry(params[0], params[1], params[2]*scale);
 
         var fcal = new THREE.Group();
         fcal.name = "FCAL";
-        var sectionup = this.buildFCALSection(xmlSection, 'LGDT', 30, false, moduleBoxGeometry);
-        var sectiondown = this.buildFCALSection(xmlSection, 'LGDB', 0, false, moduleBoxGeometry);
-        var sectionleft = this.buildFCALSection(xmlSection, 'LGDN', 28, false, moduleBoxGeometry);//north
-        var sectionright = this.buildFCALSection(xmlSection, 'LGDS', 28, true, moduleBoxGeometry);
+        var sectionup = this.buildFCALSection(xmlSection, 'LGDT', 30, false, moduleBoxGeometry,scale);
+        var sectiondown = this.buildFCALSection(xmlSection, 'LGDB', 0, false, moduleBoxGeometry,scale);
+        var sectionleft = this.buildFCALSection(xmlSection, 'LGDN', 28, false, moduleBoxGeometry,scale);//north
+        var sectionright = this.buildFCALSection(xmlSection, 'LGDS', 28, true, moduleBoxGeometry,scale);
 
         fcal.add(sectionup);
         fcal.add(sectiondown);
@@ -164,7 +166,7 @@ THREE.GluexHDDSLoader.prototype = {
         return fcal;
     },
 
-    buildFCALSection: function (fcalXmlSection, regionShortName, startIndex, isRight, moduleBoxGeometry) {
+    buildFCALSection: function (fcalXmlSection, regionShortName, startIndex, isRight, moduleBoxGeometry,scale) {
 
         var yXmlComposition = fcalXmlSection.querySelector('composition[envelope="'+regionShortName+'"]');
 
@@ -206,24 +208,26 @@ THREE.GluexHDDSLoader.prototype = {
             new THREE.MeshLambertMaterial({visible:false}));
         region.name='FCAL_'+ regionShortName ;
 
+        var material = new THREE.MeshBasicMaterial({
+            transparent: true,
+            opacity: 0.5,
+            color: 0xafd5f7,
+            side: THREE.DoubleSide
+        });
+
         // Go through repetitions and create rows
         for(var yIndex=0; yIndex< yCopiesCount; yIndex++){
             // Go through repetitions and create rows
             for(var xIndex=0; xIndex< xCopyCount; xIndex++){
 
-                var material = new THREE.MeshBasicMaterial({
-                    transparent: true,
-                    opacity: 0.5,
-                    color: 0xafd5f7,
-                    side: THREE.DoubleSide
-                });
+
                 var module = new THREE.Mesh(moduleBoxGeometry.clone(), material);
 
                 //module.name = "FCAL_" + name + '_' + (startIndex + yIndex) + "_" +xIndex;
                 module.name = `FCAL_${regionShortName}_${(startIndex + yIndex)}_${xIndex}`;
                 if(isRight) module.name += "_r";
 
-                module.position.set(x0 + xIndex*dx, y0 + yIndex*dy, 0);
+                module.position.set(x0 + xIndex*dx, y0 + yIndex*dy, (45./2)-(45.*scale/2));
                 region.add(module);
             }
         }

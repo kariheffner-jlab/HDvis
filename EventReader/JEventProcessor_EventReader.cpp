@@ -245,7 +245,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
 
             // CDC
-
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
             // FDC
@@ -268,7 +267,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             { "FDC_pseudos", fdcPseudosJson },
                                             {"event_number",eventnumber}
                                         });
-
 
             std::ofstream eventFile;
             eventFile.open("www/event.json", std::ofstream::trunc);

@@ -445,13 +445,13 @@
                 if (ViewerConfig.FCALHitVis === "Dynamic") {
                     if (SceneTime + min_start_time > eventobjs[i].userData.t) {
                         eventobjs[i].scale.set(1,1,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
-                        eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2));//(655+((SceneTime/max_total_time)*eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)/2);
+                        eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2)+15);//(655+((SceneTime/max_total_time)*eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)/2);
                         eventobjs[i].geometryNeedsUpdate=true;
 
                     }
                     else if (SceneTime + min_start_time < eventobjs[i].userData.t && eventobjs[i].scale.z !== 1 ) {
                         eventobjs[i].scale.set(1,1,1);
-                        eventobjs[i].position.z= (655+1);
+                        eventobjs[i].position.z= (655+1+15);
                         eventobjs[i].geometryNeedsUpdate=true;
                     }
                 }
@@ -462,7 +462,7 @@
                 else if(ViewerConfig.FCALHitVis === "Static" && eventobjs[i].scale.z !== eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)
                 {
                     eventobjs[i].scale.set(1,1,eventobjs[i].userData.E*ViewerConfig.FCAL_EScale);
-                    eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2));
+                    eventobjs[i].position.z= (655+(eventobjs[i].userData.E*ViewerConfig.FCAL_EScale/2)+15);
                     eventobjs[i].geometryNeedsUpdate=true;
                 }
             }
