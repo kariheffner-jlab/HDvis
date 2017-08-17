@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE HDDS [
 
-  <!ENTITY Regions_s SYSTEM "Regions_HDDS.xml">
-  <!ENTITY Material_s SYSTEM "Material_HDDS.xml">
-  <!ENTITY BeamLine_s SYSTEM "BeamLine_HDDS.xml">
-  <!ENTITY PairSpect_s SYSTEM "PairSpect_HDDS.xml">
-  <!ENTITY Target_s SYSTEM "Target_HDDS.xml"  >
-  <!ENTITY Solenoid_s SYSTEM "Solenoid_HDDS.xml">
-  <!ENTITY CentralDC_s SYSTEM "CentralDC_HDDS.xml">
-  <!ENTITY ForwardDC_s SYSTEM "ForwardDC_HDDS.xml">
-  <!ENTITY StartCntr_s SYSTEM "StartCntr_HDDS.xml">
-  <!ENTITY BarrelEMcal_s SYSTEM "BarrelEMcal_HDDS.xml">
-  <!ENTITY GapEMcal_s SYSTEM "GapEMcal_HDDS.xml">
-  <!ENTITY ForwardEMcal_s SYSTEM "ForwardEMcal_HDDS.xml">
-  <!ENTITY CerenkovCntr_s SYSTEM "CerenkovCntr_HDDS.xml">
-  <!ENTITY UpstreamEMveto_s SYSTEM "UpstreamEMveto_HDDS.xml">
-  <!ENTITY ComptonEMcal_s SYSTEM "ComptonEMcal_HDDS.xml">
-  <!ENTITY DIRC_s SYSTEM "DIRC_HDDS.xml">
+        <!ENTITY Regions_s SYSTEM "Regions_HDDS.xml">
+        <!ENTITY Material_s SYSTEM "Material_HDDS.xml">
+        <!ENTITY BeamLine_s SYSTEM "BeamLine_HDDS.xml">
+        <!ENTITY PairSpect_s SYSTEM "PairSpect_HDDS.xml">
+        <!ENTITY Target_s SYSTEM "Target_HDDS.xml"  >
+        <!ENTITY Solenoid_s SYSTEM "Solenoid_HDDS.xml">
+        <!ENTITY CentralDC_s SYSTEM "CentralDC_HDDS.xml">
+        <!ENTITY ForwardDC_s SYSTEM "ForwardDC_HDDS.xml">
+        <!ENTITY StartCntr_s SYSTEM "StartCntr_HDDS.xml">
+        <!ENTITY BarrelEMcal_s SYSTEM "BarrelEMcal_HDDS.xml">
+        <!ENTITY GapEMcal_s SYSTEM "GapEMcal_HDDS.xml">
+        <!ENTITY ForwardEMcal_s SYSTEM "ForwardEMcal_HDDS.xml">
+        <!ENTITY CerenkovCntr_s SYSTEM "CerenkovCntr_HDDS.xml">
+        <!ENTITY UpstreamEMveto_s SYSTEM "UpstreamEMveto_HDDS.xml">
+        <!ENTITY ComptonEMcal_s SYSTEM "ComptonEMcal_HDDS.xml">
+        <!ENTITY DIRC_s SYSTEM "DIRC_HDDS.xml">
 
-]>
+        ]>
 
 <HDDS specification="v1.1" xmlns="http://www.gluex.org/hdds"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.gluex.org/hdds HDDS-1_1.xsd">
 
-<!-- Include materials -->
-     &Material_s;
+    <!-- Include materials -->
+    &Material_s;
 
-<!-- Include magnetic fields -->
-     &Regions_s;
+    <!-- Include magnetic fields -->
+    &Regions_s;
 
-<!-- Include spec files -->
-     &ForwardEMcal_s;
+    <!-- Include spec files -->
+    &ForwardEMcal_s;
 
 
     <!--DOCTYPE HDDS>
@@ -661,7 +661,7 @@
 
     </section>
 
-     &GapEMcal_s;
+    &GapEMcal_s;
 
     <section name        = "ForwardTOF"
              version     = "2.1"
@@ -3273,92 +3273,227 @@
     </section>
 
     &CentralDC_s;
-     &StartCntr_s;
-     &Target_s;
-     &Solenoid_s;
-     &BeamLine_s;
-     &UpstreamEMveto_s;
-     &PairSpect_s;     
-     &ComptonEMcal_s;
-     &DIRC_s;
-<!-- End of include    -->
+    &StartCntr_s;
+    &Target_s;
+    &Solenoid_s;
+    &BeamLine_s;
+    &UpstreamEMveto_s;
+    &PairSpect_s;
+    &ComptonEMcal_s;
+    &DIRC_s;
+    <!-- End of include    -->
 
 
-<!-- Hall D Detector Specification : top volume
-     ******************************************
--->
-<section name        = "HallD"
-         version     = "3.0"
-         date        = "2007-12-07"
-         author      = "R.T. Jones"
-         top_volume  = "SITE"
-         specification = "v1.0">
+    <!-- Hall D Detector Specification : top volume
+         ******************************************
+    -->
+    <section name        = "HallD"
+             version     = "3.0"
+             date        = "2007-12-07"
+             author      = "R.T. Jones"
+             top_volume  = "SITE"
+             specification = "v1.0">
 
-  <box name="SITE" X_Y_Z="10000. 10000. 10000." material="Air"
-       				comment="master volume for description" />
-  <box name="HALL" X_Y_Z="1700. 1500. 3409." material="Air"
-       				comment="master volume for description">
-    <apply region="solenoidBfield" origin="150.0 -350.0 -500.0" />
-  </box>
+        <box name="SITE" X_Y_Z="10000. 10000. 10000." material="Air"
+             comment="master volume for description" />
+        <box name="HALL" X_Y_Z="1700. 1500. 3409." material="Air"
+             comment="master volume for description">
+            <apply region="solenoidBfield" origin="150.0 -350.0 -500.0" />
+        </box>
 
-  <composition name="barrelPackage" envelope="LASS">
-    <posXYZ volume="Solenoid" X_Y_Z="0.03 0.0 0.0"/>
-    <posXYZ volume="Target" X_Y_Z="0.0 0.0 50.429"/>
-    <posXYZ volume="StartCntr" X_Y_Z="0.0 0.0 38.84"  rot="0.0 0.0 -11.25"/>
-    <posXYZ volume="CentralDC" X_Y_Z="0.0 0.0 17.68" rot="0.0 0.0 0.0" />
-    <posXYZ volume="ForwardDC" X_Y_Z="0.0 0.0 176.938" />
-    <posXYZ volume="BarrelEMcal" X_Y_Z="0.1 -0.098 16.788" rot="-0.0424 0.01633 0.0046" />
-  </composition>
+        <composition name="barrelPackage" envelope="LASS">
+            <posXYZ volume="Solenoid" X_Y_Z="0.03 0.0 0.0"/>
+            <posXYZ volume="Target" X_Y_Z="0.0 0.0 50.429"/>
+            <posXYZ volume="StartCntr" X_Y_Z="0.0 0.0 38.84"  rot="0.0 0.0 -11.25"/>
+            <posXYZ volume="CentralDC" X_Y_Z="0.0 0.0 17.68" rot="0.0 0.0 0.0" />
+            <posXYZ volume="ForwardDC" X_Y_Z="0.0 0.0 176.938" />
+            <posXYZ volume="BarrelEMcal" X_Y_Z="0.1 -0.098 16.788" rot="-0.0424 0.01633 0.0046" />
+        </composition>
 
-  <composition name="forwardPackage">
-    <!--<posXYZ volume="CerenkovCntr" X_Y_Z="0.0 0.0 466.0" /> -->
-    <!--posXYZ volume="GapEMcal" X_Y_Z="0.0 0.0 460.0" /-->
-    <!-- To simulate DIRC hits uncomment the line below -->
-    <!--posXYZ volume="DIRC" X_Y_Z="0.0 0.0 595.0" /-->
-    <posXYZ volume="ForwardTOF" X_Y_Z="0.308 0.225 605.793" rot="-0.0427 0.0461 -0.1813"/>
-    <posXYZ volume="ForwardEMcal" X_Y_Z="0.529 -0.002 624.906" rot="-0.0418 -0.07019 -0.0149" />
-    <!--posXYZ volume="ComptonEMcal" X_Y_Z="0.0 0.0 1025.3" /-->
-  </composition>
+        <composition name="forwardPackage">
+            <!--<posXYZ volume="CerenkovCntr" X_Y_Z="0.0 0.0 466.0" /> -->
+            <!--posXYZ volume="GapEMcal" X_Y_Z="0.0 0.0 460.0" /-->
+            <!-- To simulate DIRC hits uncomment the line below -->
+            <!--posXYZ volume="DIRC" X_Y_Z="0.0 0.0 595.0" /-->
+            <posXYZ volume="ForwardTOF" X_Y_Z="0.308 0.225 605.793" rot="-0.0427 0.0461 -0.1813"/>
+            <posXYZ volume="ForwardEMcal" X_Y_Z="0.529 -0.002 624.906" rot="-0.0418 -0.07019 -0.0149" />
+            <!--posXYZ volume="ComptonEMcal" X_Y_Z="0.0 0.0 1025.3" /-->
+        </composition>
 
-  <composition name="backwardPackage">
-    <posXYZ volume="UpstreamEMveto" X_Y_Z="0.0 0.0 -86.8" />
-  </composition> 
+        <composition name="backwardPackage">
+            <posXYZ volume="UpstreamEMveto" X_Y_Z="0.0 0.0 -86.8" />
+        </composition>
 
-  <composition name="GlueXdetector">
-    <!--The following is the position of the entrance window of the target cell-->
-    <!--posXYZ volume="Target" X_Y_Z="0.0 0.0 48.316" /> Moved the target to the LASS volume SJT 6/2/2016 -->
-    <posXYZ volume="barrelPackage" />
-    <posXYZ volume="forwardPackage" />
-<!-- removed from standard geometry 12/11/2007 -rtj
-    <posXYZ volume="backwardPackage" />
--->
-  </composition>
+        <composition name="GlueXdetector">
+            <!--The following is the position of the entrance window of the target cell-->
+            <!--posXYZ volume="Target" X_Y_Z="0.0 0.0 48.316" /> Moved the target to the LASS volume SJT 6/2/2016 -->
+            <posXYZ volume="barrelPackage" />
+            <posXYZ volume="forwardPackage" />
+            <!-- removed from standard geometry 12/11/2007 -rtj
+                <posXYZ volume="backwardPackage" />
+            -->
+        </composition>
 
-  <composition name="experimentalHall" envelope="HALL">
-    <posXYZ volume="GlueXdetector" X_Y_Z="150.0 -350.0 -500.0" />
-    <posXYZ volume="PairSpectrometer" X_Y_Z="150.0 -350.0 -1390.16" />  
-    <posXYZ volume="beamPipe" X_Y_Z="0.0 0.0 -0.5" />
-    <posXYZ volume="SixWayCross" X_Y_Z="150 -350 -605.93"/>
-  </composition>
+        <composition name="experimentalHall" envelope="HALL">
+            <posXYZ volume="GlueXdetector" X_Y_Z="150.0 -350.0 -500.0" />
+            <posXYZ volume="PairSpectrometer" X_Y_Z="150.0 -350.0 -1390.16" />
+            <posXYZ volume="beamPipe" X_Y_Z="0.0 0.0 -0.5" />
+            <posXYZ volume="SixWayCross" X_Y_Z="150 -350 -605.93"/>
+        </composition>
 
-  <composition name="LASSfieldVolume">
-    <posXYZ volume="experimentalHall" X_Y_Z="-150.0 350.0 500.0" />
-  </composition>
+        <composition name="LASSfieldVolume">
+            <posXYZ volume="experimentalHall" X_Y_Z="-150.0 350.0 500.0" />
+        </composition>
 
-  <composition name="everything" envelope="SITE">
-    <posXYZ volume="collimatorPackage" X_Y_Z="0.0 0.0 -2254.5" />
-    <posXYZ volume="LASSfieldVolume" X_Y_Z="0. 0. 0." />
-  </composition>
+        <composition name="everything" envelope="SITE">
+            <posXYZ volume="collimatorPackage" X_Y_Z="0.0 0.0 -2254.5" />
+            <posXYZ volume="LASSfieldVolume" X_Y_Z="0. 0. 0." />
+        </composition>
 
-  <!-- The following elements describe an early rendition of the GlueX
-       detector simulated using a fast Monte Carlo program MCFast.  They
-       are retained for future reference, do not rely on their values. -->
+        <!-- The following elements describe an early rendition of the GlueX
+             detector simulated using a fast Monte Carlo program MCFast.  They
+             are retained for future reference, do not rely on their values. -->
 
-  <mcfast model="detector" template="db/detector.db">
-    <string name="name" value="GLUEX" />
-    <string name="geom_id" value="CENTRAL" />
-  </mcfast>
+        <mcfast model="detector" template="db/detector.db">
+            <string name="name" value="GLUEX" />
+            <string name="geom_id" value="CENTRAL" />
+        </mcfast>
 
-</section>
+    </section>
+
+    <section name        = "ForwardEMcal"
+             version     = "2.0"
+             date        = "2006-11-25"
+             author      = "R.T. Jones"
+             top_volume  = "FCAL"
+             specification = "v1.0">
+
+        <!-- Origin of ForwardEMcal is center of upstream face of LGD -->
+
+        <!-- Thr Jan 29 08:14:30 EST 2009                                  -->
+        <!-- changed order of counting columns: 0-58 from south to north   -->
+
+        <composition name="ForwardEMcal">
+            <apply region="nullBfield"/>
+            <posXYZ volume="forwardEMcal" X_Y_Z="0.0  0.0  22.5" />
+        </composition>
+
+        <composition name="forwardEMcal" envelope="FCAL">
+            <posXYZ volume="LGDlower" X_Y_Z="  0.0 -62.0  0.0" />
+            <posXYZ volume="LGDsouth" X_Y_Z="-62.0   0.0  0.0" />
+            <posXYZ volume="LGDnorth" X_Y_Z="+62.0   0.0  0.0" />
+            <posXYZ volume="LGDupper" X_Y_Z="  0.0 +62.0  0.0" />
+            <posXYZ volume="FCBI" X_Y_Z="0.0 0.0 0.0" />
+        </composition>
+
+        <composition name="LGDlower" envelope="LGDB">
+            <mposY volume="LGDfullRow" ncopy="28" Z_X="0.0 0.0" Y0="-54.0" dY="4.0">
+                <row value="0" step="1" />
+            </mposY>
+        </composition>
+
+        <composition name="LGDnorth" envelope="LGDN">
+            <mposY volume="LGDhalfRowNorth" ncopy="3" Y0="-4.0" dY="4.0">
+                <row value="28" step="1" />
+            </mposY>
+        </composition>
+
+        <composition name="LGDsouth" envelope="LGDS">
+            <mposY volume="LGDhalfRowSouth" ncopy="3" Y0="-4.0" dY="4.0">
+                <row value="28" step="1" />
+            </mposY>
+        </composition>
+
+        <composition name="LGDupper" envelope="LGDT">
+            <mposY volume="LGDfullRow" ncopy="28" Z_X="0.0 0.0" Y0="-54.0" dY="4.0">
+                <row value="31" step="1" />
+            </mposY>
+        </composition>
+        <composition name="LGDfullRow">
+            <mposX volume="LGBL" ncopy="59" Y_Z="0.0 0.0" X0="-116.0" dX="4.0">
+                <column value="0" step="1" />
+            </mposX>
+        </composition>
+
+        <composition name="LGDhalfRowNorth">
+            <mposX volume="LGBL" ncopy="28" Y_Z="0.0 0.0" X0="-54.0" dX="4.0">
+                <column value="31" step="1" />
+            </mposX>
+        </composition>
+
+        <composition name="LGDhalfRowSouth">
+            <mposX volume="LGBL" ncopy="28" Y_Z="0.0 0.0" X0="-54.0" dX="4.0">
+                <column value="0" step="1" />
+            </mposX>
+        </composition>
+
+        <box name="FCAL" X_Y_Z="236.0  236.0  45.0"  material="Air"
+             comment="forward EMcal mother" />
+        <box name="LGDB" X_Y_Z="236.0  112.0  45.0"  material="Air"
+             comment="LGD bottom section"   />
+        <box name="LGDT" X_Y_Z="236.0  112.0  45.0"  material="Air"
+             comment="LGD top section"      />
+        <box name="LGDN" X_Y_Z="112.0   12.0  45.0"  material="Air"
+             comment="LGD north section"     />
+        <box name="LGDS" X_Y_Z="112.0   12.0  45.0"  material="Air"
+             comment="LGD south section"    />
+        <box name="LGBL" X_Y_Z="  4.0    4.0  45.0"  material="leadGlassF800"
+             sensitive="true"	comment="lead glass block"     />
+
+        <pgon name="FCBI" segments="4" profile="-45 360" material="StainlessSteel"
+              comment="FCal beam hole support insert">
+            <polyplane Rio_Z="4.73 6.00 -22.5"  />
+            <polyplane Rio_Z="4.73 6.00 +22.5" />
+        </pgon>
+
+        <!-- The following elements describe an early rendition of the GlueX
+             detector simulated using a fast Monte Carlo program MCFast.  They
+             are retained for future reference, do not rely on their values. -->
+
+        <parameters name="forwardEMcal_pars" type="mcfast">
+            <real_array	name="xlimit"	comment="xmin  xmax limits of box"
+                           values="-106.0  106.0"
+                           unit="cm"	/>
+            <real_array	name="ylimit"	comment="ymin  ymax limits of box"
+                           values="-106.0  106.0"
+                           unit="cm"	/>
+            <real_array	name="xlimit_gap" comment="xmin  xmax of beam hole aperture"
+                           values="   -6.0   6.0"
+                           unit="cm"	/>
+            <real_array	name="ylimit_gap" comment="ymin  ymax of beam hole aperture"
+                           values="   -6.0   6.0"
+                           unit="cm"	/>
+            <real	name="z0"	value="620.07"	comment="z of midplane"
+                     unit="cm"	/>
+            <real	name="zlen"	value="45.0"	comment="length of blocks"
+                     unit="cm"	/>
+            <reference	name="material"	value="leadGlassF800" />
+            <reference	name="active"	value="leadGlassF800" />
+            <int	name="ncr1"	value="58"	comment="x segmentation"     />
+            <int	name="ncr2"	value="58"	comment="y segmentation"     />
+            <int	name="nlayers"	value="1"	comment="z segmentation"     />
+            <real	name="siga_em"	value="0.06"	comment="root-E coefficient"
+                     unit="cm"	/>
+            <real	name="sigb_em"	value="0.01"	comment="floor term"
+                     unit="cm"	/>
+            <real	name="siga_had"	value="0.0"	comment="root-E coefficient"
+                     unit="cm"	/>
+            <real	name="sigb_had"	value="0.0"	comment="floor term"
+                     unit="cm"	/>
+            <real	name="em_had_ratio" value="4.0"	comment="response ratio"
+                     unit="cm"	/>
+        </parameters>
+
+        <!-- The forward calorimeter is hard coded into HDFast at present
+
+          <mcfast model="CalorBox" template="db/calorbox.db"
+                                   parameters="forwardEMcal_pars">
+            <string	name="name"	value="FCAL"
+            <string	name="shape"	value="BOX"
+            <int	name="type"	value="2"
+          </mcfast>
+        -->
+
+    </section>
 
 </HDDS>

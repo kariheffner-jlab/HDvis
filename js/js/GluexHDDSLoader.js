@@ -87,11 +87,12 @@ THREE.GluexHDDSLoader.prototype = {
 
         this.group.add(this.processFTOF());
         this.group.add(this.processFDC());
+        this.group.add(this.processFCAL());
 
-        var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 10.0);
-        var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0x436280, transparent: false, opacity: 1, side: THREE.DoubleSide }));
-        fcal.position.set(0.529, -0.002, 624.906 + 22.5);
-        this.group.add(fcal);
+        //var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 10.0);
+        //var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0x436280, transparent: true, opacity: .4, side: THREE.DoubleSide }));
+        //fcal.position.set(0.529, -0.002, 624.906 + 22.5);
+        //this.group.add(fcal);
         return this.group;
     },
 
@@ -134,6 +135,137 @@ THREE.GluexHDDSLoader.prototype = {
         fdc.name="FDC";
 
         return fdc;
+    },
+
+    processFCAL: function () {
+        var xmlSection = this.xmlSections['ForwardEMcal'];
+
+        var fcal = new THREE.Group();
+        fcal.name = "FCAL";
+        var sectionup = this.buildFCALSection(xmlSection, 'LGDT', 30, false);
+        var sectiondown = this.buildFCALSection(xmlSection, 'LGDB', 0, false);
+        var sectionleft = this.buildFCALSection(xmlSection, 'LGDN', 28, false);//north
+        var sectionright = this.buildFCALSection(xmlSection, 'LGDS', 28, true);
+        //var plane1 = this.buildTofPlane(xmlSection, 1);
+        fcal.add(sectionup);
+        fcal.add(sectiondown);
+        fcal.add(sectionleft);
+        fcal.add(sectionright);
+        //ftof.add(plane1);
+
+        // Tof placement in the global main file
+        var xmlFCALGlobal = this.HDDS.querySelector('composition[name="forwardPackage"] > posXYZ[volume="ForwardEMcal"]');
+        var globalPlacement = extractPlacement(xmlFCALGlobal);
+        this.setMeshPlacement(fcal, globalPlacement);
+
+        return fcal;
+    },
+
+    buildFCALSection: function (fcalXmlSection, name, startIndex, isRight) {
+        if(name=="GluexEvent")
+            return;
+
+        var xmlComposition = fcalXmlSection.querySelector('composition[envelope="'+name+'"]');
+
+        // We will need this to extract region position in the future
+        // because we have region positions in xml like:
+        //    <composition name="forwardTOF" envelope="FTOF">
+        //         <posXYZ volume="forwardTOF_bottom1" X_Y_Z="0.0 -70.125 0.0" />
+        //         ....
+        // so we need this forwardTOF_bottom1 to extract its placement
+        var regionFullName = xmlComposition.getAttribute('name');
+
+        var xmlMultPosY = xmlComposition.querySelector('mposY');
+        // the xml looks like this:
+        // <mposY volume="FTOH" ncopy="2" Z_X = "0.0 0.0" Y0="-3.045" dY="6.09">
+        var volumeName = xmlMultPosY.getAttribute('volume');
+        var ncopy = parseInt(xmlMultPosY.getAttribute('ncopy'));
+        var y0 = parseFloat(xmlMultPosY.getAttribute('Y0'));
+        var dy = parseFloat(xmlMultPosY.getAttribute('dY'));
+
+        // Region bounding box
+        var region = new THREE.Mesh(
+            this.boxFromXml(fcalXmlSection, name),
+            new THREE.MeshLambertMaterial({visible:false}));
+        region.name='FCAL_'+ name ;
+
+        // Module box that we will copy
+        // Modules should NOT be of buffered geometry, because they get colored by faces
+        var moduleBox = this.boxFromXml(fcalXmlSection, name, false);
+
+        // Go through repetitions and create rows
+        for(var i=0; i< ncopy; i++){
+            this.buildFCALRow(fcalXmlSection,name,"LGDfullRow",startIndex,isRight);
+
+            var material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, vertexColors: THREE.VertexColors});
+
+
+            var module = new THREE.Mesh(moduleBox.clone(), material);
+            module.name = "FCALrow" + "_r" + (startIndex+i);
+            if(isRight) module.name += "_r";
+
+            module.position.set(0, y0 + i*dy, 0);
+            region.add(module);
+        }
+
+        // get placement
+        var selector = 'posXYZ[volume="'+regionFullName+'"]';
+        var xmlPlacement = fcalXmlSection.querySelector(selector);
+        var regionPlacement = extractPlacement(xmlPlacement);
+        this.setMeshPlacement(region, regionPlacement);
+
+        return region;
+    },
+
+    buildFCALRow: function (fcalXmlSection, sectionName,name, startIndex, isRight) {
+
+        var xmlComposition = fcalXmlSection.querySelector('composition[name="'+name+'"]');
+
+        // We will need this to extract region position in the future
+        // because we have region positions in xml like:
+        //    <composition name="forwardTOF" envelope="FTOF">
+        //         <posXYZ volume="forwardTOF_bottom1" X_Y_Z="0.0 -70.125 0.0" />
+        //         ....
+        // so we need this forwardTOF_bottom1 to extract its placement
+        var regionFullName = xmlComposition.getAttribute('name');
+
+        var xmlMultPosY = xmlComposition.querySelector('mposX');
+        // the xml looks like this:
+        // <mposY volume="FTOH" ncopy="2" Z_X = "0.0 0.0" Y0="-3.045" dY="6.09">
+        var volumeName = xmlMultPosY.getAttribute('volume');
+        var ncopy = parseInt(xmlMultPosY.getAttribute('ncopy'));
+        var x0 = parseFloat(xmlMultPosY.getAttribute('X0'));
+        var dx = parseFloat(xmlMultPosY.getAttribute('dX'));
+
+        // Region bounding box
+        var region = new THREE.Mesh(
+            this.boxFromXml(fcalXmlSection, sectionName),
+            new THREE.MeshLambertMaterial({visible:false}));
+        region.name='FCAL_'+ sectionName+"_"+startIndex ;
+
+        // Module box that we will copy
+        // Modules should NOT be of buffered geometry, because they get colored by faces
+        var moduleBox = this.boxFromXml(fcalXmlSection, 'LGBL', true);
+
+        // Go through repetitions and create rows
+        for(var i=0; i< ncopy; i++){
+            var material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, vertexColors: THREE.VertexColors});
+            var module = new THREE.Mesh(moduleBox.clone(), material);
+
+            module.name = "FCALrow" + startIndex +"_"+i;
+            if(isRight) module.name += "_r";
+
+            module.position.set(0, x0 + i*dx, 0);
+            region.add(module);
+        }
+
+        // get placement
+        var selector = 'posXYZ[name="'+regionFullName+'"]';
+        var xmlPlacement = fcalXmlSection.querySelector(selector);
+        var regionPlacement = extractPlacement(xmlPlacement);
+        this.setMeshPlacement(region, regionPlacement);
+
+        return region;
     },
 
     processFTOF: function () {
