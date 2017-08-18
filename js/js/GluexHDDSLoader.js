@@ -135,8 +135,8 @@ THREE.GluexHDDSLoader.prototype = {
     processCDC: function() {
         var xmlSection = this.xmlSections['CentralDC'];
 
-        var CDCMotherGeom = this.tubeGeometry(11,60,154.75,0,2*Math.PI);
-        var cdc = new THREE.Mesh(CDCMotherGeom, new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide }));
+        //var CDCMotherGeom = this.tubeGeometry(11,60,154.75,0,2*Math.PI);
+        // var cdc = new THREE.Mesh(CDCMotherGeom, new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide }));
 
         var ShortWireGeometry =this.tubeGeometry(0,.8,154.5,0,2*Math.PI);
 
@@ -148,16 +148,16 @@ THREE.GluexHDDSLoader.prototype = {
         CDC.add(straws);
 
 
+        //cdc.rotateX(Math.PI/2.0);
+        //cdc.name="CDC";
+
         var xmlGlobalPlacement = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="CentralDC"]');
         var globalPlacement = extractPlacement(xmlGlobalPlacement);
         var xmlLocalPlacement = xmlSection.querySelector('composition[name="CentralDC"] > posXYZ[volume="centralDC"]');
         var localPlacement = extractPlacement(xmlLocalPlacement);
-        this.setMeshPlacement(cdc, this.sumPlacements(localPlacement, globalPlacement));
+        this.setMeshPlacement(CDC, this.sumPlacements(localPlacement, globalPlacement));
 
-        //cdc.rotateX(Math.PI/2.0);
-        cdc.name="CDC";
-
-        return cdc;
+        return CDC;
     },
 
     buildCDCStraws: function (cdcXmlSection, regionShortName, startIndex, ShortWireGeometry, LongWireGeometry) {
@@ -168,8 +168,9 @@ THREE.GluexHDDSLoader.prototype = {
 
         var region = new THREE.Mesh(
             this.tubeGeometry(11,60,154.75,0,2*Math.PI),
-            new THREE.MeshLambertMaterial({visible:false}));
-        region.name='BCAL_Layers';
+            new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide })
+        );
+        region.name='CDC_Layers';
 
         for (var i=0;i<arrayofComponents.length;i++) {
             if (i < 3)
@@ -187,7 +188,7 @@ THREE.GluexHDDSLoader.prototype = {
 
             for (var j = 1; j <= ncopy; j++)
             {
-                if(regionFullName=="CDCstrawShort")
+                if(regionFullName==="CDCstrawShort")
                 {
 
                     var material = new THREE.MeshBasicMaterial({
@@ -200,18 +201,19 @@ THREE.GluexHDDSLoader.prototype = {
 
                     var module = new THREE.Mesh(ShortWireGeometry.clone(), material);
 
+                    module.name=ring.toString()+"_"+j.toString();
                     module.position.set(R*Math.cos(Phi0+(j-1)*dPhi), R*Math.sin(Phi0+(j-1)*dPhi), 0);
+
+
                     region.add(module);
                 }
             }
         }
 
-
         var selector = `posXYZ[volume="CDClayers"]`;
         var xmlPlacement = cdcXmlSection.querySelector(selector);
         var regionPlacement = extractPlacement(xmlPlacement);
         this.setMeshPlacement(region, regionPlacement);
-
         return region;
     },
 
