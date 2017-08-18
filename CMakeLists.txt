@@ -30,7 +30,6 @@ link_directories(
         /usr/lib64/mysql/
 )
 
-
 add_definitions(${ROOT_CXX_FLAGS})
 
 

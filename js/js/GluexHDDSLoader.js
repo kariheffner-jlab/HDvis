@@ -22,7 +22,6 @@ extractPlacement = function(xmlElement, posAttName, rotAttName){
         rotation:extractXYZ(xmlElement, rotAttName)
     };
 };
-
 createPolyPlaneGeometry = function(data, segments, phiStart, phiLength) {
 
     segments = typeof segments !== 'undefined' ? segments : 20;
@@ -39,6 +38,27 @@ createPolyPlaneGeometry = function(data, segments, phiStart, phiLength) {
     }
 
     points2d.push(new THREE.Vector2(data[0][1], data[0][2]));   // Closing the contour
+
+    // use the same points to create a LatheGeometry
+    return new THREE.LatheGeometry(points2d, segments, phiStart, phiLength);
+};
+
+createPolyPlaneGeometry2 = function(data, segments, phiStart, phiLength) {
+
+    segments = typeof segments !== 'undefined' ? segments : 20;
+    phiStart = typeof phiStart !== 'undefined' ? phiStart : 0;
+    phiLength = typeof phiLength !== 'undefined' ? phiLength : 2*Math.PI;
+
+    var points2d = []
+    for (var i = 0; i < data.length; i++) {
+        points2d.push(new THREE.Vector2(parseFloat(data[i].attributes[0].value.split(" ")[1]), parseFloat(data[i].attributes[0].value.split(" ")[2])));
+    }
+
+    for (var i = data.length -1; i >= 0; i--) {
+        points2d.push(new THREE.Vector2(parseFloat(data[i].attributes[0].value.split(" ")[0]), parseFloat(data[i].attributes[0].value.split(" ")[2])));
+    }
+
+    points2d.push(new THREE.Vector2(parseFloat(data[0].attributes[0].value.split(" ")[1]), parseFloat(data[0].attributes[0].value.split(" ")[2])));   // Closing the contour
 
     // use the same points to create a LatheGeometry
     return new THREE.LatheGeometry(points2d, segments, phiStart, phiLength);
@@ -86,6 +106,7 @@ THREE.GluexHDDSLoader.prototype = {
         });
 
         this.group.add(this.processFTOF());
+        this.group.add(this.processCDC());
         this.group.add(this.processFDC());
         this.group.add(this.processFCAL());
 
@@ -109,6 +130,89 @@ THREE.GluexHDDSLoader.prototype = {
         this.setMeshPlacement(bcal, globalPlacement);
 
         return bcal;
+    },
+
+    processCDC: function() {
+        var xmlSection = this.xmlSections['CentralDC'];
+
+        var CDCMotherGeom = this.tubeGeometry(11,60,154.75,0,2*Math.PI);
+        var cdc = new THREE.Mesh(CDCMotherGeom, new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide }));
+
+        var ShortWireGeometry =this.tubeGeometry(0,.8,154.5,0,2*Math.PI);
+
+        var LongWireGeometry =this.tubeGeometry(0,.8,155.5,0,2*Math.PI);
+
+        var CDC = new THREE.Group();
+        CDC.name = "CDC";
+        var straws = this.buildCDCStraws(xmlSection, 'DCLS', 0, ShortWireGeometry, LongWireGeometry);
+        CDC.add(straws);
+
+
+        var xmlGlobalPlacement = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="CentralDC"]');
+        var globalPlacement = extractPlacement(xmlGlobalPlacement);
+        var xmlLocalPlacement = xmlSection.querySelector('composition[name="CentralDC"] > posXYZ[volume="centralDC"]');
+        var localPlacement = extractPlacement(xmlLocalPlacement);
+        this.setMeshPlacement(cdc, this.sumPlacements(localPlacement, globalPlacement));
+
+        //cdc.rotateX(Math.PI/2.0);
+        cdc.name="CDC";
+
+        return cdc;
+    },
+
+    buildCDCStraws: function (cdcXmlSection, regionShortName, startIndex, ShortWireGeometry, LongWireGeometry) {
+
+        var XmlComposition = cdcXmlSection.querySelector('composition[envelope="'+regionShortName+'"]');
+
+        var arrayofComponents=XmlComposition.children;
+
+        var region = new THREE.Mesh(
+            this.tubeGeometry(11,60,154.75,0,2*Math.PI),
+            new THREE.MeshLambertMaterial({visible:false}));
+        region.name='BCAL_Layers';
+
+        for (var i=0;i<arrayofComponents.length;i++) {
+            if (i < 3)
+                continue;
+
+
+            var regionFullName = arrayofComponents[i].getAttribute('volume');
+
+            var ncopy = arrayofComponents[i].getAttribute('ncopy');
+            var Phi0 = arrayofComponents[i].getAttribute('Phi0');
+            var R = parseFloat(arrayofComponents[i].getAttribute('R_Z').split(" ")[0]);
+            var dPhi = (360. / ncopy) * (Math.PI / 180.);
+
+            var ring = i - 2;
+
+            for (var j = 1; j <= ncopy; j++)
+            {
+                if(regionFullName=="CDCstrawShort")
+                {
+
+                    var material = new THREE.MeshBasicMaterial({
+                        transparent: false,
+                        opacity: 0.5,
+                        color: 0xffffff,
+                        side: THREE.DoubleSide
+                    });
+
+
+                    var module = new THREE.Mesh(ShortWireGeometry.clone(), material);
+
+                    module.position.set(R*Math.cos(Phi0+(j-1)*dPhi), R*Math.sin(Phi0+(j-1)*dPhi), 0);
+                    region.add(module);
+                }
+            }
+        }
+
+
+        var selector = `posXYZ[volume="CDClayers"]`;
+        var xmlPlacement = cdcXmlSection.querySelector(selector);
+        var regionPlacement = extractPlacement(xmlPlacement);
+        this.setMeshPlacement(region, regionPlacement);
+
+        return region;
     },
 
     processFDC: function() {
@@ -422,6 +526,6 @@ THREE.GluexHDDSLoader.prototype = {
 
 
         return mesh;
-    },
+    }
 
 };
