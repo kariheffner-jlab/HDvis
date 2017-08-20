@@ -201,11 +201,30 @@ THREE.GluexHDDSLoader.prototype = {
 
                     var module = new THREE.Mesh(ShortWireGeometry.clone(), material);
 
-                    module.name=ring.toString()+"_"+j.toString();
+                    module.name="CDCstraw_"+ring.toString()+"_"+j.toString();
                     module.position.set(R*Math.cos(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), R*Math.sin(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), 0.0);
 
 
                     region.add(module);
+                }
+                else if(regionFullName==="CDCstrawLong")
+                {
+
+                    var materialL = new THREE.MeshBasicMaterial({
+                        transparent: false,
+                        opacity: 0.5,
+                        color: 0x00ff00,
+                        side: THREE.DoubleSide
+                    });
+                    var rotX = parseFloat(arrayofComponents[i].getAttribute('rot').split(" ")[0]);
+
+                    var moduleL = new THREE.Mesh(LongWireGeometry.clone(), materialL);
+
+                    moduleL.name="CDCstraw_"+ring.toString()+"_"+j.toString();
+                    moduleL.position.set(R*Math.cos(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), R*Math.sin(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), 0.0);
+                    moduleL.rotateX(rotX*Math.PI/180.);
+
+                    region.add(moduleL);
                 }
             }
         }
