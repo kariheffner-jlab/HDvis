@@ -179,14 +179,14 @@ THREE.GluexHDDSLoader.prototype = {
 
             var regionFullName = arrayofComponents[i].getAttribute('volume');
 
-            var ncopy = arrayofComponents[i].getAttribute('ncopy');
-            var Phi0 = arrayofComponents[i].getAttribute('Phi0');
+            var ncopy = parseInt(arrayofComponents[i].getAttribute('ncopy'));
+            var Phi0 = parseFloat(arrayofComponents[i].getAttribute('Phi0'));
             var R = parseFloat(arrayofComponents[i].getAttribute('R_Z').split(" ")[0]);
             var dPhi = (360. / ncopy) * (Math.PI / 180.);
 
             var ring = i - 2;
 
-            for (var j = 1; j <= ncopy; j++)
+            for (var j = 1.0; j <= ncopy; j++)
             {
                 if(regionFullName==="CDCstrawShort")
                 {
@@ -202,7 +202,7 @@ THREE.GluexHDDSLoader.prototype = {
                     var module = new THREE.Mesh(ShortWireGeometry.clone(), material);
 
                     module.name=ring.toString()+"_"+j.toString();
-                    module.position.set(R*Math.cos(Phi0+(j-1)*dPhi), R*Math.sin(Phi0+(j-1)*dPhi), 0);
+                    module.position.set(R*Math.cos(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), R*Math.sin(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), 0.0);
 
 
                     region.add(module);
@@ -325,7 +325,6 @@ THREE.GluexHDDSLoader.prototype = {
         for(var yIndex=0; yIndex< yCopiesCount; yIndex++){
             // Go through repetitions and create rows
             for(var xIndex=0; xIndex< xCopyCount; xIndex++){
-
 
                 var module = new THREE.Mesh(moduleBoxGeometry.clone(), material);
 
