@@ -516,6 +516,29 @@ THREE.GluexEventLoader.prototype = {
                 //console.log(track.charge);
             });
         }
+
+        if(this.EventData.CDC_hits) {
+            this.EventData.CDC_hits.forEach(function (cdchit) {
+
+                var vis = false;
+                if (scope.Configuration.CDCHitVis === "Static") {
+                    vis = true;
+                }
+
+                var name="CDCstraw_"+cdchit.ring+"_"+cdchit.straw;
+
+                var strawMesh = scope.geometry.getObjectByName(name);
+
+                strawMesh.material.visible=vis
+
+                strawMesh.userData = {
+                    "t": cdchit.t,
+                };
+
+
+            });
+        }
+
         if(this.EventData.TOF_points) {
             this.EventData.TOF_points.forEach(function (point) {
                 //console.log(hit.id);

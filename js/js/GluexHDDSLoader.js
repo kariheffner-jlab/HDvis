@@ -138,9 +138,9 @@ THREE.GluexHDDSLoader.prototype = {
         //var CDCMotherGeom = this.tubeGeometry(11,60,154.75,0,2*Math.PI);
         // var cdc = new THREE.Mesh(CDCMotherGeom, new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide }));
 
-        var ShortWireGeometry =this.tubeGeometry(0,.05,154.5,0,2*Math.PI);
+        var ShortWireGeometry =this.tubeGeometry(0,.075,154.5,0,2*Math.PI);
 
-        var LongWireGeometry =this.tubeGeometry(0,.05,155.5,0,2*Math.PI);
+        var LongWireGeometry =this.tubeGeometry(0,.075,155.5,0,2*Math.PI);
 
         var CDC = new THREE.Group();
         CDC.name = "CDC";
@@ -193,9 +193,10 @@ THREE.GluexHDDSLoader.prototype = {
 
                     var material = new THREE.MeshBasicMaterial({
                         transparent: true,
-                        opacity: 0.5,
-                        color: 0xffffff,
-                        side: THREE.DoubleSide
+                        opacity: 0.8,
+                        color: 0x3dc67d,
+                        side: THREE.DoubleSide,
+                        visible:false
                     });
 
 
@@ -212,9 +213,10 @@ THREE.GluexHDDSLoader.prototype = {
 
                     var materialL = new THREE.MeshBasicMaterial({
                         transparent: true,
-                        opacity: 0.5,
-                        color: 0x00ff00,
-                        side: THREE.DoubleSide
+                        opacity: 0.8,
+                        color: 0x3dc67d,
+                        side: THREE.DoubleSide,
+                        visible:false
                     });
                     var rotX = parseFloat(arrayofComponents[i].getAttribute('rot').split(" ")[0]);
 

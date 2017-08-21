@@ -25,6 +25,9 @@ var HDVisConfig = function() {
     this.TOFHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFHitVis= 'Dynamic';
 
+    this.CDCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.CDCHitVis= 'Dynamic';
+
     this.FDCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FDCHitVis= 'Dynamic';
 
@@ -89,10 +92,10 @@ function makeGUI(scene){
     //gui.add(config, 'SceneTimeMessage').name("Event Time (ns)").listen();
 
     gui.add(config, 'time_scale', .1, 20).name("Time Scale (ns/s)").onChange(function(value) { this.time_scale=value;});
-    gui.add(config, 'min_clock_time', -1000, 0).name("Min. Clock (RF)").onChange(function(value) { this.min_clock_time=value;config.TimingsNeedsUpdate=true;});
-    gui.add(config, 'max_clock_time', 0,1000).name("Max. Clock (RF)").onChange(function(value) { this.max_clock_time=value;config.TimingsNeedsUpdate=true;});
+    gui.add(config, 'min_clock_time', -1500, 0).name("Min. Clock (RF)").onChange(function(value) { this.min_clock_time=value;config.TimingsNeedsUpdate=true;});
+    gui.add(config, 'max_clock_time', 0,1500).name("Max. Clock (RF)").onChange(function(value) { this.max_clock_time=value;config.TimingsNeedsUpdate=true;});
 
-    gui.addFolder('CDC');
+    var cdcGuiFolder=gui.addFolder('CDC');
 
     var bcalGuiFolder = gui.addFolder('BCAL');
 
@@ -101,6 +104,20 @@ function makeGUI(scene){
     var tofGuiFolder = gui.addFolder('TOF');
 
     var fcalGuiFolder= gui.addFolder('FCAL');
+
+    cdcGuiFolder.add( config, 'CDCHitVis', config.CDCHit_Options )
+        .name('CDC Hits').onFinishChange(function(value) { this.CDCHitVis=value;
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("CDC").children[0].children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "CDCstraw") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+
+        config.TimingsNeedsUpdate=true;
+    });
 
     fdcGuiFolder.add( config, 'FDCHitTypeVis', config.FDCHitType_Options )
         .name('FDC Hits to Show').onFinishChange(function(value) { this.FDCHitTypeVis=value;

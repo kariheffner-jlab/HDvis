@@ -296,7 +296,7 @@
         renderer.setClearColor( 0xff0f0 );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.shadowMapEnabled=false;
+        renderer.shadowMap.enabled=false;
         container.appendChild( renderer.domElement );
 
         if(renderer.vr)
@@ -727,6 +727,51 @@
         }
     }
 
+    function animateCDCHits(clock,time_scale,min_start_time)
+    {
+        var SceneTime=clock.getElapsedTime()*time_scale;
+
+        if(SceneTime>max_total_time-min_start_time)
+        {
+            //RealTime=SceneTime;
+            SceneTime=max_total_time-min_start_time;
+        }
+
+        var eventobjs = scene.getObjectByName("CDC").children[0].children;
+
+        for (var i = 0; i < eventobjs.length; i++) {
+            if (eventobjs[i].userData.t) {
+                if(eventobjs[i].userData.t>ViewerConfig.max_clock_time ||
+                    eventobjs[i].userData.t<ViewerConfig.min_clock_time)
+                {
+                    eventobjs[i].material.visible=false;
+                    //continue;
+                }//RESPECT THE CLOCK BOUNDS TOF POINTS
+                else
+                {
+                    if(ViewerConfig.CDCHitVis !== "Off")
+                        eventobjs[i].material.visible=true;
+                }
+                if (ViewerConfig.CDCHitVis === "Dynamic") {
+                    if (SceneTime + min_start_time > eventobjs[i].userData.t && eventobjs[i].material.visible === false) {
+                        eventobjs[i].material.visible = true;
+                    }
+                    else if (SceneTime + min_start_time < eventobjs[i].userData.t && eventobjs[i].material.visible === true) {
+                        eventobjs[i].material.visible = false;
+                    }
+                }
+                else if(ViewerConfig.CDCHitVis === "Off" && eventobjs[i].material.visible===true)
+                {
+                    eventobjs[i].material.visible=false;
+                }
+                else if(ViewerConfig.CDCHitVis === "Static" && eventobjs[i].material.visible === false)
+                {
+                    eventobjs[i].material.visible = true;
+                }
+            }
+        }
+    }
+
     function animateFDCPseudos(clock,time_scale,eventobjs,min_start_time)
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
@@ -1107,6 +1152,7 @@
                 }
             }
 
+
             if(ViewerConfig.FDCHitVis !== "Off" && ViewerConfig.FDCHitVis !=="Static" ) {
                 if (eventobjs[i].name.split('_')[0] === "FDCHit") {
 
@@ -1170,6 +1216,25 @@
                 }
             }
         }
+        if(ViewerConfig.CDCHitVis !== "Off" && ViewerConfig.CDCHitVis !=="Static" ) {
+
+            var eventobjs = scene.getObjectByName("CDC").children[0].children;
+            var time=9999999999;
+            for (var i = 0; i < eventobjs.length; i++) {
+
+                if(eventobjs[i].userData.t) {
+
+                    if (eventobjs[i].userData.t < min_start_time) {
+                        min_start_time = eventobjs[i].userData.t;
+                    }
+                    if (eventobjs[i].userData.t > max_total_time) {
+                        max_total_time = eventobjs[i].userData.t;
+                    }
+                }
+
+            }
+        }
+
         if(min_start_time<ViewerConfig.min_clock_time)
         {
             min_start_time=ViewerConfig.min_clock_time;
@@ -1220,6 +1285,7 @@
             animateTrackLines(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
             animateBCALPoints(clock,time_scale,eventobjs,min_start_time);
             animateBCALShowers(clock,time_scale,eventobjs,min_start_time,max_total_time);
+            animateCDCHits(clock,time_scale,eventobjs,min_start_time );
             animateFDCHits(clock,time_scale,min_start_time,eventobjs,max_swim_steps,max_swim_time,max_total_time);
             animateFDCPseudos(clock,time_scale,eventobjs,min_start_time);
             animateTOFHits(clock,time_scale,min_start_time,max_total_time);
