@@ -138,7 +138,9 @@ THREE.GluexHDDSLoader.prototype = {
 
         //sector geometry
         var data=xmlSection.querySelector('pgon[name="STRC"]').children;
-        var SectorGeometry = createPolyPlaneGeometry2(data);
+        var SectorGeometry = createPolyPlaneGeometry2(data,data.length,-6*Math.PI/180.,12*Math.PI/180.)
+        SectorGeometry.rotateX(-1*Math.PI/2.);
+        SectorGeometry.rotateY(Math.PI)
 
         var SC = new THREE.Group();
         SC.name = "SC";
@@ -159,13 +161,13 @@ THREE.GluexHDDSLoader.prototype = {
         var XmlComposition = scXmlSection.querySelector('composition[envelope="'+regionShortName+'"]');
 
         var region = new THREE.Mesh(
-            this.tubeGeometry(0,.001,154.75,0,2*Math.PI),
+            this.tubeGeometry(0,.001,1,0,2*Math.PI),
             new THREE.MeshLambertMaterial({ visible:false ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide })
         );
         region.name='SC_sectors';
 
-       //make/place the sectors
-        var sectors = XmlComposition.querySelector('composition[volume="STRC"]');
+        //make/place the sectors
+        var sectors = XmlComposition.querySelector('mposPhi[volume="STRC"]');
 
         var ncopy = parseInt(sectors.getAttribute('ncopy'));
 
@@ -173,26 +175,29 @@ THREE.GluexHDDSLoader.prototype = {
         var dPhi = (360. / ncopy) * (Math.PI / 180.);
 
         //Z ROTATION equal to Phi too
-
         for(var i=0;i<ncopy;i++) {
             var material = new THREE.MeshBasicMaterial({
                 transparent: true,
-                opacity: 0.8,
-                color: 0x3dc67d,
+                opacity: 0.6,
+                color: 0xffffff,
                 side: THREE.DoubleSide,
-                visible: false
+                visible: true
             });
 
 
             var sector = new THREE.Mesh(SectorGeometry.clone(), material);
 
             sector.name = "SCsector_" + (i+1).toString();
-            sector.position.set(R * Math.cos(Math.PI / 2. - (Phi0 + (i) * dPhi)), R * Math.sin(Math.PI / 2. - (Phi0 + (i) * dPhi)), 0.0);
             sector.rotateZ((Phi0 + (i) * dPhi));
+            sector.position.set(0 * Math.cos(Math.PI / 2. - (Phi0 + (i) * dPhi)), 0 * Math.sin(Math.PI / 2. - (Phi0 + (i) * dPhi)), 0.0);
+
+
+
+            region.add(sector);
         }
 
         var selector = `posXYZ[volume="startCntr"]`;
-        var xmlPlacement = cdcXmlSection.querySelector(selector);
+        var xmlPlacement = scXmlSection.querySelector(selector);
         var regionPlacement = extractPlacement(xmlPlacement);
         this.setMeshPlacement(region, regionPlacement);
         return region;
