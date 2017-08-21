@@ -517,8 +517,20 @@ THREE.GluexEventLoader.prototype = {
             });
         }
 
+        var eventobjs = scene.getObjectByName("CDC").children[0].children;//reset all CDC wires
+        if(eventobjs) {
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "CDCstraw") {
+                    eventobjs[i].material.visible = false;
+                    eventobjs[i].userData = {};
+
+                }
+            }
+        }
         if(this.EventData.CDC_hits) {
             this.EventData.CDC_hits.forEach(function (cdchit) {
+
+
 
                 var vis = false;
                 if (scope.Configuration.CDCHitVis === "Static") {
@@ -529,10 +541,10 @@ THREE.GluexEventLoader.prototype = {
 
                 var strawMesh = scope.geometry.getObjectByName(name);
 
-                strawMesh.material.visible=vis
+                strawMesh.material.visible=vis;
 
                 strawMesh.userData = {
-                    "t": cdchit.t,
+                    "t": cdchit.t
                 };
 
 
