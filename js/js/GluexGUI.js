@@ -25,6 +25,9 @@ var HDVisConfig = function() {
     this.TOFHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFHitVis= 'Dynamic';
 
+    this.SCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.SCHitVis= 'Dynamic';
+
     this.CDCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.CDCHitVis= 'Dynamic';
 
@@ -95,6 +98,8 @@ function makeGUI(scene){
     gui.add(config, 'min_clock_time', -1500, 0).name("Min. Clock (RF)").onChange(function(value) { this.min_clock_time=value;config.TimingsNeedsUpdate=true;});
     gui.add(config, 'max_clock_time', 0,1500).name("Max. Clock (RF)").onChange(function(value) { this.max_clock_time=value;config.TimingsNeedsUpdate=true;});
 
+    var scGuiFolder=gui.addFolder('SC');
+
     var cdcGuiFolder=gui.addFolder('CDC');
 
     var bcalGuiFolder = gui.addFolder('BCAL');
@@ -104,6 +109,21 @@ function makeGUI(scene){
     var tofGuiFolder = gui.addFolder('TOF');
 
     var fcalGuiFolder= gui.addFolder('FCAL');
+
+
+    scGuiFolder.add( config, 'SCHitVis', config.SCHit_Options )
+        .name('SC Hits').onFinishChange(function(value) { this.SCHitVis=value;
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("SC").children[0].children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "SCsector") {
+                    eventobjs[i].material.color.setRGB(1.,1.,1.);
+                }
+            }
+        }
+
+        config.TimingsNeedsUpdate=true;
+    });
 
     cdcGuiFolder.add( config, 'CDCHitVis', config.CDCHit_Options )
         .name('CDC Hits').onFinishChange(function(value) { this.CDCHitVis=value;

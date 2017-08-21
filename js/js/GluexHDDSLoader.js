@@ -109,6 +109,7 @@ THREE.GluexHDDSLoader.prototype = {
         this.group.add(this.processCDC());
         this.group.add(this.processFDC());
         this.group.add(this.processFCAL());
+        this.group.add(this.processSC());
 
         var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 43.0);//was 45
         var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .1, side: THREE.DoubleSide }));
@@ -130,6 +131,71 @@ THREE.GluexHDDSLoader.prototype = {
         this.setMeshPlacement(bcal, globalPlacement);
 
         return bcal;
+    },
+
+    processSC: function() {
+        var xmlSection = this.xmlSections['StartCntr'];
+
+        //sector geometry
+        var data=xmlSection.querySelector('pgon[name="STRC"]').children;
+        var SectorGeometry = createPolyPlaneGeometry2(data);
+
+        var SC = new THREE.Group();
+        SC.name = "SC";
+        var sectors = this.buildSCSectors(xmlSection, 'STRT', 0, SectorGeometry);
+        SC.add(sectors);
+
+
+        var xmlGlobalPlacement = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="StartCntr"]');
+        var globalPlacement = extractPlacement(xmlGlobalPlacement);
+        var xmlLocalPlacement = xmlSection.querySelector('composition[name="StartCntr"] > posXYZ[volume="startCntr"]');
+        var localPlacement = extractPlacement(xmlLocalPlacement);
+        this.setMeshPlacement(SC, this.sumPlacements(localPlacement, globalPlacement));
+
+        return SC;
+    },
+    buildSCSectors: function (scXmlSection, regionShortName, startIndex, SectorGeometry) {
+
+        var XmlComposition = scXmlSection.querySelector('composition[envelope="'+regionShortName+'"]');
+
+        var region = new THREE.Mesh(
+            this.tubeGeometry(0,.001,154.75,0,2*Math.PI),
+            new THREE.MeshLambertMaterial({ visible:false ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide })
+        );
+        region.name='SC_sectors';
+
+       //make/place the sectors
+        var sectors = XmlComposition.querySelector('composition[volume="STRC"]');
+
+        var ncopy = parseInt(sectors.getAttribute('ncopy'));
+
+        var Phi0 = parseFloat(sectors.getAttribute('Phi0'));
+        var dPhi = (360. / ncopy) * (Math.PI / 180.);
+
+        //Z ROTATION equal to Phi too
+
+        for(var i=0;i<ncopy;i++) {
+            var material = new THREE.MeshBasicMaterial({
+                transparent: true,
+                opacity: 0.8,
+                color: 0x3dc67d,
+                side: THREE.DoubleSide,
+                visible: false
+            });
+
+
+            var sector = new THREE.Mesh(SectorGeometry.clone(), material);
+
+            sector.name = "SCsector_" + (i+1).toString();
+            sector.position.set(R * Math.cos(Math.PI / 2. - (Phi0 + (i) * dPhi)), R * Math.sin(Math.PI / 2. - (Phi0 + (i) * dPhi)), 0.0);
+            sector.rotateZ((Phi0 + (i) * dPhi));
+        }
+
+        var selector = `posXYZ[volume="startCntr"]`;
+        var xmlPlacement = cdcXmlSection.querySelector(selector);
+        var regionPlacement = extractPlacement(xmlPlacement);
+        this.setMeshPlacement(region, regionPlacement);
+        return region;
     },
 
     processCDC: function() {

@@ -42,7 +42,35 @@ THREE.GluexEventLoader.prototype = {
         var eventNum=this.EventData.event_number;
         var scope = this;
         scene.name="Hall";
-        // Iterate charged_tracks
+
+
+
+        var eventobjssc = scene.getObjectByName("SC").children[0].children;//reset all CDC wires
+        if(eventobjssc) {
+            for (var i = 0; i < eventobjssc.length; i++) {
+                if (eventobjssc[i].name.split('_')[0] === "SCsector") {
+                    eventobjssc[i].material.color.setRGB(255./255., /*141.*/255./255., /*66.*/255./255.);
+                    eventobjssc[i].userData = {};
+
+                }
+            }
+        }
+        if(this.EventData.SC_hits) {
+            this.EventData.SC_hits.forEach(function (schit) {
+
+                var name="SCsector_"+schit.sector;
+
+                var sectorMesh = scope.geometry.getObjectByName(name);
+
+                sectorMesh.material.color.setRGB(255./255., /*141.*/255./255., /*66.*/255./255.);
+
+                sectorMesh.userData = {
+                    "t": schit.t
+                };
+
+
+            });
+        }
 
         if(this.EventData.charged_tracks) {
             this.EventData.charged_tracks.forEach(function (track) {
