@@ -161,7 +161,7 @@ THREE.GluexHDDSLoader.prototype = {
         var XmlComposition = scXmlSection.querySelector('composition[envelope="'+regionShortName+'"]');
 
         var region = new THREE.Mesh(
-            this.tubeGeometry(0,.001,1,0,2*Math.PI),
+            this.tubeGeometry(0,.001,1,0,2*Math.PI,false),
             new THREE.MeshLambertMaterial({ visible:false ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide })
         );
         region.name='SC_sectors';
@@ -209,9 +209,9 @@ THREE.GluexHDDSLoader.prototype = {
         //var CDCMotherGeom = this.tubeGeometry(11,60,154.75,0,2*Math.PI);
         // var cdc = new THREE.Mesh(CDCMotherGeom, new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide }));
 
-        var ShortWireGeometry =this.tubeGeometry(0,.075,154.5,0,2*Math.PI);
+        var ShortWireGeometry =this.tubeGeometry(0,.075,154.5,0,2*Math.PI,true);
 
-        var LongWireGeometry =this.tubeGeometry(0,.075,155.5,0,2*Math.PI);
+        var LongWireGeometry =this.tubeGeometry(0,.075,155.5,0,2*Math.PI,true);
 
         var CDC = new THREE.Group();
         CDC.name = "CDC";
@@ -238,7 +238,7 @@ THREE.GluexHDDSLoader.prototype = {
         var arrayofComponents=XmlComposition.children;
 
         var region = new THREE.Mesh(
-            this.tubeGeometry(11,60,154.75,0,2*Math.PI),
+            this.tubeGeometry(11,60,154.75,0,2*Math.PI,true),
             new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide })
         );
         region.name='CDC_Layers';
@@ -384,7 +384,7 @@ THREE.GluexHDDSLoader.prototype = {
         var y0 = parseFloat(yXmlMultPosY.getAttribute('Y0'));
         var dy = parseFloat(yXmlMultPosY.getAttribute('dY'));
 
-        var xName = 'LGDfullRow'
+        var xName = 'LGDfullRow';
         if (regionFullName === 'LGDnorth') {
             xName = 'LGDhalfRowNorth'
         }
@@ -402,7 +402,7 @@ THREE.GluexHDDSLoader.prototype = {
 
         // Region bounding box
         var region = new THREE.Mesh(
-            this.boxFromXml(fcalXmlSection, regionShortName),
+            this.boxFromXml(fcalXmlSection, regionShortName,true),
             new THREE.MeshLambertMaterial({visible:false}));
         region.name='FCAL_'+ regionShortName ;
 
@@ -536,7 +536,7 @@ THREE.GluexHDDSLoader.prototype = {
         return region;
     },
 
-    tubeGeometry: function(rmin, rmax, z, startphi, deltaphi)
+    tubeGeometry: function(rmin, rmax, z, startphi, deltaphi, isBuffered)
     {
         var shape = new THREE.Shape();
         // x,y, radius, startAngle, endAngle, clockwise, rotation
@@ -557,7 +557,13 @@ THREE.GluexHDDSLoader.prototype = {
 
         var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         geometry.center();
-        return geometry;
+        if(isBuffered) {
+            return new THREE.BufferGeometry().fromGeometry(geometry);
+        }
+        else
+        {
+            return geometry
+        }
     },
 
     boxFromXml:function(xmlElement, boxName, isBuffered){
