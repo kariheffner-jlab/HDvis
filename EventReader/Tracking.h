@@ -54,7 +54,11 @@ public:
             auto position = ChargedTracks[i]->Get_BestTrackingFOM()->position();
             auto momentum = ChargedTracks[i]->Get_BestTrackingFOM()->momentum();
             auto charge = ChargedTracks[i]->Get_BestTrackingFOM()->charge();
-            auto start_time = ChargedTracks[i]->Get_BestTrackingFOM()->t0();
+            auto start_time=-1E9;
+            if(!isnan(float(ChargedTracks[i]->Get_BestTrackingFOM()->t0())))
+            {
+                start_time = ChargedTracks[i]->Get_BestTrackingFOM()->t0();
+            }
 
             double TrackChiSq_NDF=ChargedTracks[i]->Get_Hypothesis(PID)->dChiSq_Track/double(ChargedTracks[i]->Get_Hypothesis(PID)->dNDF_Track);
 
@@ -81,6 +85,7 @@ public:
             }
 
            // event_out<<WriteTrackJSON2(name, momentum,charge,TrackChiSq_NDF, track_points);
+           // std::cout<<name<<" , "<< momentum.Mag()<<" , "<<charge<<" , "<<TrackChiSq_NDF<<" , "<<start_time<<" , "<< track_points.size()<<" , "<< track_point_times.size()<<std::endl;
             jsonTracks.emplace_back(WriteTrackJSON(name, momentum,charge,TrackChiSq_NDF,start_time, track_points, track_point_times));
             track_points.clear();
             track_point_times.clear();
@@ -110,8 +115,14 @@ public:
 
             rt->SetMass(NeutralTracks[i]->Get_BestFOM()->mass());
             //rt.SetMass(TrackCandidates[i]->mass());
-            auto start_time = NeutralTracks[i]->Get_BestFOM()->t0();
+
             auto momentum=NeutralTracks[i]->Get_BestFOM()->momentum();
+            auto start_time=-1E9;
+            if(!isnan(float(NeutralTracks[i]->Get_BestFOM()->t0())))
+            {
+                start_time = NeutralTracks[i]->Get_BestFOM()->t0();
+            }
+
             rt->Swim(NeutralTracks[i]->Get_BestFOM()->position(), momentum, NeutralTracks[i]->Get_BestFOM()->charge());
             //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
             DReferenceTrajectory::swim_step_t* steps =rt->swim_steps;
@@ -134,6 +145,7 @@ public:
             }
             //event_out<<tao::json::to_string(WriteTrackJSON2(name,momentum, 0,-1, track_points), 4);
 
+            //std::cout<<name<<" , "<< momentum.Mag()<<" , "<<0<<" , "<<-1<<" , "<<start_time<<" , "<< track_points.size()<<" , "<< track_point_times.size()<<std::endl;
             jsonTracks.emplace_back(WriteTrackJSON(name,momentum, 0,-1, start_time,track_points,track_point_times));
             track_points.clear();
             track_point_times.clear();
@@ -152,7 +164,10 @@ public:
                         {"TrackChiSq_NDF", TrackChiSq_NDF},
                         {"momentum", momentum.Mag()},
                         {"mass", momentum.Mag()},
-                        {"start_time", start_time}
+                        {"start_time", start_time},
+                        {"px",momentum.X()},
+                        {"py",momentum.Y()},
+                        {"pz",momentum.Z()}
 
                 });
 
@@ -163,6 +178,7 @@ public:
 
         for (int j = 0; j<track_points.size(); j++) {
             vals.push_back(track_points[j].X());
+            //std::cout<<track_points[j].X()<<" , "<< track_points[j].Y()<<" , "<<track_points[j].Z()<<" , "<<track_point_times[j]<<std::endl;
             jsonArray.emplace_back(tao::json::value::array({track_points[j].X() , track_points[j].Y() , track_points[j].Z(), track_point_times[j]}));
 
         }

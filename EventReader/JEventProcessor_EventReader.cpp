@@ -38,6 +38,7 @@ JEventProcessor_EventReader::JEventProcessor_EventReader(hdvis::ApplicationConte
     _context(context)
 {
 }
+
 //------------------
 // ~JEventProcessor_EventReader (Destructor)
 //------------------
@@ -211,12 +212,12 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         loop->Get(FDCPseudos);
         loop->Get(SCHits);
 
-
         try {
             //Setup the tracking to display tracking info
             Tracking Tracks(Bfield,Geom);
 
             //Will take the Charged Tracks given and visualize them
+
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
             auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
 
@@ -225,25 +226,30 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto scdHitsJson = StartC::Add_SCHits(SCHits);
 
             //TOF
+
             auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
             auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
 
+
             // FCAL;
+
             auto fcalHitsJson = FCAL::Add_FCALHits(FCALHits);
             auto fcalShowersJson = FCAL::Add_FCALShowers(FCALShowers);
 
+
             // BCAL
+
             auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
             auto bcalPointsJson = BCAL::Add_BCALPoints(BCALPoints);
             auto bcalShowersJson = BCAL::Add_BCALShowers(BCALShowers);
+
 
             // CDC
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
 
             // FDC
-            auto fdcHitsJson = FDC::Add_FDCHits(FDCHits,FDCwires,FDCcathodes);
-            auto fdcPseudosJson = FDC::Add_FDCPseudos(FDCPseudos);
-
+           auto fdcHitsJson = FDC::Add_FDCHits(FDCHits,FDCwires,FDCcathodes);
+           auto fdcPseudosJson = FDC::Add_FDCPseudos(FDCPseudos);
 
             tao::json::value eventJson ({
                                             { "charged_tracks", chargedTracksJson },
@@ -262,8 +268,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             {"event_number",eventnumber}
                                         });
 
+
             std::ofstream eventFile;
-            eventFile.open("www/event.json");
+            eventFile.open("www/event.json", std::ofstream::trunc);
 
             std::cout<<"opened/created event json "<<endl;
             eventFile<< tao::json::to_string(eventJson, 4);
@@ -275,9 +282,9 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         }
         catch (std::exception& ex)
         {
-            std::cout<<"caught exception"<<endl;
-            std::cout<< ex.what() << std::endl;
-        }
+           std::cout<<"caught exception"<<endl;
+           std::cout<< ex.what() << std::endl;
+       }
     }   // <- unlock EventMutex
 
     _context.SetCurrentEventNumber(eventnumber);

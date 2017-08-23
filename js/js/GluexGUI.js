@@ -25,8 +25,17 @@ var HDVisConfig = function() {
     this.TOFHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFHitVis= 'Dynamic';
 
+    this.SCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.SCHitVis= 'Dynamic';
+
+    this.CDCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.CDCHitVis= 'Dynamic';
+
     this.FDCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.FDCHitVis= 'Dynamic';
+
+    this.FDCHitType_Options ={"Both": 'Both',"Cathodes": 'Cathodes', "Anodes": 'Anodes'};
+    this.FDCHitTypeVis= 'Anodes';
 
     this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
@@ -86,10 +95,12 @@ function makeGUI(scene){
     //gui.add(config, 'SceneTimeMessage').name("Event Time (ns)").listen();
 
     gui.add(config, 'time_scale', .1, 20).name("Time Scale (ns/s)").onChange(function(value) { this.time_scale=value;});
-    gui.add(config, 'min_clock_time', -1000, 0).name("Min. Clock (RF)").onChange(function(value) { this.min_clock_time=value;config.TimingsNeedsUpdate=true;});
-    gui.add(config, 'max_clock_time', 0,1000).name("Max. Clock (RF)").onChange(function(value) { this.max_clock_time=value;config.TimingsNeedsUpdate=true;});
+    gui.add(config, 'min_clock_time', -1500, 0).name("Min. Clock (RF)").onChange(function(value) { this.min_clock_time=value;config.TimingsNeedsUpdate=true;});
+    gui.add(config, 'max_clock_time', 0,1500).name("Max. Clock (RF)").onChange(function(value) { this.max_clock_time=value;config.TimingsNeedsUpdate=true;});
 
-    gui.addFolder('CDC');
+    var scGuiFolder=gui.addFolder('SC');
+
+    var cdcGuiFolder=gui.addFolder('CDC');
 
     var bcalGuiFolder = gui.addFolder('BCAL');
 
@@ -100,8 +111,81 @@ function makeGUI(scene){
     var fcalGuiFolder= gui.addFolder('FCAL');
 
 
+    scGuiFolder.add( config, 'SCHitVis', config.SCHit_Options )
+        .name('SC Hits').onFinishChange(function(value) { this.SCHitVis=value;
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("SC").children[0].children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "SCsector") {
+                    eventobjs[i].material.color.setRGB(1.,1.,1.);
+                }
+            }
+        }
+
+        config.TimingsNeedsUpdate=true;
+    });
+
+    cdcGuiFolder.add( config, 'CDCHitVis', config.CDCHit_Options )
+        .name('CDC Hits').onFinishChange(function(value) { this.CDCHitVis=value;
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("CDC").children[0].children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "CDCstraw") {
+                    eventobjs[i].material.visible = 0;
+                }
+            }
+        }
+
+        config.TimingsNeedsUpdate=true;
+    });
+
+    fdcGuiFolder.add( config, 'FDCHitTypeVis', config.FDCHitType_Options )
+        .name('FDC Hits to Show').onFinishChange(function(value) { this.FDCHitTypeVis=value;
+        if(value==="Cathodes") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit") {
+                    if(eventobjs[i].userData.type===0) {
+                        eventobjs[i].material.visible = 0;
+                    }
+                    else
+                    {
+                        if( config.FDCHitVis !=="Off")
+                            eventobjs[i].material.visible = 1;
+                    }
+                }
+            }
+        }
+        else if(value==="Anodes") {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit") {
+                    if(eventobjs[i].userData.type!==0) {
+                        eventobjs[i].material.visible = 0;
+                    }
+                    else
+                    {
+                        if( config.FDCHitVis !=="Off")
+                            eventobjs[i].material.visible = 1;
+                    }
+                }
+            }
+        }
+        else
+        {
+            var eventobjs = scene.getObjectByName("GluexEvent").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "FDCHit" && eventobjs[i].material.visible===0 && config.FDCHitVis !=="Off") {
+                    eventobjs[i].material.visible = 1;
+                }
+            }
+
+        }
+        config.TimingsNeedsUpdate=true;
+    });
+
     fdcGuiFolder.add( config, 'FDCHitVis', config.FDCHit_Options )
-        .name('FDC Hits').onFinishChange(function(value) {
+        .name('FDC Hits').onFinishChange(function(value) { this.FDCHitVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -122,8 +206,9 @@ function makeGUI(scene){
         }
         config.TimingsNeedsUpdate=true;
     });
+
     fdcGuiFolder.add( config, 'FDCPseudoVis', config.FDCPseudo_Options )
-        .name('FDC Pseudos').onFinishChange(function(value) {
+        .name('FDC Pseudos').onFinishChange(function(value) { this.FDCPseudoVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -189,6 +274,7 @@ function makeGUI(scene){
 
     fcalGuiFolder.add( config, 'FCALHitVis', config.FCALHit_Options )
         .name('FCAL Hits').onFinishChange(function(value) {
+        this.FCALHitVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -211,6 +297,7 @@ function makeGUI(scene){
     });
     fcalGuiFolder.add( config, 'FCALShowerVis', config.FCALShower_Options )
         .name('FCAL Showers').onFinishChange(function(value) {
+        this.FCALShowerVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -269,6 +356,7 @@ function makeGUI(scene){
 
     tofGuiFolder.add( config, 'TOFHitVis', config.TOFHit_Options )
         .name('TOF Hits').onFinishChange(function(value) {
+        this.TOFHitVis=value;
         if(value==="Off") {
             var geoobjs = scene.getObjectByName("FTOF",true);
 
@@ -297,7 +385,7 @@ function makeGUI(scene){
 
     tofGuiFolder.add( config, 'TOFPointVis', config.TOFPoint_Options )
         .name('TOF Points').onFinishChange(function(value) {
-            config.TOFPointVis=value;
+        config.TOFPointVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -337,7 +425,7 @@ function makeGUI(scene){
 
     bcalGuiFolder.add( config, 'BCALPointVis', config.BCALPoint_Options )
         .name('BCAL Points').onFinishChange(function(value) {
-            config.BCALPointVis=value;
+        config.BCALPointVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -361,6 +449,7 @@ function makeGUI(scene){
 
     bcalGuiFolder.add( config, 'BCALShowerVis', config.BCALShower_Options )
         .name('BCAL Showers').onFinishChange(function(value) {
+        this.BCALShowerVis=value;
         if(value==="Off") {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
             for (var i = 0; i < eventobjs.length; i++) {
@@ -391,7 +480,12 @@ function makeGUI(scene){
     positiveTrackgui.add(config, 'positive_track_swim', config.positive_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,1,value,config);
+            var value_conv="Off";
+            if(value==true)
+            {
+                value_conv="On";
+            }
+            gui_TrackVis(eventobjs,1,value_conv,config);
 
         });
 
@@ -405,7 +499,12 @@ function makeGUI(scene){
     negativeTrackgui.add(config, 'negative_track_swim', config.negative_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,-1,value,config);
+            var value_conv="Off";
+            if(value==true)
+            {
+                value_conv="On";
+            }
+            gui_TrackVis(eventobjs,-1,value_conv,config);
 
         });
 
@@ -419,7 +518,12 @@ function makeGUI(scene){
     neutralTrackgui.add(config, 'neutral_track_swim', config.neutral_track_swim).name('Show Swim Points')
         .onFinishChange(function(value) {
             var eventobjs = scene.getObjectByName("GluexEvent").children;
-            gui_TrackVis(eventobjs,0,value,config);
+            var value_conv="Off";
+            if(value==true)
+            {
+                value_conv="On";
+            }
+            gui_TrackVis(eventobjs,0,value_conv,config);
         });
 
     neutralTrackgui.add( config, 'neutral_track_line', config.neutral_track_lineOptions )
@@ -444,14 +548,14 @@ function makeGUI(scene){
                     }
                     else
                     {
-                        if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0)) {
+                        if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_track_swim===true && eventobjs[i].userData.charge===0)) {
                             eventobjs[i].material.visible = true;
                             eventobjs[i].children[0].material.visible=true;
                         }
                     }
                 }
                 else {
-                    if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_tracks===true && eventobjs[i].userData.charge===0))
+                    if((config.positive_track_swim===true && eventobjs[i].userData.charge===1) || (config.negative_track_swim===true && eventobjs[i].userData.charge===-1) || (config.neutral_track_swim===true && eventobjs[i].userData.charge===0))
                     {
                         eventobjs[i].material.visible = true;
                         eventobjs[i].children[0].material.visible=true;
@@ -486,16 +590,22 @@ function makeGUI(scene){
 
 function gui_TrackVis(eventobjs,Trackq,isVis,config) {
 
+    var vis=false;
+    if(isVis !== "Off")
+    {
+        vis=true;
+    }
+
     for(var i=0;i<eventobjs.length;i++)
     {
 
         if(eventobjs[i].name.split('_')[0]==="track" && eventobjs[i].userData.charge===Trackq )
         {
-            eventobjs[i].material.visible=isVis;
+            eventobjs[i].material.visible=vis;
         }
         if(eventobjs[i].userData.TrackChiSq_NDF >= config.TrackingChiSq_NDF_cut && config.TrackingChiSq_NDF_cut !==0 && Trackq!==0)
         {
-            eventobjs[i].material.visible=0;
+            eventobjs[i].material.visible=false;
         }
     }
 }
