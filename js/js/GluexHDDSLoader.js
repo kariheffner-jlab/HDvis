@@ -294,8 +294,8 @@ THREE.GluexHDDSLoader.prototype = {
         //var CDCMotherGeom = this.tubeGeometry(11,60,154.75,0,2*Math.PI);
         // var cdc = new THREE.Mesh(CDCMotherGeom, new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide }));
 
-        var shortWireGeometry =this.tubeGeometry(0,.075,154.5,0,2*Math.PI,true);
-        var longWireGeometry =this.tubeGeometry(0,.075,155.5,0,2*Math.PI,true);
+        var shortWireGeometry =this.tubeGeometry(0,.25,154.5,0,2*Math.PI,true);
+        var longWireGeometry =this.tubeGeometry(0,.25,155.5,0,2*Math.PI,true);
         var cdc = this.buildCDCStraws(xmlSection, 'DCLS', 0, shortWireGeometry, longWireGeometry);
         cdc.renderOrder = 50;
 
