@@ -618,7 +618,7 @@ THREE.GluexHDDSLoader.prototype = {
         // Go through repetitions and create modules
         for(var i=0; i< ncopy; i++){
 
-            var module = new THREE.Mesh(moduleBox, material);
+            var module = new THREE.Mesh(moduleBox, material.clone());
 
             module.name = "TOFBar_p" + planeNum + "_m" + (startIndex+i);
             if(isRight) module.name += "_r";
