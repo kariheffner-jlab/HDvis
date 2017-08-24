@@ -545,7 +545,7 @@ THREE.GluexEventLoader.prototype = {
             });
         }
 
-        var eventobjs = scene.getObjectByName("CDC").children[0].children;//reset all CDC wires
+        var eventobjs = scene.getObjectByName("CDC").children;//reset all CDC wires
         if(eventobjs) {
             for (var i = 0; i < eventobjs.length; i++) {
                 if (eventobjs[i].name.split('_')[0] === "CDCstraw") {
@@ -569,7 +569,7 @@ THREE.GluexEventLoader.prototype = {
 
                 var name="CDCstraw_"+cdchit.ring+"_"+cdchit.straw;
 
-                var strawMesh = scope.geometry.getObjectByName(name);
+                var strawMesh = scene.getObjectByName(name,true);
 
                 strawMesh.material.visible=vis;
 

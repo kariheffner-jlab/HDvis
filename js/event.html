@@ -815,7 +815,7 @@
             SceneTime=max_total_time-min_start_time;
         }
 
-        var eventobjs = scene.getObjectByName("CDC").children[0].children;
+        var eventobjs = scene.getObjectByName("CDC").children;
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].userData.t) {
