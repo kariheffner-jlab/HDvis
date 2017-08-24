@@ -261,8 +261,11 @@ THREE.GluexHDDSLoader.prototype = {
         var Phi0 = parseFloat(sectors.getAttribute('Phi0'));
         var dPhi = (360. / ncopy) * (Math.PI / 180.);
 
+
+
         //Z ROTATION equal to Phi too
         for(var i=0;i<ncopy;i++) {
+
             var material = new THREE.MeshBasicMaterial({
                 transparent: true,
                 opacity: 0.6,
@@ -270,9 +273,7 @@ THREE.GluexHDDSLoader.prototype = {
                 side: THREE.DoubleSide,
                 visible: true
             });
-
-
-            var sector = new THREE.Mesh(SectorGeometry.clone(), material);
+            var sector = new THREE.Mesh(SectorGeometry, material);
 
             sector.name = "SCsector_" + (i+1).toString();
             sector.rotateZ((Phi0 + (i) * dPhi));
@@ -334,6 +335,9 @@ THREE.GluexHDDSLoader.prototype = {
 
             var ring = i - 2;
 
+
+
+
             for (var j = 1.0; j <= ncopy; j++)
             {
                 if(regionFullName==="CDCstrawShort")
@@ -348,7 +352,7 @@ THREE.GluexHDDSLoader.prototype = {
                     });
 
 
-                    var module = new THREE.Mesh(ShortWireGeometry.clone(), material);
+                    var module = new THREE.Mesh(ShortWireGeometry, material);
 
                     module.name="CDCstraw_"+ring.toString()+"_"+j.toString();
                     module.position.set(R*Math.cos(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), R*Math.sin(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), 0.0);
@@ -368,7 +372,7 @@ THREE.GluexHDDSLoader.prototype = {
                     });
                     var rotX = parseFloat(arrayofComponents[i].getAttribute('rot').split(" ")[0]);
 
-                    var moduleL = new THREE.Mesh(LongWireGeometry.clone(), materialL);
+                    var moduleL = new THREE.Mesh(LongWireGeometry, materialL);
 
                     moduleL.name="CDCstraw_"+ring.toString()+"_"+j.toString();
                     moduleL.position.set(R*Math.cos(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), R*Math.sin(Math.PI/2.-(Phi0+(j-1.0)*dPhi)), 0.0);
@@ -506,7 +510,7 @@ THREE.GluexHDDSLoader.prototype = {
                 if( (regionPlacement['position']['x']+ x0 + xIndex*dx)**2+ (regionPlacement['position']['y']+y0 + yIndex*dy)**2 >= 120*120 )
                     continue;
 
-                var module = new THREE.Mesh(moduleBoxGeometry.clone(), material.clone());
+                var module = new THREE.Mesh(moduleBoxGeometry, material);
 
 
                 //module.name = "FCAL_" + name + '_' + (startIndex + yIndex) + "_" +xIndex;
@@ -609,10 +613,12 @@ THREE.GluexHDDSLoader.prototype = {
         // Modules should NOT be of buffered geometry, because they get colored by faces
         var moduleBox = this.boxFromXml(tofXmlSection, volumeName, false);
 
+
+        var material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, vertexColors: THREE.VertexColors });
         // Go through repetitions and create modules
         for(var i=0; i< ncopy; i++){
-            var material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, vertexColors: THREE.VertexColors });
-            var module = new THREE.Mesh(moduleBox.clone(), material);
+
+            var module = new THREE.Mesh(moduleBox, material);
 
             module.name = "TOFBar_p" + planeNum + "_m" + (startIndex+i);
             if(isRight) module.name += "_r";
