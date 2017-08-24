@@ -85,6 +85,8 @@ THREE.GluexHDDSLoader.prototype = {
     refs: {},
     meshes: [],
     xmlSections: {},
+    bcalLayerRioPhi: [],
+    bcalDeltaAngle : 2*Math.PI/(48*4),
 
     load: function (url, onLoad, onProgress, onError) {
         this.group.name="GluexGeometry";
@@ -128,44 +130,81 @@ THREE.GluexHDDSLoader.prototype = {
     processBCAL: function() {
         var xmlSection = this.xmlSections['BarrelEMcal'];
 
+        // BCAL mother volume
         var bcalGeo = this.tubeGeometry(64.2485, 90.5185, 390.0);
         var bcalMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc, transparent: true, opacity: .2, side: THREE.DoubleSide })
-        bcalMaterial.visible = false;
         var bcal = new THREE.Mesh(bcalGeo, bcalMaterial);
-        bcal.name = "BCAL";
+        bcal.name = "BCAL"
         bcal.renderOrder = 100;     // should be higher than FDC and CDC mother volumes render Order
 
+        let bcalDetails = new THREE.Group();
+        bcalDetails.name = "BCAL_details"
         const sectorKeys = ["BM01", "BM02", "BM04", "BMF7", "BMFA"];
         const sectorColors = [0xddd1be, 0xe1ddb5, 0xDED29E, 0xB3A580]
-        let sectorDimensions = [];
+        let BCALLayerDimentions = [];
         for (let sectionName of sectorKeys) {
-            sectorDimensions.push(extractRioZ(xmlSection.querySelector(`tubs[name="${sectionName}"]`), "Rio_Z"))
+            BCALLayerDimentions.push(extractRioZ(xmlSection.querySelector(`tubs[name="${sectionName}"]`), "Rio_Z"))
         }
 
-        const deltaAngle = 2*Math.PI/(48*4);
 
+        let bcalDeltaAngle = this.bcalDeltaAngle
         for(let moduleIndex=0; moduleIndex<48; moduleIndex++) {
             // Build section geometries
             for(let sectorIndex = 0; sectorIndex<4; sectorIndex++) {
                 for(let layerIndex = 0; layerIndex<4; layerIndex++)
                 {
+                    this.bcalLayerRioPhi[layerIndex] = {
+                        inner:BCALLayerDimentions[layerIndex].inner,
+                        outer:BCALLayerDimentions[layerIndex+1].inner,
+                        phi: bcalDeltaAngle}
                     let pieceGeo = this.tubeGeometry(
-                        sectorDimensions[layerIndex].inner,          // inner radius
-                        sectorDimensions[layerIndex+1].inner,        // outer radius (take it from next element)
-                        390.0,                                       // z length
-                        (moduleIndex*4+sectorIndex)*deltaAngle,        // angle offset
-                        deltaAngle,                                  // angle
-                        true,                                        // double buffered
+                        BCALLayerDimentions[layerIndex].inner,          // inner radius
+                        BCALLayerDimentions[layerIndex+1].inner,        // outer radius (take it from next element)
+                        2.0,                                         // z length
+                        (moduleIndex*4+sectorIndex)*bcalDeltaAngle,      // angle offset
+                        bcalDeltaAngle,                                  // angle
+                        true,                                        // buffered geometry
                         false)                                       // do not center the geometry to the... center
 
                     let sectionMat = new THREE.MeshLambertMaterial(
                         { color: sectorColors[layerIndex], transparent: true, opacity: .2, side: THREE.DoubleSide })
                     let sector = new THREE.Mesh(pieceGeo, sectionMat);
                     sector.name = `BCAL_m${moduleIndex}_l${layerIndex}_s${sectorIndex}`
-                    bcal.add(sector)
+                    bcalDetails.add(sector)
                 }
             }
         }
+
+        bcal.add(bcalDetails)
+        bcalDetails.translateZ(195)
+
+        // BCAL hits example
+        let bcalHits = new THREE.Group();
+        bcalHits.name = "BCAL_hits"
+
+        let moduleIndex = 15;
+        let sectorIndex = 2;
+        let layerIndex = 1;
+
+
+        let hitGeo = this.tubeGeometry(
+            this.bcalLayerRioPhi[layerIndex].inner,        // inner radius
+            this.bcalLayerRioPhi[layerIndex].outer,      // outer radius (take it from next element)
+            20.0,                                          // z length
+            (moduleIndex*4+sectorIndex)*this.bcalDeltaAngle,   // angle offset
+            bcalDeltaAngle,                               // angle
+            true,                                         // buffered geometry
+            false)                                        // do not center the geometry to the... center
+
+        let hitMat = new THREE.MeshLambertMaterial(
+            { color: 0xFF0000, transparent: true, opacity: .2, side: THREE.DoubleSide })
+                    let hit = new THREE.Mesh(hitGeo, hitMat);
+        hit.name = `BCAL_hit_m${moduleIndex}_l${layerIndex}_s${sectorIndex}`
+        bcalHits.add(hit)
+
+        bcal.add(bcalHits)
+        bcalHits.translateZ(208)
+
 
         // BCAL placement in the global main file
         let xmlBcalGlobal = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="BarrelEMcal"]');
@@ -237,8 +276,6 @@ THREE.GluexHDDSLoader.prototype = {
             sector.name = "SCsector_" + (i+1).toString();
             sector.rotateZ((Phi0 + (i) * dPhi));
             sector.position.set(0 * Math.cos(Math.PI / 2. - (Phi0 + (i) * dPhi)), 0 * Math.sin(Math.PI / 2. - (Phi0 + (i) * dPhi)), 0.0);
-
-
 
             region.add(sector);
         }
