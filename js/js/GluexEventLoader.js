@@ -707,7 +707,7 @@ THREE.GluexEventLoader.prototype = {
                 var sector = hit.sector;
                 var time = hit.t;
 
-                var geoName = "BCAL_m" + (module-1).toString() /*+ "_l" + layer*/ + "_s" + (sector-1).toString();
+                var geoName = "BCAL_m" + (module-1).toString() + "_l" + (layer-1).toString() + "_s" + (sector-1).toString();
 
 
                 if(bcalMesh) {
