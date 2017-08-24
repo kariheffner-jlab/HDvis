@@ -412,7 +412,7 @@ THREE.GluexHDDSLoader.prototype = {
         var xmlBox = xmlSection.querySelectorAll('box[name="LGBL"]')[0];
         var params = parseXYZ(xmlBox.getAttribute('X_Y_Z'));
         var scale =.04;
-        var moduleBoxGeometry = new THREE.BoxBufferGeometry(params[0], params[1], params[2]*scale);
+        var moduleBoxGeometry = new THREE.BoxGeometry(params[0], params[1], params[2]*scale);
 
         var fcal = new THREE.Group();
         fcal.name = "FCAL";
@@ -477,15 +477,18 @@ THREE.GluexHDDSLoader.prototype = {
 
         // Region bounding box
         var region = new THREE.Mesh(
-            this.boxFromXml(fcalXmlSection, regionShortName,true),
+            this.boxFromXml(fcalXmlSection, regionShortName),
             new THREE.MeshLambertMaterial({visible:false}));
         region.name='FCAL_'+ regionShortName ;
+
+
 
         var material = new THREE.MeshBasicMaterial({
             transparent: true,
             opacity: 0.5,
             color: 0xafd5f7,
-            side: THREE.DoubleSide
+            side: THREE.DoubleSide,
+            visible: true
         });
 
         var selector = `posXYZ[volume="${regionFullName}"]`;
@@ -493,6 +496,8 @@ THREE.GluexHDDSLoader.prototype = {
         var regionPlacement = extractPlacement(xmlPlacement);
 
 
+
+        var TotalGeometry = new THREE.Geometry();
         // Go through repetitions and create rows
         for(var yIndex=0; yIndex< yCopiesCount; yIndex++){
             // Go through repetitions and create rows
@@ -501,18 +506,27 @@ THREE.GluexHDDSLoader.prototype = {
                 if( (regionPlacement['position']['x']+ x0 + xIndex*dx)**2+ (regionPlacement['position']['y']+y0 + yIndex*dy)**2 >= 120*120 )
                     continue;
 
-                var module = new THREE.Mesh(moduleBoxGeometry.clone(), material);
+                var module = new THREE.Mesh(moduleBoxGeometry.clone(), material.clone());
+
 
                 //module.name = "FCAL_" + name + '_' + (startIndex + yIndex) + "_" +xIndex;
                 module.name = `FCAL_${regionShortName}_${(startIndex + yIndex)}_${xIndex}`;
                 if(isRight) module.name += "_r";
 
                 module.position.set(x0 + xIndex*dx, y0 + yIndex*dy, (45./2)-(45.*scale/2));
-                region.add(module);
+
+                module.updateMatrix();
+                TotalGeometry.merge(module.geometry, module.matrix);
+
+                //region.add(module);
             }
         }
 
-        // get placement
+
+        var CombinedMesh = new THREE.Mesh(new THREE.BufferGeometry().fromGeometry(TotalGeometry), material);
+        CombinedMesh.name="wholeSection";
+        region.add(CombinedMesh);
+
 
         this.setMeshPlacement(region, regionPlacement);
 
