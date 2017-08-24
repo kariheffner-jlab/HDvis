@@ -14,6 +14,11 @@ extractXYZ = function(xmlElement, attributeName){
     return {x:values[0], y:values[1], z:values[2]};
 };
 
+extractRioZ = function(xmlElement, attributeName){
+    var values = parseXYZ(xmlElement.getAttribute(attributeName));
+    return {inner:values[0], outer:values[1], z:values[2]};
+};
+
 extractPlacement = function(xmlElement, posAttName, rotAttName){
     posAttName = typeof posAttName !== 'undefined' ? posAttName : 'X_Y_Z';
     rotAttName = typeof rotAttName !== 'undefined' ? rotAttName : 'rot';
@@ -110,6 +115,7 @@ THREE.GluexHDDSLoader.prototype = {
         this.group.add(this.processFDC());
         this.group.add(this.processFCAL());
         this.group.add(this.processSC());
+        this.group.add(this.processBCAL());
 
         var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 43.0);//was 45
         var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .1, side: THREE.DoubleSide }));
@@ -122,16 +128,54 @@ THREE.GluexHDDSLoader.prototype = {
     processBCAL: function() {
         var xmlSection = this.xmlSections['BarrelEMcal'];
 
-        var bcal = new THREE.Group();
+        var bcalGeo = this.tubeGeometry(64.2485, 90.5185, 390.0);
+        var bcalMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc, transparent: true, opacity: .2, side: THREE.DoubleSide })
+        bcalMaterial.visible = false;
+        var bcal = new THREE.Mesh(bcalGeo, bcalMaterial);
         bcal.name = "BCAL";
+        bcal.renderOrder = 100;     // should be higher than FDC and CDC mother volumes render Order
+
+        const sectorKeys = ["BM01", "BM02", "BM04", "BMF7", "BMFA"];
+        const sectorColors = [0xddd1be, 0xe1ddb5, 0xDED29E, 0xB3A580]
+        let sectorDimensions = [];
+        for (let sectionName of sectorKeys) {
+            sectorDimensions.push(extractRioZ(xmlSection.querySelector(`tubs[name="${sectionName}"]`), "Rio_Z"))
+        }
+
+        const sectorAngle = 2*Math.PI/48;
+
+        for(let moduleIndex=0; moduleIndex<48; moduleIndex++) {
+            // Build section geometries
+            for(let sectorIndex = 0; sectorIndex<4; sectorIndex++)
+            {
+                let sectorGeo = this.tubeGeometry(
+                    sectorDimensions[sectorIndex].inner,          // inner radius
+                    sectorDimensions[sectorIndex+1].inner,        // outer radius (take it from next element)
+                    390.0,                                        // z length
+                    moduleIndex*sectorAngle,                      // angle offset
+                    sectorAngle,                                  // angle
+                    true,                                         // double buffered
+                    false)                                        // do not center the geometry to the... center
+
+                let sectionMat = new THREE.MeshLambertMaterial(
+                    { color: sectorColors[sectorIndex], transparent: true, opacity: .2, side: THREE.DoubleSide })
+                let sector = new THREE.Mesh(sectorGeo, sectionMat);
+                sector.name = `BCAL_m${moduleIndex}_s${sectorIndex}`
+                bcal.add(sector)
+            }
+        }
 
         // BCAL placement in the global main file
-        var xmlBcalGlobal = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="ForwardTOF"]');
-        var globalPlacement = extractPlacement(xmlBcalGlobal);
-        this.setMeshPlacement(bcal, globalPlacement);
+        let xmlBcalGlobal = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="BarrelEMcal"]');
+        let globalPlacement = extractPlacement(xmlBcalGlobal);
+        let localPlacement = extractPlacement(xmlSection.querySelector('composition[name="BarrelEMcal"] > posXYZ[volume="barrelEMcal"]'))
+        this.setMeshPlacement(bcal, this.sumPlacements(globalPlacement, localPlacement));
 
         return bcal;
     },
+
+
+
 
     processSC: function() {
         var xmlSection = this.xmlSections['StartCntr'];
@@ -141,6 +185,7 @@ THREE.GluexHDDSLoader.prototype = {
         var SectorGeometry = createPolyPlaneGeometry2(data,data.length,-6*Math.PI/180.,12*Math.PI/180.)
         SectorGeometry.rotateX(-1*Math.PI/2.);
         SectorGeometry.rotateY(Math.PI)
+
 
         var SC = new THREE.Group();
         SC.name = "SC";
@@ -209,26 +254,18 @@ THREE.GluexHDDSLoader.prototype = {
         //var CDCMotherGeom = this.tubeGeometry(11,60,154.75,0,2*Math.PI);
         // var cdc = new THREE.Mesh(CDCMotherGeom, new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide }));
 
-        var ShortWireGeometry =this.tubeGeometry(0,.075,154.5,0,2*Math.PI,true);
-
-        var LongWireGeometry =this.tubeGeometry(0,.075,155.5,0,2*Math.PI,true);
-
-        var CDC = new THREE.Group();
-        CDC.name = "CDC";
-        var straws = this.buildCDCStraws(xmlSection, 'DCLS', 0, ShortWireGeometry, LongWireGeometry);
-        CDC.add(straws);
-
-
-        //cdc.rotateX(Math.PI/2.0);
-        //cdc.name="CDC";
+        var shortWireGeometry =this.tubeGeometry(0,.075,154.5,0,2*Math.PI,true);
+        var longWireGeometry =this.tubeGeometry(0,.075,155.5,0,2*Math.PI,true);
+        var cdc = this.buildCDCStraws(xmlSection, 'DCLS', 0, shortWireGeometry, longWireGeometry);
+        cdc.renderOrder = 50;
 
         var xmlGlobalPlacement = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="CentralDC"]');
         var globalPlacement = extractPlacement(xmlGlobalPlacement);
         var xmlLocalPlacement = xmlSection.querySelector('composition[name="CentralDC"] > posXYZ[volume="centralDC"]');
         var localPlacement = extractPlacement(xmlLocalPlacement);
-        this.setMeshPlacement(CDC, this.sumPlacements(localPlacement, globalPlacement));
+        this.setMeshPlacement(cdc, this.sumPlacements(localPlacement, globalPlacement));
 
-        return CDC;
+        return cdc;
     },
 
     buildCDCStraws: function (cdcXmlSection, regionShortName, startIndex, ShortWireGeometry, LongWireGeometry) {
@@ -241,7 +278,7 @@ THREE.GluexHDDSLoader.prototype = {
             this.tubeGeometry(11,60,154.75,0,2*Math.PI,true),
             new THREE.MeshLambertMaterial({ visible:true ,color: 0x436280, transparent:true, opacity: 0.4, side: THREE.DoubleSide })
         );
-        region.name='CDC_Layers';
+        region.name='CDC';
 
         for (var i=0;i<arrayofComponents.length;i++) {
             if (i < 3)
@@ -312,12 +349,10 @@ THREE.GluexHDDSLoader.prototype = {
     processFDC: function() {
         var xmlSection = this.xmlSections['ForwardDC'];
 
-
         var fdcMotherGeom = new THREE.CylinderBufferGeometry( 64.0485, 64.0485, 188, 32 );
 
-
         var fdc = new THREE.Mesh(fdcMotherGeom, new THREE.MeshLambertMaterial({ color: 0x436280, transparent:true, opacity: 0.3, side: THREE.DoubleSide }));
-
+        fdc.renderOrder = 50;
 
         var xmlGlobalPlacement = this.HDDS.querySelector('composition[name="barrelPackage"] > posXYZ[volume="ForwardDC"]');
         var globalPlacement = extractPlacement(xmlGlobalPlacement);
@@ -536,17 +571,20 @@ THREE.GluexHDDSLoader.prototype = {
         return region;
     },
 
-    tubeGeometry: function(rmin, rmax, z, startphi, deltaphi, isBuffered)
+    tubeGeometry: function(rmin, rmax, z, startphi=0, deltaphi=2*Math.PI, isBuffered=true, center=true)
     {
         var shape = new THREE.Shape();
-        // x,y, radius, startAngle, endAngle, clockwise, rotation
-        shape.absarc(0, 0, rmax, startphi, deltaphi, false);
-
         if ( rmin > 0.0 ) {
-            var hole = new THREE.Path();
-            hole.absarc(0, 0, rmin, startphi, deltaphi, true);
-            shape.holes.push(hole);
+            shape.moveTo(0, 0);
+            shape.absarc(0, 0, rmin, startphi, startphi+deltaphi, false);
+            shape.absarc(0, 0, rmax, startphi+deltaphi, startphi, true);
+            shape.closePath();
         }
+        else {
+            shape.absarc(0, 0, rmax, startphi, deltaphi, false);
+        }
+
+        shape.closePath();
 
         var extrudeSettings = {
             amount : z,
@@ -556,7 +594,14 @@ THREE.GluexHDDSLoader.prototype = {
         };
 
         var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        geometry.center();
+
+        if(center){
+            geometry.center();
+        }
+        else {
+            geometry.translate(0, 0, -z/2.0 );  // move back to a center of gravity
+        }
+
         if(isBuffered) {
             return new THREE.BufferGeometry().fromGeometry(geometry);
         }
