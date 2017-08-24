@@ -681,31 +681,33 @@
 
             var geoobjs = eventObj.getObjectByName("BCAL");
 
-            for (var part = 0; part < geoobjs.children.length; part++) {
+            if (geoobjs) {
+                for (var part = 0; part < geoobjs.children.length; part++) {
 
-                if (geoobjs.children[part].userData.t) {
-                    if (geoobjs.children[part].userData.t > ViewerConfig.max_clock_time ||
-                        geoobjs.children[part].userData.t < ViewerConfig.min_clock_time) {
-                        geoobjs.children[part].material.color.setRGB(1, 1, 1);
-                        continue;
-                    }//RESPECT THE CLOCK BOUNDS
+                    if (geoobjs.children[part].userData.t) {
+                        if (geoobjs.children[part].userData.t > ViewerConfig.max_clock_time ||
+                            geoobjs.children[part].userData.t < ViewerConfig.min_clock_time) {
+                            geoobjs.children[part].material.color.setRGB(1, 1, 1);
+                            continue;
+                        }//RESPECT THE CLOCK BOUNDS
 
-                    if (ViewerConfig.BCALHitVis === "Dynamic") {
-                        if (SceneTime + min_start_time > geoobjs.children[part].userData.t) {
-                            geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
+                        if (ViewerConfig.BCALHitVis === "Dynamic") {
+                            if (SceneTime + min_start_time > geoobjs.children[part].userData.t) {
+                                geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
+                            }
+                            else if (SceneTime + min_start_time < geoobjs.children[part].userData.t) {
+                                geoobjs.children[part].material.color.setRGB(1, 1, 1);
+                            }
                         }
-                        else if (SceneTime + min_start_time < geoobjs.children[part].userData.t) {
+                        else if (ViewerConfig.BCALHitVis === "Off") {
                             geoobjs.children[part].material.color.setRGB(1, 1, 1);
                         }
-                    }
-                    else if (ViewerConfig.BCALHitVis === "Off") {
-                        geoobjs.children[part].material.color.setRGB(1, 1, 1);
-                    }
-                    else if (ViewerConfig.BCALHitVis === "Static") {
-                        if(geoobjs.children[part].userData.t) {
-                            geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
-                        }
+                        else if (ViewerConfig.BCALHitVis === "Static") {
+                            if (geoobjs.children[part].userData.t) {
+                                geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
+                            }
 
+                        }
                     }
                 }
             }
@@ -1243,14 +1245,16 @@
             var geoobjs = scene.getObjectByName("BCAL", true);
 
             //LOOP OVER BCAL AND MAKE THE CHECKS
-            for (var part = 0; part < geoobjs.children.length; part++) {
+            if (geoobjs) {
+                for (var part = 0; part < geoobjs.children.length; part++) {
 
 
-                if (geoobjs.children[part].t < min_start_time) {
-                    min_start_time = geoobjs.children[part].t;
-                }
-                if (geoobjs.children[part].t > max_total_time) {
-                    max_total_time = geoobjs.children[part].t;
+                    if (geoobjs.children[part].t < min_start_time) {
+                        min_start_time = geoobjs.children[part].t;
+                    }
+                    if (geoobjs.children[part].t > max_total_time) {
+                        max_total_time = geoobjs.children[part].t;
+                    }
                 }
             }
         }
