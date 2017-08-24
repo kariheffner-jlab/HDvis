@@ -25,6 +25,8 @@ var HDVisConfig = function() {
     this.TOFHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFHitVis= 'Dynamic';
 
+
+
     this.SCHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.SCHitVis= 'Dynamic';
 
@@ -39,6 +41,9 @@ var HDVisConfig = function() {
 
     this.TOFPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.TOFPointVis= 'Dynamic';
+
+    this.BCALHit_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
+    this.BCALHitVis= 'Dynamic';
 
     this.BCALPoint_Options ={"Off": 'Off',"Static": 'Static', "Dynamic": 'Dynamic'};
     this.BCALPointVis= 'Dynamic';
@@ -421,6 +426,33 @@ function makeGUI(scene){
                 }
             }
         }
+    });
+
+    bcalGuiFolder.add( config, 'BCALHitVis', config.BCALHit_Options )
+        .name('BCAL Hits').onFinishChange(function(value) {
+        this.BCALHitVis=value;
+
+
+        if(value==="Off") {
+            var eventobjs = scene.getObjectByName("BCAL").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "BCAL") {
+                    eventobjs[i].material.color.setRGB(1.,1.,1.);
+                }
+            }
+        }
+        if(value==="Static") {
+            var eventobjs = scene.getObjectByName("BCAL").children;
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "BCAL") {
+                    if(eventobjs[i].userData.t)
+                        eventobjs[i].material.color.setRGB(255.,0.,0.);
+                    else
+                        eventobjs[i].material.color.setRGB(1.,1.,1.);
+                }
+            }
+        }
+        config.TimingsNeedsUpdate=true;
     });
 
     bcalGuiFolder.add( config, 'BCALPointVis', config.BCALPoint_Options )

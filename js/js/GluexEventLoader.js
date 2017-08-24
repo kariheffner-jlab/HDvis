@@ -45,7 +45,7 @@ THREE.GluexEventLoader.prototype = {
 
 
 
-        var eventobjssc = scene.getObjectByName("SC").children[0].children;//reset all CDC wires
+        var eventobjssc = scene.getObjectByName("SC").children[0].children;
         if(eventobjssc) {
             for (var i = 0; i < eventobjssc.length; i++) {
                 if (eventobjssc[i].name.split('_')[0] === "SCsector") {
@@ -555,7 +555,9 @@ THREE.GluexEventLoader.prototype = {
                 }
             }
         }
+
         if(this.EventData.CDC_hits) {
+
             this.EventData.CDC_hits.forEach(function (cdchit) {
 
 
@@ -577,6 +579,21 @@ THREE.GluexEventLoader.prototype = {
 
 
             });
+
+
+            /*var eventobjs = scene.getObjectByName("CDC").children[0].children;//remove unneeded wires
+            if(eventobjs) {
+                for (var i = 0; i < eventobjs.length; i++) {
+
+                    if(!eventobjs[i].userData.t)
+                    {
+                        var toremove=scene.getObjectByName(eventobjs[i].name);
+                       //toremove.parent.remove(toremove);
+
+                    }
+
+                }
+            }*/
         }
 
         if(this.EventData.TOF_points) {
@@ -679,6 +696,54 @@ THREE.GluexEventLoader.prototype = {
 
             });
         }
+
+        var bcalMesh = scope.geometry.getObjectByName("BCAL");
+        if(this.EventData.BCAL_hits) {
+            this.EventData.BCAL_hits.forEach(function (hit) {
+                //get the object to change and change it
+                // console.log("hit id:"+hit.id);
+                var module = hit.module;
+                var layer = hit.layer;
+                var sector = hit.sector;
+                var time = hit.t;
+
+                var geoName = "BCAL_m" + (module-1).toString() /*+ "_l" + layer*/ + "_s" + (sector-1).toString();
+
+
+                if(bcalMesh) {
+                    var object = bcalMesh.getObjectByName(geoName, true);
+                    //getObjectByName( "TestBox", true );
+
+                    if (object) {
+                        if (object.geometry.type === "BufferGeometry") {
+                            object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
+                        }
+
+                        object.userData = {
+                            "t": hit.t
+                        };
+
+                        /* var inside=glowMesh.insideMesh.material.uniforms;
+                         inside.glowColor.value.setRGB(color.r,color.g,color.b);
+                         inside.power.value=.5;
+                         var outside=glowMesh.insideMesh.material.uniforms;
+
+                         outside.glowColor.value.setRGB(color.r,color.g,color.b);
+                         outside.power.value=.5;
+                         console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
+
+
+                        object.geometry.colorsNeedUpdate = true;
+
+                    }
+                    else {
+                        console.log("DIDN'T FIND " + geoName);
+                    }//console.log(object);
+                }
+            });
+        }
+
+
         return this.group;
     }
 

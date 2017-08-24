@@ -111,7 +111,7 @@
 </head>
 <body>
 
-<script src="js/three.js"></script>
+<script src="js/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
 <script src="js/controls/FlyControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
@@ -216,7 +216,9 @@
     var min_start_time=99999999999;
     var max_total_time=-9999999999;
 
-    var animationTimings=[min_start_time,max_swim_steps,max_swim_time,max_total_time];
+    var SCgeo=null;
+
+    // var animationTimings=[min_start_time,max_swim_steps,max_swim_time,max_total_time];
 
     keyState: new Array();
 
@@ -334,6 +336,7 @@
             loadEventFromFile();
         });
 
+        SCgeo=scene.getObjectByName("SC");
 
         object = new THREE.AxisHelper( 100 );
         object.position.set( 0, 0, 0 );
@@ -625,7 +628,8 @@
 
                                 var half_length = false;
 
-                                if (geoobjs.children[plane].children[block].children[bar].name.split("_")[2]==="m21" || geoobjs.children[plane].children[block].children[bar].name.split("_")[2]==="m22")
+                                var half_tag =geoobjs.children[plane].children[block].children[bar].name.split("_")[2];
+                                if (half_tag==="m21" || half_tag==="m22")
                                     half_length = true;
 
                                 for (var i = 0; i < geoobjs.children[plane].children[block].children[bar].geometry.faces.length; i++) {
@@ -662,6 +666,52 @@
 
         }
     }
+
+    function animateBCALHits(clock,time_scale,min_start_time,max_total_time) {
+        var SceneTime = clock.getElapsedTime() * time_scale;
+
+        if (SceneTime > max_total_time - min_start_time) {
+            //RealTime=SceneTime;
+            SceneTime = max_total_time - min_start_time;
+        }
+
+        var eventObj = scene.getObjectByName("GluexGeometry");
+        if (eventObj) {
+
+
+            var geoobjs = eventObj.getObjectByName("BCAL");
+
+            for (var part = 0; part < geoobjs.children.length; part++) {
+
+                if (geoobjs.children[part].userData.t) {
+                    if (geoobjs.children[part].userData.t > ViewerConfig.max_clock_time ||
+                        geoobjs.children[part].userData.t < ViewerConfig.min_clock_time) {
+                        geoobjs.children[part].material.color.setRGB(1, 1, 1);
+                        continue;
+                    }//RESPECT THE CLOCK BOUNDS
+
+                    if (ViewerConfig.BCALHitVis === "Dynamic") {
+                        if (SceneTime + min_start_time > geoobjs.children[part].userData.t) {
+                            geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
+                        }
+                        else if (SceneTime + min_start_time < geoobjs.children[part].userData.t) {
+                            geoobjs.children[part].material.color.setRGB(1, 1, 1);
+                        }
+                    }
+                    else if (ViewerConfig.BCALHitVis === "Off") {
+                        geoobjs.children[part].material.color.setRGB(1, 1, 1);
+                    }
+                    else if (ViewerConfig.BCALHitVis === "Static") {
+                        if(geoobjs.children[part].userData.t) {
+                            geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
 
     function animateTOFPoints(clock,time_scale,eventobj,min_start_time) {
         var SceneTime = clock.getElapsedTime() * time_scale;
@@ -714,7 +764,7 @@
 
     }
 
-    function animateSCHits(clock,time_scale,min_start_time)
+    function animateSCHits(eventobjs,clock,time_scale,min_start_time)
     {
         var SceneTime=clock.getElapsedTime()*time_scale;
 
@@ -723,8 +773,6 @@
             //RealTime=SceneTime;
             SceneTime=max_total_time-min_start_time;
         }
-
-        var eventobjs = scene.getObjectByName("SC").children[0].children;
 
         for (var i = 0; i < eventobjs.length; i++) {
             if (eventobjs[i].userData.t) {
@@ -1190,6 +1238,22 @@
                 }
             }
         }
+        if(ViewerConfig.BCALHitVis !== "Off" && ViewerConfig.BCALHitVis !=="Static" ) {
+
+            var geoobjs = scene.getObjectByName("BCAL", true);
+
+            //LOOP OVER BCAL AND MAKE THE CHECKS
+            for (var part = 0; part < geoobjs.children.length; part++) {
+
+
+                if (geoobjs.children[part].t < min_start_time) {
+                    min_start_time = geoobjs.children[part].t;
+                }
+                if (geoobjs.children[part].t > max_total_time) {
+                    max_total_time = geoobjs.children[part].t;
+                }
+            }
+        }
         if(ViewerConfig.TOFHitVis !== "Off" && ViewerConfig.TOFHitVis !=="Static" ) {
 
             var geoobjs=scene.getObjectByName("FTOF",true);
@@ -1304,9 +1368,10 @@
                 animateFCALHits(clock, time_scale, eventobjs[i], min_start_time);
                 animateFCALShowers(clock, time_scale, eventobjs[i], min_start_time, max_total_time);
             }
-            animateSCHits(clock, time_scale, min_start_time);
+            animateSCHits(scene.getObjectByName("SC").children[0].children,clock, time_scale, min_start_time);
             animateCDCHits(clock, time_scale, min_start_time);
             animateTOFHits(clock, time_scale, min_start_time, max_total_time);
+            animateBCALHits(clock, time_scale, min_start_time, max_total_time);
 
 
             if((SceneTime+min_start_time>(max_total_time) || firstShowing || RealTime+min_start_time>=max_total_time+2*time_scale))//includes a delay at the end
