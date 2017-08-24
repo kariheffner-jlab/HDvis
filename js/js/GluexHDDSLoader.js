@@ -142,26 +142,28 @@ THREE.GluexHDDSLoader.prototype = {
             sectorDimensions.push(extractRioZ(xmlSection.querySelector(`tubs[name="${sectionName}"]`), "Rio_Z"))
         }
 
-        const sectorAngle = 2*Math.PI/48;
+        const deltaAngle = 2*Math.PI/(48*4);
 
         for(let moduleIndex=0; moduleIndex<48; moduleIndex++) {
             // Build section geometries
-            for(let sectorIndex = 0; sectorIndex<4; sectorIndex++)
-            {
-                let sectorGeo = this.tubeGeometry(
-                    sectorDimensions[sectorIndex].inner,          // inner radius
-                    sectorDimensions[sectorIndex+1].inner,        // outer radius (take it from next element)
-                    390.0,                                        // z length
-                    moduleIndex*sectorAngle,                      // angle offset
-                    sectorAngle,                                  // angle
-                    true,                                         // double buffered
-                    false)                                        // do not center the geometry to the... center
+            for(let sectorIndex = 0; sectorIndex<4; sectorIndex++) {
+                for(let layerIndex = 0; layerIndex<4; layerIndex++)
+                {
+                    let pieceGeo = this.tubeGeometry(
+                        sectorDimensions[layerIndex].inner,          // inner radius
+                        sectorDimensions[layerIndex+1].inner,        // outer radius (take it from next element)
+                        390.0,                                       // z length
+                        (moduleIndex*4+sectorIndex)*deltaAngle,        // angle offset
+                        deltaAngle,                                  // angle
+                        true,                                        // double buffered
+                        false)                                       // do not center the geometry to the... center
 
-                let sectionMat = new THREE.MeshLambertMaterial(
-                    { color: sectorColors[sectorIndex], transparent: true, opacity: .2, side: THREE.DoubleSide })
-                let sector = new THREE.Mesh(sectorGeo, sectionMat);
-                sector.name = `BCAL_m${moduleIndex}_s${sectorIndex}`
-                bcal.add(sector)
+                    let sectionMat = new THREE.MeshLambertMaterial(
+                        { color: sectorColors[layerIndex], transparent: true, opacity: .2, side: THREE.DoubleSide })
+                    let sector = new THREE.Mesh(pieceGeo, sectionMat);
+                    sector.name = `BCAL_m${moduleIndex}_l${layerIndex}_s${sectorIndex}`
+                    bcal.add(sector)
+                }
             }
         }
 
