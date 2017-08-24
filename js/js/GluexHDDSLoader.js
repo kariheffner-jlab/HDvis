@@ -488,10 +488,18 @@ THREE.GluexHDDSLoader.prototype = {
             side: THREE.DoubleSide
         });
 
+        var selector = `posXYZ[volume="${regionFullName}"]`;
+        var xmlPlacement = fcalXmlSection.querySelector(selector);
+        var regionPlacement = extractPlacement(xmlPlacement);
+
+
         // Go through repetitions and create rows
         for(var yIndex=0; yIndex< yCopiesCount; yIndex++){
             // Go through repetitions and create rows
             for(var xIndex=0; xIndex< xCopyCount; xIndex++){
+
+                if( (regionPlacement['position']['x']+ x0 + xIndex*dx)**2+ (regionPlacement['position']['y']+y0 + yIndex*dy)**2 >= 120*120 )
+                    continue;
 
                 var module = new THREE.Mesh(moduleBoxGeometry.clone(), material);
 
@@ -505,9 +513,7 @@ THREE.GluexHDDSLoader.prototype = {
         }
 
         // get placement
-        var selector = `posXYZ[volume="${regionFullName}"]`;
-        var xmlPlacement = fcalXmlSection.querySelector(selector);
-        var regionPlacement = extractPlacement(xmlPlacement);
+
         this.setMeshPlacement(region, regionPlacement);
 
         return region;
