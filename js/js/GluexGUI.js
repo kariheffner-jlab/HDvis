@@ -434,24 +434,30 @@ function makeGUI(scene){
 
 
         if(value==="Off") {
-            var eventobjs = scene.getObjectByName("BCAL").children;
+            var eventobjs = scene.getObjectByName("BCAL").children[0].children;
             for (var i = 0; i < eventobjs.length; i++) {
                 if (eventobjs[i].name.split('_')[0] === "BCAL") {
-                    eventobjs[i].material.color.setRGB(1.,1.,1.);
+
+                    if(eventobjs[i].name.split("_")[2]==="l3")
+                    {
+                        eventobjs[i].material.color.setRGB(179./255., 165./255., 128./255.);
+                    }
+                    else if(eventobjs[i].name.split("_")[2]==="l2")
+                    {
+                        eventobjs[i].material.color.setRGB(222./255., 210./255., 158./255.);
+                    }
+                    else if(eventobjs[i].name.split("_")[2]==="l1")
+                    {
+                        eventobjs[i].material.color.setRGB(225./255., 221./255., 181./255.);
+                    }
+                    else if(eventobjs[i].name.split("_")[2]==="l0")
+                    {
+                        eventobjs[i].material.color.setRGB(221./255., 209./255., 190./255.);
+                    }
                 }
             }
         }
-        if(value==="Static") {
-            var eventobjs = scene.getObjectByName("BCAL").children;
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "BCAL") {
-                    if(eventobjs[i].userData.t)
-                        eventobjs[i].material.color.setRGB(255.,0.,0.);
-                    else
-                        eventobjs[i].material.color.setRGB(1.,1.,1.);
-                }
-            }
-        }
+
         config.TimingsNeedsUpdate=true;
     });
 

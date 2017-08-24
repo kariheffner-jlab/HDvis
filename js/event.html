@@ -679,7 +679,7 @@
         if (eventObj) {
 
 
-            var geoobjs = eventObj.getObjectByName("BCAL");
+            var geoobjs = eventObj.getObjectByName("BCAL").children[0];
 
             if (geoobjs) {
                 for (var part = 0; part < geoobjs.children.length; part++) {
@@ -687,7 +687,24 @@
                     if (geoobjs.children[part].userData.t) {
                         if (geoobjs.children[part].userData.t > ViewerConfig.max_clock_time ||
                             geoobjs.children[part].userData.t < ViewerConfig.min_clock_time) {
-                            geoobjs.children[part].material.color.setRGB(1, 1, 1);
+
+                            if(geoobjs.children[part].name.split("_")[2]==="l3")
+                            {
+                                geoobjs.children[part].material.color.setRGB(179./255., 165./255., 128./255.);
+                            }
+                            else if(geoobjs.children[part].name.split("_")[2]==="l2")
+                            {
+                                geoobjs.children[part].material.color.setRGB(222./255., 210./255., 158./255.);
+                            }
+                            else if(geoobjs.children[part].name.split("_")[2]==="l1")
+                            {
+                                geoobjs.children[part].material.color.setRGB(225./255., 221./255., 181./255.);
+                            }
+                            else if(geoobjs.children[part].name.split("_")[2]==="l0")
+                            {
+                                geoobjs.children[part].material.color.setRGB(221./255., 209./255., 190./255.);
+                            }
+
                             continue;
                         }//RESPECT THE CLOCK BOUNDS
 
@@ -696,11 +713,41 @@
                                 geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
                             }
                             else if (SceneTime + min_start_time < geoobjs.children[part].userData.t) {
-                                geoobjs.children[part].material.color.setRGB(1, 1, 1);
+                                if(geoobjs.children[part].name.split("_")[2]==="l3")
+                                {
+                                    geoobjs.children[part].material.color.setRGB(179./255., 165./255., 128./255.);
+                                }
+                                else if(geoobjs.children[part].name.split("_")[2]==="l2")
+                                {
+                                    geoobjs.children[part].material.color.setRGB(222./255., 210./255., 158./255.);
+                                }
+                                else if(geoobjs.children[part].name.split("_")[2]==="l1")
+                                {
+                                    geoobjs.children[part].material.color.setRGB(225./255., 221./255., 181./255.);
+                                }
+                                else if(geoobjs.children[part].name.split("_")[2]==="l0")
+                                {
+                                    geoobjs.children[part].material.color.setRGB(221./255., 209./255., 190./255.);
+                                }
                             }
                         }
                         else if (ViewerConfig.BCALHitVis === "Off") {
-                            geoobjs.children[part].material.color.setRGB(1, 1, 1);
+                            if(geoobjs.children[part].name.split("_")[2]==="l3")
+                            {
+                                geoobjs.children[part].material.color.setRGB(179./255., 165./255., 128./255.);
+                            }
+                            else if(geoobjs.children[part].name.split("_")[2]==="l2")
+                            {
+                                geoobjs.children[part].material.color.setRGB(222./255., 210./255., 158./255.);
+                            }
+                            else if(geoobjs.children[part].name.split("_")[2]==="l1")
+                            {
+                                geoobjs.children[part].material.color.setRGB(225./255., 221./255., 181./255.);
+                            }
+                            else if(geoobjs.children[part].name.split("_")[2]==="l0")
+                            {
+                                geoobjs.children[part].material.color.setRGB(221./255., 209./255., 190./255.);
+                            }
                         }
                         else if (ViewerConfig.BCALHitVis === "Static") {
                             if (geoobjs.children[part].userData.t) {

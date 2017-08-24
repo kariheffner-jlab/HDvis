@@ -140,7 +140,7 @@ THREE.GluexHDDSLoader.prototype = {
         let bcalDetails = new THREE.Group();
         bcalDetails.name = "BCAL_details"
         const sectorKeys = ["BM01", "BM02", "BM04", "BMF7", "BMFA"];
-        const sectorColors = [0xddd1be, 0xe1ddb5, 0xDED29E, 0xB3A580]
+        const sectorColors = [0xddd1be, 0xe1ddb5, 0xDED29E, 0xb3a580];
         let BCALLayerDimentions = [];
         for (let sectionName of sectorKeys) {
             BCALLayerDimentions.push(extractRioZ(xmlSection.querySelector(`tubs[name="${sectionName}"]`), "Rio_Z"))
@@ -164,7 +164,7 @@ THREE.GluexHDDSLoader.prototype = {
                         2.0,                                         // z length
                         (moduleIndex*4+sectorIndex)*bcalDeltaAngle,      // angle offset
                         bcalDeltaAngle,                                  // angle
-                        true,                                        // buffered geometry
+                        false,                                        // buffered geometry
                         false)                                       // do not center the geometry to the... center
 
                     let sectionMat = new THREE.MeshLambertMaterial(
@@ -199,11 +199,11 @@ THREE.GluexHDDSLoader.prototype = {
 
         let hitMat = new THREE.MeshLambertMaterial(
             { color: 0xFF0000, transparent: true, opacity: .2, side: THREE.DoubleSide })
-                    let hit = new THREE.Mesh(hitGeo, hitMat);
+        let hit = new THREE.Mesh(hitGeo, hitMat);
         hit.name = `BCAL_hit_m${moduleIndex}_l${layerIndex}_s${sectorIndex}`
         bcalHits.add(hit)
 
-        bcal.add(bcalHits)
+        //bcal.add(bcalHits)
         bcalHits.translateZ(208)
 
 
