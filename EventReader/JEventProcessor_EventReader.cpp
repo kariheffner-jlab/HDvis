@@ -268,6 +268,7 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
                                             {"event_number",eventnumber}
                                         });
 
+
             std::ofstream eventFile;
             eventFile.open("www/event.json", std::ofstream::trunc);
 

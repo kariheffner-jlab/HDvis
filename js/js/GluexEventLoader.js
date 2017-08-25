@@ -581,7 +581,7 @@ THREE.GluexEventLoader.prototype = {
             });
 
 
-            /*var eventobjs = scene.getObjectByName("CDC").children[0].children;//remove unneeded wires
+           /* var eventobjs = scene.getObjectByName("CDC").children[0].children;//remove unneeded wires
             if(eventobjs) {
                 for (var i = 0; i < eventobjs.length; i++) {
 
