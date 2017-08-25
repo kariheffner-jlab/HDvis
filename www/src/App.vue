@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import Slideout from 'slideout'
+
 
   export default {
     name: 'app',
@@ -43,6 +43,7 @@
 </script>
 
 <style>
+
   body {
     width: 100%;
     height: 100%;

@@ -37,6 +37,11 @@ module.exports = {
         }
       },
       {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader',
+        include: [resolve('src'), resolve('src/assets'), resolve('src/hdvis')]
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
