@@ -1327,8 +1327,7 @@
         }
         if(ViewerConfig.CDCHitVis !== "Off" && ViewerConfig.CDCHitVis !=="Static" ) {
 
-            var eventobjs = scene.getObjectByName("CDC").children[0].children;
-            var time=9999999999;
+            var eventobjs = scene.getObjectByName("CDC").children;
             for (var i = 0; i < eventobjs.length; i++) {
 
                 if(eventobjs[i].userData.t) {
@@ -1346,7 +1345,7 @@
         if(ViewerConfig.SCHitVis !== "Off" && ViewerConfig.SCHitVis !=="Static" ) {
 
             var eventobjs = scene.getObjectByName("SC").children[0].children;
-            var time=9999999999;
+
             for (var i = 0; i < eventobjs.length; i++) {
 
                 if(eventobjs[i].userData.t) {
