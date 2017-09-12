@@ -14,11 +14,14 @@ THREE.GluexEventLoader.prototype = {
     geometry:null,
     Configuration:null,
     TOFReferenceColor:null,
-
-    setGeometry: function (geometry) {
+    shadowGeom:null,
+    setGeometry: function (geometry,shadowGeometry) {
         this.geometry = geometry;
+        this.shadowGeom=shadowGeometry;
         var tofMesh = geometry.getObjectByName("FTOF");
-        TOFReferenceColor= tofMesh.getObjectByName("TOFBar_p1_m1",true).material.color;
+        if(tofMesh) {
+            TOFReferenceColor = tofMesh.getObjectByName("TOFBar_p1_m1", true).material.color;
+        }
     },
     setConfiguration: function (config) {
         this.Configuration = config;
@@ -44,14 +47,16 @@ THREE.GluexEventLoader.prototype = {
         scene.name="Hall";
 
 
+        var scobj=scope.geometry.getObjectByName("SC");
+        if(scobj) {
+            var eventobjssc = scobj.children[0].children;
+            if (eventobjssc) {
+                for (var i = 0; i < eventobjssc.length; i++) {
+                    if (eventobjssc[i].name.split('_')[0] === "SCsector") {
+                        eventobjssc[i].material.color.setRGB(255. / 255., /*141.*/255. / 255., /*66.*/255. / 255.);
+                        eventobjssc[i].userData = {};
 
-        var eventobjssc = scene.getObjectByName("SC").children[0].children;
-        if(eventobjssc) {
-            for (var i = 0; i < eventobjssc.length; i++) {
-                if (eventobjssc[i].name.split('_')[0] === "SCsector") {
-                    eventobjssc[i].material.color.setRGB(255./255., /*141.*/255./255., /*66.*/255./255.);
-                    eventobjssc[i].userData = {};
-
+                    }
                 }
             }
         }
@@ -62,12 +67,13 @@ THREE.GluexEventLoader.prototype = {
 
                 var sectorMesh = scope.geometry.getObjectByName(name);
 
-                sectorMesh.material.color.setRGB(255./255., /*141.*/255./255., /*66.*/255./255.);
+                if(sectorMesh) {
+                    sectorMesh.material.color.setRGB(255. / 255., /*141.*/255. / 255., /*66.*/255. / 255.);
 
-                sectorMesh.userData = {
-                    "t": schit.t
-                };
-
+                    sectorMesh.userData = {
+                        "t": schit.t
+                    };
+                }
 
             });
         }
@@ -545,56 +551,35 @@ THREE.GluexEventLoader.prototype = {
             });
         }
 
-        var eventobjs = scene.getObjectByName("CDC").children;//reset all CDC wires
-        if(eventobjs) {
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "CDCstraw") {
-                    eventobjs[i].material.visible = false;
-                    eventobjs[i].userData = {};
+        //var cdcobj=scope.geometry.getObjectByName("CDC",true);
+       // var shadowcdcobj=scope.shadowGeom.getObjectByName("CDC",true)
 
-                }
-            }
-        }
+            if (this.EventData.CDC_hits) {
 
-        if(this.EventData.CDC_hits) {
-
-            this.EventData.CDC_hits.forEach(function (cdchit) {
+                this.EventData.CDC_hits.forEach(function (cdchit) {
 
 
-
-                var vis = false;
-                if (scope.Configuration.CDCHitVis === "Static") {
-                    vis = true;
-                }
-
-                var name="CDCstraw_"+cdchit.ring+"_"+cdchit.straw;
-
-                var strawMesh = scene.getObjectByName(name,true);
-
-                strawMesh.material.visible=vis;
-
-                strawMesh.userData = {
-                    "t": cdchit.t
-                };
-
-
-            });
-
-
-           /* var eventobjs = scene.getObjectByName("CDC").children[0].children;//remove unneeded wires
-            if(eventobjs) {
-                for (var i = 0; i < eventobjs.length; i++) {
-
-                    if(!eventobjs[i].userData.t)
-                    {
-                        var toremove=scene.getObjectByName(eventobjs[i].name);
-                       //toremove.parent.remove(toremove);
-
+                    var vis = false;
+                    if (scope.Configuration.CDCHitVis === "Static") {
+                        vis = true;
                     }
 
-                }
-            }*/
-        }
+                    var name = "CDCstraw_" + cdchit.ring + "_" + cdchit.straw;
+
+                   // var strawMesh = scope.geometry.getObjectByName(name, true);
+                    var strawMesh = scope.shadowGeom.getObjectByName(name, true);
+                    if (strawMesh) {
+                        strawMesh.material.visible = vis;
+
+                        strawMesh.userData.t=cdchit.t
+                        scope.geometry.getObjectByName("CDC",true).add(strawMesh);
+                    }
+
+                });
+
+
+            }
+
 
         if(this.EventData.TOF_points) {
             this.EventData.TOF_points.forEach(function (point) {
@@ -629,72 +614,77 @@ THREE.GluexEventLoader.prototype = {
         }
 
         var tofMesh = scope.geometry.getObjectByName("FTOF");
-
-        tofMesh.children.forEach(function (tofPlane) {
-            tofPlane.children.forEach(function (tofSector) {
-                tofSector.children.forEach(function (tofStrip) {
-                    tofStrip.material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, vertexColors: THREE.VertexColors});
-                    //tofStrip.material.vertexColors=THREE.VertexColors;
-                    tofStrip.userData.end0h=0;
-                    tofStrip.userData.end1h=0;
-                    tofStrip.userData.HitTimes=[];
-                    //tofStrip.geometry.colorsNeedUpdate = true;
+        if(tofMesh) {
+            tofMesh.children.forEach(function (tofPlane) {
+                tofPlane.children.forEach(function (tofSector) {
+                    tofSector.children.forEach(function (tofStrip) {
+                        tofStrip.material = new THREE.MeshBasicMaterial({
+                            transparent: true,
+                            opacity: 0.5,
+                            vertexColors: THREE.VertexColors
+                        });
+                        //tofStrip.material.vertexColors=THREE.VertexColors;
+                        tofStrip.userData.end0h = 0;
+                        tofStrip.userData.end1h = 0;
+                        tofStrip.userData.HitTimes = [];
+                        //tofStrip.geometry.colorsNeedUpdate = true;
+                    });
                 });
             });
-        });
 
-        var TOFOneHitColor = new THREE.Color;
-        TOFOneHitColor.setRGB(1,1,0);
+            var TOFOneHitColor = new THREE.Color;
+            TOFOneHitColor.setRGB(1, 1, 0);
 
-        var TOFTwoHitColor = new THREE.Color;
-        TOFTwoHitColor.setRGB(1,.66,0);
+            var TOFTwoHitColor = new THREE.Color;
+            TOFTwoHitColor.setRGB(1, .66, 0);
 
-        var TOFThreeHitColor = new THREE.Color;
-        TOFThreeHitColor.setRGB(1,0,0);
+            var TOFThreeHitColor = new THREE.Color;
+            TOFThreeHitColor.setRGB(1, 0, 0);
 
-        if(this.EventData.TOF_hits) {
-            this.EventData.TOF_hits.forEach(function (hit) {
-                //get the object to change and change it
-                // console.log("hit id:"+hit.id);
-                var plane = hit.plane;
-                var bar = hit.bar;
-                var end = hit.end;
-                var time = hit.t;
+            if (this.EventData.TOF_hits) {
+                this.EventData.TOF_hits.forEach(function (hit) {
+                    //get the object to change and change it
+                    // console.log("hit id:"+hit.id);
+                    var plane = hit.plane;
+                    var bar = hit.bar;
+                    var end = hit.end;
+                    var time = hit.t;
 
-                var geoName = "TOFBar_p" + plane + "_m" + (bar - 1);
+                    var geoName = "TOFBar_p" + plane + "_m" + (bar - 1);
 
-                if ((bar - 1 === 21 || bar - 1 === 22) && end === 0) {
-                    geoName += "_r";
-                }
-
-                var object = tofMesh.getObjectByName(geoName, true);
-                //getObjectByName( "TestBox", true );
-
-                if (object) {
-                    if (object.geometry.type === "BufferGeometry") {
-                        object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
+                    if ((bar - 1 === 21 || bar - 1 === 22) && end === 0) {
+                        geoName += "_r";
                     }
 
-                    object.userData.HitTimes.push({end: end, time: time});
+                    var object = tofMesh.getObjectByName(geoName, true);
+                    //getObjectByName( "TestBox", true );
 
-                    /* var inside=glowMesh.insideMesh.material.uniforms;
-                     inside.glowColor.value.setRGB(color.r,color.g,color.b);
-                     inside.power.value=.5;
-                     var outside=glowMesh.insideMesh.material.uniforms;
+                    if (object) {
+                        if (object.geometry.type === "BufferGeometry") {
+                            object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
+                        }
 
-                     outside.glowColor.value.setRGB(color.r,color.g,color.b);
-                     outside.power.value=.5;
-                     console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
+                        object.userData.HitTimes.push({end: end, time: time});
+
+                        /* var inside=glowMesh.insideMesh.material.uniforms;
+                         inside.glowColor.value.setRGB(color.r,color.g,color.b);
+                         inside.power.value=.5;
+                         var outside=glowMesh.insideMesh.material.uniforms;
+
+                         outside.glowColor.value.setRGB(color.r,color.g,color.b);
+                         outside.power.value=.5;
+                         console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
 
 
-                    object.geometry.colorsNeedUpdate = true;
+                        object.geometry.colorsNeedUpdate = true;
 
-                }
-                else {
-                    console.log("DIDN'T FIND " + geoName);
-                }//console.log(object);
+                    }
+                    else {
+                        console.log("DIDN'T FIND " + geoName);
+                    }//console.log(object);
 
-            });
+                });
+            }
         }
 
         var bcalMesh = scope.geometry.getObjectByName("BCAL");

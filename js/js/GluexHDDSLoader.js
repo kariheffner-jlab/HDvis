@@ -114,8 +114,8 @@ THREE.GluexHDDSLoader.prototype = {
 
         this.group.add(this.processFTOF());
         this.group.add(this.processCDC());
-        this.group.add(this.processFDC());
-        this.group.add(this.processFCAL());
+        //this.group.add(this.processFDC());
+        //this.group.add(this.processFCAL());
         this.group.add(this.processSC());
         this.group.add(this.processBCAL());
 
