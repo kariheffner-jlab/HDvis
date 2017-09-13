@@ -282,11 +282,11 @@
         eventLoader.load('./event.json', function(loadedEvent) {
             shadowevent=loadedEvent;
             scene.add(loadedEvent);
-           UpdateAnimationTriggers(loadedEvent.children);
+            UpdateAnimationTriggers(loadedEvent.children);
         });
-       /* shadoweventLoader.load('./event.json', function(loadedEvent) {
-            shadowscene.add(loadedEvent);
-        });*/
+        /* shadoweventLoader.load('./event.json', function(loadedEvent) {
+             shadowscene.add(loadedEvent);
+         });*/
 
         firstShowing=true;
 

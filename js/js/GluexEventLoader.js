@@ -552,33 +552,33 @@ THREE.GluexEventLoader.prototype = {
         }
 
         //var cdcobj=scope.geometry.getObjectByName("CDC",true);
-       // var shadowcdcobj=scope.shadowGeom.getObjectByName("CDC",true)
+        // var shadowcdcobj=scope.shadowGeom.getObjectByName("CDC",true)
 
-            if (this.EventData.CDC_hits) {
+        if (this.EventData.CDC_hits) {
 
-                this.EventData.CDC_hits.forEach(function (cdchit) {
-
-
-                    var vis = false;
-                    if (scope.Configuration.CDCHitVis === "Static") {
-                        vis = true;
-                    }
-
-                    var name = "CDCstraw_" + cdchit.ring + "_" + cdchit.straw;
-
-                   // var strawMesh = scope.geometry.getObjectByName(name, true);
-                    var strawMesh = scope.shadowGeom.getObjectByName(name, true);
-                    if (strawMesh) {
-                        strawMesh.material.visible = vis;
-
-                        strawMesh.userData.t=cdchit.t
-                        scope.geometry.getObjectByName("CDC",true).add(strawMesh);
-                    }
-
-                });
+            this.EventData.CDC_hits.forEach(function (cdchit) {
 
 
-            }
+                var vis = false;
+                if (scope.Configuration.CDCHitVis === "Static") {
+                    vis = true;
+                }
+
+                var name = "CDCstraw_" + cdchit.ring + "_" + cdchit.straw;
+
+                // var strawMesh = scope.geometry.getObjectByName(name, true);
+                var strawMesh = scope.shadowGeom.getObjectByName(name, true);
+                if (strawMesh) {
+                    strawMesh.material.visible = vis;
+
+                    strawMesh.userData.t=cdchit.t
+                    scope.geometry.getObjectByName("CDC",true).add(strawMesh);
+                }
+
+            });
+
+
+        }
 
 
         if(this.EventData.TOF_points) {
