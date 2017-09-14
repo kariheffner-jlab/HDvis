@@ -55,7 +55,7 @@ public:
                                         {"module", module},
                                         {"layer", layer},
                                         {"sector", sector},
-                                        //{"end", end},
+                                        {"end", int(end)},
                                         {"pulse_peak", pulse_peak},
                                         {"E", E},
                                         {"t", t},

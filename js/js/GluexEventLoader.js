@@ -687,7 +687,7 @@ THREE.GluexEventLoader.prototype = {
             }
         }
 
-        var bcalMesh = scope.geometry.getObjectByName("BCAL");
+        // var bcalMesh = scope.shadowGeom.getObjectByName("BCAL");
         if(this.EventData.BCAL_hits) {
             this.EventData.BCAL_hits.forEach(function (hit) {
                 //get the object to change and change it
@@ -695,41 +695,33 @@ THREE.GluexEventLoader.prototype = {
                 var module = hit.module;
                 var layer = hit.layer;
                 var sector = hit.sector;
+                var end = hit.end;
                 var time = hit.t;
 
-                var geoName = "BCAL_m" + (module-1).toString() + "_l" + (layer-1).toString() + "_s" + (sector-1).toString();
+                var geoName = "BCAL_m" + (module - 1).toString() + "_l" + (layer - 1).toString() + "_s" + (sector - 1).toString()+"_e"+end.toString();
 
 
-                if(bcalMesh) {
-                    var object = bcalMesh.getObjectByName(geoName, true);
-                    //getObjectByName( "TestBox", true );
+                var modulemesh = scope.shadowGeom.getObjectByName(geoName, true);
+                //getObjectByName( "TestBox", true );
 
-                    if (object) {
-                        if (object.geometry.type === "BufferGeometry") {
-                            object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
-                        }
+                if (modulemesh) {
+                    /* if (modulemesh.geometry.type === "BufferGeometry") {
+                         modulemesh.geometry = new THREE.Geometry().fromBufferGeometry(modulemesh.geometry);
+                     }*/
+                    var moduletoadd=modulemesh;//.clone();
+                    moduletoadd.userData.t = hit.t;
 
-                        object.userData = {
-                            "t": hit.t
-                        };
+                    moduletoadd.geometry.colorsNeedUpdate = true;
+                    if(end==1)
+                        scope.geometry.getObjectByName("BCAL_details", true).add(moduletoadd);
+                    else
+                        scope.geometry.getObjectByName("BCAL_details2", true).add(moduletoadd);
 
-                        /* var inside=glowMesh.insideMesh.material.uniforms;
-                         inside.glowColor.value.setRGB(color.r,color.g,color.b);
-                         inside.power.value=.5;
-                         var outside=glowMesh.insideMesh.material.uniforms;
-
-                         outside.glowColor.value.setRGB(color.r,color.g,color.b);
-                         outside.power.value=.5;
-                         console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
-
-
-                        object.geometry.colorsNeedUpdate = true;
-
-                    }
-                    else {
-                        console.log("DIDN'T FIND " + geoName);
-                    }//console.log(object);
                 }
+                else {
+                    console.log("DIDN'T FIND " + geoName);
+                }//console.log(object);
+
             });
         }
 
