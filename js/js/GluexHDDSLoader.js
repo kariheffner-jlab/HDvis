@@ -114,10 +114,10 @@ THREE.GluexHDDSLoader.prototype = {
 
         this.group.add(this.processFTOF());
         this.group.add(this.processCDC());
-        //this.group.add(this.processFDC());
+        //this.group.add(this.processFDC());//convert to 4 packages
         this.group.add(this.processFCAL());
         this.group.add(this.processSC());
-        this.group.add(this.processBCAL());
+        this.group.add(this.processBCAL()); //add texture for the demarking lines between modules
 
         var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 43.0);//was 45
         var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .1, side: THREE.DoubleSide }));
