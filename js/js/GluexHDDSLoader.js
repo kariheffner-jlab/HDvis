@@ -538,7 +538,7 @@ THREE.GluexHDDSLoader.prototype = {
             // Go through repetitions and create rows
             for(var xIndex=0; xIndex< xCopyCount; xIndex++){
 
-                if( (regionPlacement['position']['x']+ x0 + xIndex*dx)**2+ (regionPlacement['position']['y']+y0 + yIndex*dy)**2 >= 120*120 )
+                if( (regionPlacement['position']['x']+ x0 + xIndex*dx)*(regionPlacement['position']['x']+ x0 + xIndex*dx) + (regionPlacement['position']['y']+y0 + yIndex*dy)*(regionPlacement['position']['y']+y0 + yIndex*dy) >= 120*120 )
                     continue;
 
                 var module = new THREE.Mesh(moduleBoxGeometry, material);
