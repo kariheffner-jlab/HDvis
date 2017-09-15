@@ -235,7 +235,7 @@
     animate();
 
     function recursiveRemove(mesh) {
-        while(mesh.children.length > 0){
+        while (mesh.children.length > 0) {
             var child = mesh.children[0];
             recursiveRemove(child);
             mesh.remove(child);
@@ -259,6 +259,34 @@
             scene.remove(gluexGeometry.getObjectByName("BCAL_details",true));
             recursiveRemove(gluexGeometry.getObjectByName("BCAL_details2",true));
             scene.remove(gluexGeometry.getObjectByName("BCAL_details2",true));
+
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane0_FTOB",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane0_FTOB",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane0_FTOZ",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane0_FTOZ",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane0_FTOS",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane0_FTOS",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane0_FTON",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane0_FTON",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane0_FTOY",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane0_FTOY",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane0_FTOT",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane0_FTOT",true));
+
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane1_FTOB",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTOB",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane1_FTOZ",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTOZ",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane1_FTOS",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTOS",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane1_FTON",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTON",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane1_FTOY",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTOY",true));
+            recursiveRemove(gluexGeometry.getObjectByName("TOF_plane1_FTOT",true));
+            scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTOT",true));
+
+
             scene.add(gluexGeometry);
         }
         if(event) {
@@ -567,24 +595,25 @@
 
                                 var numhits0 = 0;
                                 var numhits1 = 0;
-                                for (var j = 0; j < geoobjs.children[plane].children[block].children[bar].userData.HitTimes.length; j++) {
-                                    if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] > ViewerConfig.max_total_time ||
-                                        geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] < ViewerConfig.min_clock_time) {
-                                        continue;
-                                    }//RESPECT THE CLOCK BOUNDS TOF
+                                if(geoobjs.children[plane].children[block].children[bar].userData.HitTimes) {
+                                    for (var j = 0; j < geoobjs.children[plane].children[block].children[bar].userData.HitTimes.length; j++) {
+                                        if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] > ViewerConfig.max_total_time ||
+                                            geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] < ViewerConfig.min_clock_time) {
+                                            continue;
+                                        }//RESPECT THE CLOCK BOUNDS TOF
 
-                                    if (SceneTime + min_start_time >= geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] || ViewerConfig.TOFHitVis === "Static") {
+                                        if (SceneTime + min_start_time >= geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] || ViewerConfig.TOFHitVis === "Static") {
 
-                                        if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['end'] === 0) {
-                                            numhits0++;
+                                            if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['end'] === 0) {
+                                                numhits0++;
+                                            }
+                                            else if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['end'] === 1) {
+                                                numhits1++;
+                                            }
+
                                         }
-                                        else if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['end'] === 1) {
-                                            numhits1++;
-                                        }
-
                                     }
                                 }
-
 
                                 for (var end = 0; end <= 1; end++) {
 
@@ -1323,13 +1352,15 @@
                 for (var plane = 0; plane < geoobjs.children.length; plane++) {
                     for (var block = 0; block < geoobjs.children[plane].children.length; block++) {
                         for (var bar = 0; bar < geoobjs.children[plane].children[block].children.length; bar++) {
-                            for (var hit = 0; hit < geoobjs.children[plane].children[block].children[bar].userData.HitTimes.length; hit++) {
+                            if(geoobjs.children[plane].children[block].children[bar].userData.HitTimes) {
+                                for (var hit = 0; hit < geoobjs.children[plane].children[block].children[bar].userData.HitTimes.length; hit++) {
 
-                                if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'] < min_start_time) {
-                                    min_start_time = geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'];
-                                }
-                                if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'] > max_total_time) {
-                                    max_total_time = geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'];
+                                    if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'] < min_start_time) {
+                                        min_start_time = geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'];
+                                    }
+                                    if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'] > max_total_time) {
+                                        max_total_time = geoobjs.children[plane].children[block].children[bar].userData.HitTimes[hit]['time'];
+                                    }
                                 }
                             }
                         }

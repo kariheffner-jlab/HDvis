@@ -18,10 +18,7 @@ THREE.GluexEventLoader.prototype = {
     setGeometry: function (geometry,shadowGeometry) {
         this.geometry = geometry;
         this.shadowGeom=shadowGeometry;
-        var tofMesh = geometry.getObjectByName("FTOF");
-        if(tofMesh) {
-            TOFReferenceColor = tofMesh.getObjectByName("TOFBar_p1_m1", true).material.color;
-        }
+        this.TOFReferenceColor = new THREE.Color(1,1,1);
     },
     setConfiguration: function (config) {
         this.Configuration = config;
@@ -613,79 +610,69 @@ THREE.GluexEventLoader.prototype = {
             });
         }
 
-        var tofMesh = scope.geometry.getObjectByName("FTOF");
-        if(tofMesh) {
-            tofMesh.children.forEach(function (tofPlane) {
-                tofPlane.children.forEach(function (tofSector) {
-                    tofSector.children.forEach(function (tofStrip) {
-                        tofStrip.material = new THREE.MeshBasicMaterial({
-                            transparent: true,
-                            opacity: 0.5,
-                            vertexColors: THREE.VertexColors
-                        });
-                        //tofStrip.material.vertexColors=THREE.VertexColors;
-                        tofStrip.userData.end0h = 0;
-                        tofStrip.userData.end1h = 0;
-                        tofStrip.userData.HitTimes = [];
-                        //tofStrip.geometry.colorsNeedUpdate = true;
-                    });
-                });
-            });
 
-            var TOFOneHitColor = new THREE.Color;
-            TOFOneHitColor.setRGB(1, 1, 0);
+        if (this.EventData.TOF_hits) {
+            this.EventData.TOF_hits.forEach(function (hit) {
+                //get the object to change and change it
+                // console.log("hit id:"+hit.id);
+                var plane = hit.plane;
+                var bar = hit.bar;
+                var end = hit.end;
+                var time = hit.t;
 
-            var TOFTwoHitColor = new THREE.Color;
-            TOFTwoHitColor.setRGB(1, .66, 0);
+                var geoName = "TOFBar_p" + plane + "_m" + (bar - 1);
 
-            var TOFThreeHitColor = new THREE.Color;
-            TOFThreeHitColor.setRGB(1, 0, 0);
+                if ((bar - 1 === 21 || bar - 1 === 22) && end === 0) {
+                    geoName += "_r";
+                }
 
-            if (this.EventData.TOF_hits) {
-                this.EventData.TOF_hits.forEach(function (hit) {
-                    //get the object to change and change it
-                    // console.log("hit id:"+hit.id);
-                    var plane = hit.plane;
-                    var bar = hit.bar;
-                    var end = hit.end;
-                    var time = hit.t;
+                var object = scope.shadowGeom.getObjectByName(geoName, true);
+                var sceneobject = scope.geometry.getObjectByName(geoName, true);
+                //getObjectByName( "TestBox", true );
 
-                    var geoName = "TOFBar_p" + plane + "_m" + (bar - 1);
-
-                    if ((bar - 1 === 21 || bar - 1 === 22) && end === 0) {
-                        geoName += "_r";
+                if (object) {
+                    if (object.geometry.type === "BufferGeometry") {
+                        object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
                     }
 
-                    var object = tofMesh.getObjectByName(geoName, true);
-                    //getObjectByName( "TestBox", true );
-
-                    if (object) {
-                        if (object.geometry.type === "BufferGeometry") {
-                            object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
-                        }
-
+                    if(object.userData.HitTimes) {
                         object.userData.HitTimes.push({end: end, time: time});
-
-                        /* var inside=glowMesh.insideMesh.material.uniforms;
-                         inside.glowColor.value.setRGB(color.r,color.g,color.b);
-                         inside.power.value=.5;
-                         var outside=glowMesh.insideMesh.material.uniforms;
-
-                         outside.glowColor.value.setRGB(color.r,color.g,color.b);
-                         outside.power.value=.5;
-                         console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
-
-
-                        object.geometry.colorsNeedUpdate = true;
-
                     }
-                    else {
-                        console.log("DIDN'T FIND " + geoName);
-                    }//console.log(object);
+                    else
+                    {
+                        object.userData.HitTimes=[];
+                        object.userData.HitTimes.push({end: end, time: time});
+                    }
+                    object.geometry.colorsNeedUpdate = true;
 
-                });
-            }
+                    if(plane==1)
+                        scope.geometry.getObjectByName(object.parent.name, true).add(object);
+                    else
+                        scope.geometry.getObjectByName(object.parent.name, true).add(object);
+                    /* var inside=glowMesh.insideMesh.material.uniforms;
+                     inside.glowColor.value.setRGB(color.r,color.g,color.b);
+                     inside.power.value=.5;
+                     var outside=glowMesh.insideMesh.material.uniforms;
+
+                     outside.glowColor.value.setRGB(color.r,color.g,color.b);
+                     outside.power.value=.5;
+                     console.log(end+":"+object.userData.end0h+","+object.userData.end1h );*/
+
+
+
+
+                }
+                else if(sceneobject)
+                {
+                    sceneobject.userData.HitTimes.push({end: end, time: time});
+                }
+                else {
+                    console.log("DIDN'T FIND " + geoName);
+                }//console.log(object);
+
+            });
         }
+
 
         // var bcalMesh = scope.shadowGeom.getObjectByName("BCAL");
         if(this.EventData.BCAL_hits) {
@@ -712,7 +699,7 @@ THREE.GluexEventLoader.prototype = {
                     moduletoadd.userData.t = hit.t;
 
                     moduletoadd.geometry.colorsNeedUpdate = true;
-                    if(end==1)
+                    if(end===1)
                         scope.geometry.getObjectByName("BCAL_details", true).add(moduletoadd);
                     else
                         scope.geometry.getObjectByName("BCAL_details2", true).add(moduletoadd);
