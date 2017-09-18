@@ -222,7 +222,7 @@ THREE.GluexEventLoader.prototype = {
                     opacity: .8,
                     visible: vis
                 });
-                var radius = .5 * Math.log(bpoint.E);
+                var radius = .5 * Math.log(bpoint.E*1000);
                 var bcalpoint = new THREE.SphereGeometry(radius, 32, 32, 0, 6.3, 0, 6.3);
 
                 var bpointmesh = new THREE.Mesh(bcalpoint, material);
