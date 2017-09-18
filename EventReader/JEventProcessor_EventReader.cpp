@@ -232,13 +232,11 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
 
             // FCAL;
-
             auto fcalHitsJson = FCAL::Add_FCALHits(FCALHits);
             auto fcalShowersJson = FCAL::Add_FCALShowers(FCALShowers);
 
 
             // BCAL
-
             auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
             auto bcalPointsJson = BCAL::Add_BCALPoints(BCALPoints);
             auto bcalShowersJson = BCAL::Add_BCALShowers(BCALShowers);

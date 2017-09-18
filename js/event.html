@@ -125,7 +125,7 @@
 <script src="js/threex.dilategeometry.js"></script>
 <script src="js/threex.atmospherematerial.js"></script>
 <script src="js/cameras/CombinedCamera.js"></script>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!--<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>-->
 
 
 <nav style="position:absolute; left: 100px; z-index: 100">
@@ -312,7 +312,7 @@
         eventLoader.setGeometry(gluexGeometry,shadowgeom);
         //shadoweventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
-            shadowevent=loadedEvent;
+            shadowevent=loadedEvent.clone();
             scene.add(loadedEvent);
             UpdateAnimationTriggers(loadedEvent.children);
         });
