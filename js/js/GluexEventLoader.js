@@ -217,7 +217,7 @@ THREE.GluexEventLoader.prototype = {
                 }
 
                 var material = new THREE.MeshBasicMaterial({
-                    color: 0x0000ff,
+                    color: 0x68d6ff,
                     transparent: true,
                     opacity: .8,
                     visible: vis
@@ -566,10 +566,11 @@ THREE.GluexEventLoader.prototype = {
                 // var strawMesh = scope.geometry.getObjectByName(name, true);
                 var strawMesh = scope.shadowGeom.getObjectByName(name, true);
                 if (strawMesh) {
-                    strawMesh.material.visible = vis;
+                    var strawmeshToAdd= strawMesh.clone();
+                    strawmeshToAdd.material.visible = vis;
 
-                    strawMesh.userData.t=cdchit.t
-                    scope.geometry.getObjectByName("CDC",true).add(strawMesh);
+                    strawmeshToAdd.userData.t=cdchit.t
+                    scope.geometry.getObjectByName("CDC",true).add(strawmeshToAdd);
                 }
 
             });
@@ -635,20 +636,24 @@ THREE.GluexEventLoader.prototype = {
                         object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
                     }
 
-                    if(object.userData.HitTimes) {
-                        object.userData.HitTimes.push({end: end, time: time});
+
+                    var objectToAdd= object.clone();
+
+
+                    if(objectToAdd.userData.HitTimes) {
+                        objectToAdd.userData.HitTimes.push({end: end, time: time});
                     }
                     else
                     {
-                        object.userData.HitTimes=[];
-                        object.userData.HitTimes.push({end: end, time: time});
+                        objectToAdd.userData.HitTimes=[];
+                        objectToAdd.userData.HitTimes.push({end: end, time: time});
                     }
-                    object.geometry.colorsNeedUpdate = true;
+                    objectToAdd.geometry.colorsNeedUpdate = true;
 
                     if(plane==1)
-                        scope.geometry.getObjectByName(object.parent.name, true).add(object);
+                        scope.geometry.getObjectByName(object.parent.name, true).add(objectToAdd);
                     else
-                        scope.geometry.getObjectByName(object.parent.name, true).add(object);
+                        scope.geometry.getObjectByName(object.parent.name, true).add(objectToAdd);
                     /* var inside=glowMesh.insideMesh.material.uniforms;
                      inside.glowColor.value.setRGB(color.r,color.g,color.b);
                      inside.power.value=.5;
@@ -666,7 +671,8 @@ THREE.GluexEventLoader.prototype = {
                 {
                     sceneobject.userData.HitTimes.push({end: end, time: time});
                 }
-                else {
+                else
+                {
                     console.log("DIDN'T FIND " + geoName);
                 }//console.log(object);
 
@@ -689,13 +695,14 @@ THREE.GluexEventLoader.prototype = {
 
 
                 var modulemesh = scope.shadowGeom.getObjectByName(geoName, true);
+                var sceneobject = scope.geometry.getObjectByName(geoName, true);
                 //getObjectByName( "TestBox", true );
 
                 if (modulemesh) {
                     /* if (modulemesh.geometry.type === "BufferGeometry") {
                          modulemesh.geometry = new THREE.Geometry().fromBufferGeometry(modulemesh.geometry);
                      }*/
-                    var moduletoadd=modulemesh;//.clone();
+                    var moduletoadd=modulemesh.clone();
                     moduletoadd.userData.t = hit.t;
 
                     moduletoadd.geometry.colorsNeedUpdate = true;
@@ -704,6 +711,10 @@ THREE.GluexEventLoader.prototype = {
                     else
                         scope.geometry.getObjectByName("BCAL_details2", true).add(moduletoadd);
 
+                }
+                else if(sceneobject)
+                {
+                    sceneobject.userData.t = hit.t;
                 }
                 else {
                     console.log("DIDN'T FIND " + geoName);
