@@ -137,8 +137,23 @@
     <a id="autoPlay" href="#" class="button gray" OnClick="autoplay_click()">autoplay</a>
     <span id="janaStatus" style="color: darkgray"> JANA status </span>
     <span style="display: block; text-align: center;color: green; font-size: 30px" id="EventClock" > Event Clock </span>
+    <span style="display: block; text-align: center;color: green; font-size: 30px" id="play_pause" > <a href="#" class="button gray" OnClick="togglePlay()">play/pause</a> </span>
 </nav>
 <script>
+    function togglePlay(){
+        if(isPlaying)
+        {
+            <!--clock.stop();-->
+            isPlaying=false;
+        }
+        else
+        {
+            <!--clock.start();-->
+            isPlaying = true;
+            animate();
+        }
+    }
+
     function next_click() {
         console.log("calling /api/v1/next");
         firstShowing=true;
@@ -212,10 +227,13 @@
 
     var gluexGeometry = null;
 
+    var SceneClock;
+    var isPlaying=true;
     var max_swim_steps=0;
     var max_swim_time=0;
     var min_start_time=99999999999;
     var max_total_time=-9999999999;
+
 
     var SCgeo=null;
 
@@ -456,7 +474,7 @@
     }
 
     function animateFCALHits(clock,time_scale,eventobj,min_start_time,max_total_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -499,7 +517,7 @@
     }
 
     function animateFCALShowers(clock,time_scale,eventobj,min_start_time,max_total_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -542,7 +560,7 @@
     }
 
     function animateTOFHits(clock,time_scale,min_start_time,max_total_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -686,7 +704,7 @@
         }
     }
     function animateBCALHits(clock,time_scale,min_start_time,max_total_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -775,7 +793,7 @@
 
 
     function animateTOFPoints(clock,time_scale,eventobj,min_start_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = parseFloat($("#EventClock")[0].innerHTML.split(" "));// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -827,7 +845,7 @@
 
     function animateSCHits(eventobjs,clock,time_scale,min_start_time) {
         if (eventobjs) {
-            var SceneTime = clock.getElapsedTime() * time_scale;
+            var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
             if (SceneTime > max_total_time - min_start_time) {
                 //RealTime=SceneTime;
@@ -867,7 +885,7 @@
         if (cdcobj) {
 
 
-            var SceneTime = clock.getElapsedTime() * time_scale;
+            var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
             if (SceneTime > max_total_time - min_start_time) {
                 //RealTime=SceneTime;
@@ -907,7 +925,7 @@
     }
 
     function animateFDCPseudos(clock,time_scale,eventobj,min_start_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -958,7 +976,7 @@
     }
 
     function animateBCALPoints(clock,time_scale,eventobj,min_start_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -1008,7 +1026,7 @@
     }
 
     function animateBCALShowers(clock,time_scale,eventobj,min_start_time,max_total_time) {
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -1077,13 +1095,13 @@
             //ViewerConfig.SceneTimeMessage = "NO TRACKS IN EVENT"
         }
         else {
-
+            SceneClock=timeToShow;
             $("#EventClock").text(timeToShow.toFixed(3) + " ns");
         }
     }
     function animateTrackLines(clock,time_scale,min_start_time,eventobj,max_swim_steps,max_swim_time,max_total_time) {
 
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -1137,7 +1155,7 @@
 
     function animateFDCHits(clock,time_scale,min_start_time,eventobj,max_swim_steps,max_swim_time,max_total_time) {
 
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
 
         if (SceneTime > max_total_time - min_start_time) {
 
@@ -1395,6 +1413,10 @@
 
     function animate() {
 
+        if(!isPlaying)
+        {
+            return;
+        }
         requestAnimationFrame( animate );
         var time_scale=ViewerConfig.time_scale;
 
