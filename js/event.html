@@ -146,17 +146,14 @@
             SceneClockOffset=parseFloat($("#EventClock")[0].innerHTML.split(" "));//.getElapsedTime()*ViewerConfig.time_scale;
             clock.stop();
             isPlaying=false;
-            //updateClockMessage(clock,ViewerConfig.time_scale)
-            //animate();
+
         }
         else
         {
-            //SceneClockOffset=parseFloat($("#EventClock")[0].innerHTML.split(" "));//.getElapsedTime()*ViewerConfig.time_scale;
             clock.stop();
             clock.start();
             isPlaying = true;
             updateClockMessage(clock,ViewerConfig.time_scale);
-            animate();
         }
     }
 
