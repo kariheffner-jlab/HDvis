@@ -150,7 +150,6 @@
         }
         else
         {
-            clock.stop();
             clock.start();
             isPlaying = true;
             updateClockMessage(clock,ViewerConfig.time_scale);
@@ -285,18 +284,6 @@
             scene.remove(event);
         }
 
-
-        /*var shadowexistingGeometry = shadowscene.getObjectByName('GluexGeometry');
-        var shadowevent = shadowscene.getObjectByName('GluexEvent');
-        if(!shadowexistingGeometry) {
-            shadowscene.add(gluexGeometry);
-        }
-        if(shadowevent) {
-            recursiveRemove(shadowevent);
-            shadowscene.remove(shadowevent);
-        }*/
-
-
         var eventLoader = new THREE.GluexEventLoader();
         //var shadoweventLoader = new THREE.GluexEventLoader();
         eventLoader.setConfiguration(ViewerConfig);
@@ -307,15 +294,10 @@
             scene.add(loadedEvent);
             UpdateAnimationTriggers(loadedEvent.children);
         });
-        /* shadoweventLoader.load('./event.json', function(loadedEvent) {
-             shadowscene.add(loadedEvent);
-         });*/
 
         firstShowing=true;
         SceneClockOffset=min_start_time;
 
-        clock.stop();
-        clock.start();
     }
 
     function init() {
