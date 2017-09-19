@@ -1427,11 +1427,15 @@
 
     function animate() {
 
+
+        requestAnimationFrame( animate );
+        controls.update();
+
         if(!isPlaying)
         {
+            render();
             return;
         }
-        requestAnimationFrame( animate );
 
         var time_scale=ViewerConfig.time_scale;
         updateClockMessage(clock,time_scale);
@@ -1440,11 +1444,8 @@
         {
 
             clock.stop();
-            //SceneClockOffset=0.;
             clock.start();
         }
-
-
 
 
         var SceneTime=SceneClock;//clock.getElapsedTime()*time_scale;
@@ -1452,7 +1453,7 @@
         var RealTime=SceneTime;
 
         // console.log(SceneTime);
-        controls.update();
+
         var eventObj = scene.getObjectByName("GluexEvent");
         var geoObj = scene.getObjectByName("GluexGeometry");
         if( eventObj ) {
@@ -1488,7 +1489,7 @@
             animateBCALHits(clock, time_scale, min_start_time, max_total_time);
 
 
-            if((SceneTime+min_start_time>(max_total_time) || firstShowing || RealTime+min_start_time>=max_total_time+2*time_scale))//includes a delay at the end
+            if((SceneTime>(max_total_time) || firstShowing || RealTime>=max_total_time+2*time_scale))//includes a delay at the end
             {
                 if(firstShowing)
                 {
