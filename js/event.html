@@ -384,8 +384,6 @@
             loadEventFromFile();
         });
 
-        SCgeo=scene.getObjectByName("SC");
-
         object = new THREE.AxisHelper( 100 );
         object.position.set( 0, 0, 0 );
         //scene.add( object );
@@ -514,7 +512,6 @@
             }
         }
     }
-
     function animateFCALShowers(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "FCALShower") {
@@ -551,7 +548,6 @@
         }
 
     }
-
     function animateTOFHits(SceneTime) {
 
         var eventObj = scene.getObjectByName("GluexGeometry");
@@ -771,7 +767,6 @@
             }
         }
     }
-
     function animateTOFPoints(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "TOFPoint") {
@@ -816,7 +811,6 @@
         }
 
     }
-
     function animateSCHits(SceneTime) {
         var scobj=scene.getObjectByName("SC");
         if(scobj) {
@@ -847,7 +841,6 @@
             }
         }
     }
-
     function animateCDCHits(SceneTime) {
 
         var cdcobj = scene.getObjectByName("CDC");
@@ -885,7 +878,6 @@
             }
         }
     }
-
     function animateFDCPseudos(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "FDCPseudo") {
@@ -930,7 +922,6 @@
         }
 
     }
-
     function animateBCALPoints(SceneTime,eventobj,min_start_time) {
 
         if (SceneTime > max_total_time - min_start_time) {
@@ -979,7 +970,6 @@
             }
         }
     }
-
     function animateBCALShowers(SceneTime,eventobj,min_start_time,max_total_time) {
 
         if (SceneTime > max_total_time - min_start_time) {
@@ -1023,8 +1013,6 @@
         }
 
     }
-
-
     function updateClockMessage(clock,time_scale) {
 
         var SceneTime = clock.getElapsedTime() * time_scale + (SceneClockOffset-min_start_time);
@@ -1105,7 +1093,6 @@
         }
 
     }
-
     function animateFDCHits(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "FDCHit") {
@@ -1148,9 +1135,7 @@
             }
         }
     }
-
-    function UpdateAnimationTriggers(eventobjs)
-    {
+    function UpdateAnimationTriggers(eventobjs) {
         max_swim_steps=0;
         max_swim_time=0;
         min_start_time=99999999999;
@@ -1407,25 +1392,24 @@
 
             if (firstShowing) {
                 firstShowing = false;
-            }
 
-            // required after the first render
-            for (var i = 0; i < eventobjs.length; i++) {
-                if (eventobjs[i].name.split('_')[0] === "track") {
-                    var thisGeo = eventobjs[i].children[0].geometry;
+                // required after the first render
+                for (var i = 0; i < eventobjs.length; i++) {
+                    if (eventobjs[i].name.split('_')[0] === "track") {
+                        var thisGeo = eventobjs[i].children[0].geometry;
 
-                    updateTrackPositions(eventobjs[i], max_swim_steps);
-                    thisGeo.attributes.position.needsUpdate = true;
+                        updateTrackPositions(eventobjs[i], max_swim_steps);
+                        thisGeo.attributes.position.needsUpdate = true;
+                    }
                 }
-            }
 
+            }
         }
         render();
 
     }
 
-    function raytracing()
-    {
+    function raytracing() {
         /*camera.updateMatrixWorld();
 
         camera.getWorldDirection( camera_facing );
