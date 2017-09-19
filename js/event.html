@@ -143,13 +143,19 @@
     function togglePlay(){
         if(isPlaying)
         {
-            <!--clock.stop();-->
+            SceneClockOffset=parseFloat($("#EventClock")[0].innerHTML.split(" "));//.getElapsedTime()*ViewerConfig.time_scale;
+            clock.stop();
             isPlaying=false;
+            //updateClockMessage(clock,ViewerConfig.time_scale)
+            //animate();
         }
         else
         {
-            <!--clock.start();-->
+            //SceneClockOffset=parseFloat($("#EventClock")[0].innerHTML.split(" "));//.getElapsedTime()*ViewerConfig.time_scale;
+            clock.stop();
+            clock.start();
             isPlaying = true;
+            updateClockMessage(clock,ViewerConfig.time_scale);
             animate();
         }
     }
@@ -157,7 +163,6 @@
     function next_click() {
         console.log("calling /api/v1/next");
         firstShowing=true;
-        clock.stop();
         var xhr = new XMLHttpRequest();
         previousJanaState = "Processing";
         xhr.open('GET', "/api/v1/next", true);
@@ -228,6 +233,7 @@
     var gluexGeometry = null;
 
     var SceneClock;
+    var SceneClockOffset=0.;
     var isPlaying=true;
     var max_swim_steps=0;
     var max_swim_time=0;
@@ -308,6 +314,7 @@
          });*/
 
         firstShowing=true;
+        SceneClockOffset=min_start_time;
 
         clock.stop();
         clock.start();
@@ -1073,10 +1080,16 @@
 
     function updateClockMessage(clock,time_scale) {
 
-        var SceneTime = clock.getElapsedTime() * time_scale;
+        var SceneTime = clock.getElapsedTime() * time_scale + (SceneClockOffset-min_start_time);
 
 
         var timeToShow = (min_start_time + SceneTime);
+        if(SceneTime+min_start_time > max_total_time+2*time_scale)
+        {
+            clock.stop();
+            clock.start();
+            SceneClockOffset=min_start_time;
+        }
         if (timeToShow > (max_total_time)) {
             timeToShow = max_total_time;
         }
@@ -1418,18 +1431,22 @@
             return;
         }
         requestAnimationFrame( animate );
+
         var time_scale=ViewerConfig.time_scale;
+        updateClockMessage(clock,time_scale);
 
         if(firstShowing)
         {
+
             clock.stop();
+            //SceneClockOffset=0.;
             clock.start();
         }
 
 
-        updateClockMessage(clock,time_scale);
 
-        var SceneTime=clock.getElapsedTime()*time_scale;
+
+        var SceneTime=SceneClock;//clock.getElapsedTime()*time_scale;
 
         var RealTime=SceneTime;
 
@@ -1474,10 +1491,12 @@
             {
                 if(firstShowing)
                 {
+
                     firstShowing=false;
                 }
                 clock.stop();
-                ViewerConfig.SceneTimeMessage=min_start_time.toFixed(3);
+                //SceneClockOffset=0.;
+                //ViewerConfig.SceneTimeMessage=min_start_time.toFixed(3);
                 // required after the first render
                 for (var i = 0; i < eventobjs.length; i++) {
                     if (eventobjs[i].name.split('_')[0] === "track") {
