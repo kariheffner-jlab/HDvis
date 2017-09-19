@@ -163,6 +163,7 @@
     function next_click() {
         console.log("calling /api/v1/next");
         firstShowing=true;
+        clock.stop();
         var xhr = new XMLHttpRequest();
         previousJanaState = "Processing";
         xhr.open('GET', "/api/v1/next", true);
