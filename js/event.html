@@ -501,13 +501,13 @@
             }
 
             if (ViewerConfig.FCALHitVis === "Dynamic") {
-                if (SceneTime + min_start_time > eventobj.userData.t) {
+                if (SceneTime > eventobj.userData.t) {
                     eventobj.scale.set(1, 1, eventobj.userData.E * ViewerConfig.FCAL_EScale);
                     eventobj.position.z = (655 + (eventobj.userData.E * ViewerConfig.FCAL_EScale / 2) + 15);//(655+((SceneTime/max_total_time)*eventobjs[i].userData.E*ViewerConfig.FCAL_EScale)/2);
                     eventobj.geometryNeedsUpdate = true;
 
                 }
-                else if (SceneTime + min_start_time < eventobj.userData.t && eventobj.scale.z !== 1) {
+                else if (SceneTime < eventobj.userData.t && eventobj.scale.z !== 1) {
                     eventobj.scale.set(1, 1, 1);
                     eventobj.position.z = (655 + 1 + 15);
                     eventobj.geometryNeedsUpdate = true;
@@ -543,13 +543,13 @@
                     eventobj.material.visible = true;
             }
             if (ViewerConfig.FCALShowerVis === "Dynamic") {
-                if (SceneTime + min_start_time > eventobj.userData.fTime) {
+                if (SceneTime > eventobj.userData.fTime) {
                     eventobj.scale.set(10, 20, 10);
                     eventobj.position.z = eventobj.userData.showerZ + 10;
                     eventobj.geometryNeedsUpdate = true;
 
                 }
-                else if (SceneTime + min_start_time < eventobj.userData.fTime && eventobj.scale.z !== 1) {
+                else if (SceneTime < eventobj.userData.fTime && eventobj.scale.z !== 1) {
                     eventobj.scale.set(1, 1, 1);
                     eventobj.position.z = eventobj.userData.showerZ + .5;
                     eventobj.geometryNeedsUpdate = true;
@@ -597,7 +597,7 @@
                                             continue;
                                         }//RESPECT THE CLOCK BOUNDS TOF
 
-                                        if (SceneTime + min_start_time >= geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] || ViewerConfig.TOFHitVis === "Static") {
+                                        if (SceneTime >= geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['time'] || ViewerConfig.TOFHitVis === "Static") {
 
                                             if (geoobjs.children[plane].children[block].children[bar].userData.HitTimes[j]['end'] === 0) {
                                                 numhits0++;
@@ -753,10 +753,10 @@
                                 }//RESPECT THE CLOCK BOUNDS
 
                                 if (ViewerConfig.BCALHitVis === "Dynamic") {
-                                    if (SceneTime + min_start_time > geoobjs.children[part].userData.t) {
+                                    if (SceneTime  > geoobjs.children[part].userData.t) {
                                         geoobjs.children[part].material.color.setRGB(255. / 255., 0. / 255., 0. / 255.);
                                     }
-                                    else if (SceneTime + min_start_time < geoobjs.children[part].userData.t) {
+                                    else if (SceneTime < geoobjs.children[part].userData.t) {
                                         if (geoobjs.children[part].name.split("_")[2] === "l3") {
                                             geoobjs.children[part].material.color.setRGB(179. / 255., 165. / 255., 128. / 255.);
                                         }
@@ -819,7 +819,7 @@
                     eventobj.material.visible = true;
             }
             if (ViewerConfig.TOFPointVis === "Dynamic") {
-                if (SceneTime + min_start_time > eventobj.userData.t && eventobj.material.color.b === 1) {
+                if (SceneTime > eventobj.userData.t && eventobj.material.color.b === 1) {
                     eventobj.scale.set(3, 3, 3);
                     eventobj.geometryNeedsUpdate = true;
                     eventobj.material.color.r = 1;
@@ -827,7 +827,7 @@
                     eventobj.material.color.b = 0;
                     eventobj.colorsNeedUpdate = true;
                 }
-                else if (SceneTime + min_start_time < eventobj.userData.t && eventobj.material.color.r === 1) {
+                else if (SceneTime < eventobj.userData.t && eventobj.material.color.r === 1) {
                     eventobj.scale.set(1, 1, 1);
                     eventobj.geometryNeedsUpdate = true;
                     eventobj.material.color.r = 0;
@@ -869,10 +869,10 @@
                     }//RESPECT THE CLOCK BOUNDS TOF POINTS
 
                     if (ViewerConfig.SCHitVis === "Dynamic") {
-                        if (SceneTime + min_start_time > eventobjs[i].userData.t) {
+                        if (SceneTime > eventobjs[i].userData.t) {
                             eventobjs[i].material.color.setRGB(255. / 255., 141. / 255., 66. / 255.);
                         }
-                        else if (SceneTime + min_start_time < eventobjs[i].userData.t) {
+                        else if (SceneTime < eventobjs[i].userData.t) {
                             eventobjs[i].material.color.setRGB(1, 1, 1);
                         }
                     }
@@ -914,10 +914,10 @@
                             eventobjs[i].material.visible = true;
                     }
                     if (ViewerConfig.CDCHitVis === "Dynamic") {
-                        if (SceneTime + min_start_time > eventobjs[i].userData.t && eventobjs[i].material.visible === false) {
+                        if (SceneTime > eventobjs[i].userData.t && eventobjs[i].material.visible === false) {
                             eventobjs[i].material.visible = true;
                         }
-                        else if (SceneTime + min_start_time < eventobjs[i].userData.t && eventobjs[i].material.visible === true) {
+                        else if (SceneTime < eventobjs[i].userData.t && eventobjs[i].material.visible === true) {
                             eventobjs[i].material.visible = false;
                         }
                     }
@@ -951,7 +951,7 @@
                     eventobj.material.visible = true;
             }
             if (ViewerConfig.FDCPseudoVis === "Dynamic") {
-                if (SceneTime + min_start_time > eventobj.userData.time && eventobj.material.color.b === 1) {
+                if (SceneTime > eventobj.userData.time && eventobj.material.color.b === 1) {
                     eventobj.scale.set(2, 2, 2);
                     eventobj.geometryNeedsUpdate = true;
                     eventobj.material.color.r = 1;
@@ -959,7 +959,7 @@
                     eventobj.material.color.b = 0;
                     eventobj.colorsNeedUpdate = true;
                 }
-                else if (SceneTime + min_start_time < eventobj.userData.time && eventobj.material.color.r === 1) {
+                else if (SceneTime < eventobj.userData.time && eventobj.material.color.r === 1) {
                     eventobj.scale.set(1, 1, 1);
                     eventobj.geometryNeedsUpdate = true;
                     eventobj.material.color.r = 0;
@@ -1002,7 +1002,7 @@
                     eventobj.material.visible = true;
             }
             if (ViewerConfig.BCALPointVis === "Dynamic") {
-                if (SceneTime + min_start_time > eventobj.userData.t && eventobj.material.color.b === 255./255.) {
+                if (SceneTime > eventobj.userData.t && eventobj.material.color.b === 255./255.) {
                     eventobj.scale.set(2, 2, 2);
                     eventobj.geometryNeedsUpdate = true;
                     eventobj.material.color.r = 255./255.;
@@ -1010,7 +1010,7 @@
                     eventobj.material.color.b = 30./255.;
                     eventobj.colorsNeedUpdate = true;
                 }
-                else if (SceneTime + min_start_time < eventobj.userData.t && eventobj.material.color.r === 1) {
+                else if (SceneTime < eventobj.userData.t && eventobj.material.color.r === 1) {
                     eventobj.scale.set(1, 1, 1);
                     eventobj.geometryNeedsUpdate = true;
                     eventobj.material.color.r = 104./255.;
@@ -1052,14 +1052,14 @@
                     eventobj.material.visible = true;
             }
             if (ViewerConfig.BCALShowerVis === "Dynamic") {
-                if (SceneTime + min_start_time > eventobj.userData.t) {
+                if (SceneTime > eventobj.userData.t) {
                     var EScale = 5 + 10 * eventobj.userData.E;
                     eventobj.scale.set(EScale, 2 * EScale, EScale);
                     eventobj.position.z = eventobj.userData.z + EScale;
                     eventobj.geometryNeedsUpdate = true;
 
                 }
-                else if (SceneTime + min_start_time < eventobj.userData.t && eventobj.scale.z !== 1) {
+                else if (SceneTime < eventobj.userData.t && eventobj.scale.z !== 1) {
                     eventobj.scale.set(1, 1, 1);
                     eventobj.position.z = eventobj.userData.z + .5;
                     eventobj.geometryNeedsUpdate = true;
@@ -1190,7 +1190,7 @@
             }
 
             if (ViewerConfig.FDCHitVis === "Dynamic") {
-                if (SceneTime + min_start_time > eventobj.userData.t) {
+                if (SceneTime > eventobj.userData.t) {
                     if ((ViewerConfig.FDCHitTypeVis === "Cathodes" && eventobj.userData.type !== 0) || (ViewerConfig.FDCHitTypeVis === "Anodes" && eventobj.userData.type === 0) || ViewerConfig.FDCHitTypeVis === "Both") {
                         eventobj.material.visible = true;
                     }
@@ -1198,7 +1198,7 @@
                         eventobj.material.visible = false;
                     }
                 }
-                else if (SceneTime + min_start_time < eventobj.userData.t && eventobj.material.visible !== false) {
+                else if (SceneTime < eventobj.userData.t && eventobj.material.visible !== false) {
                     eventobj.material.visible = false;
                 }
             }
