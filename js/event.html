@@ -478,13 +478,7 @@
         }
     }
 
-    function animateFCALHits(clock,time_scale,eventobj,min_start_time,max_total_time) {
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-            //RealTime=SceneTime;
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateFCALHits(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "FCALHit") {
             if (eventobj.userData.t > ViewerConfig.max_clock_time ||
@@ -521,13 +515,7 @@
         }
     }
 
-    function animateFCALShowers(clock,time_scale,eventobj,min_start_time,max_total_time) {
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-            //RealTime=SceneTime;
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateFCALShowers(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "FCALShower") {
             if (eventobj.userData.fTime > ViewerConfig.max_clock_time ||
@@ -564,13 +552,7 @@
 
     }
 
-    function animateTOFHits(clock,time_scale,min_start_time,max_total_time) {
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-            //RealTime=SceneTime;
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateTOFHits(SceneTime) {
 
         var eventObj = scene.getObjectByName("GluexGeometry");
         if (eventObj) {
@@ -708,13 +690,7 @@
             }
         }
     }
-    function animateBCALHits(clock,time_scale,min_start_time,max_total_time) {
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-            //RealTime=SceneTime;
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateBCALHits(SceneTime) {
 
         var eventObj = scene.getObjectByName("GluexGeometry");
         if (eventObj) {
@@ -796,14 +772,7 @@
         }
     }
 
-
-    function animateTOFPoints(clock,time_scale,eventobj,min_start_time) {
-        var SceneTime = parseFloat($("#EventClock")[0].innerHTML.split(" "));// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-            //RealTime=SceneTime;
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateTOFPoints(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "TOFPoint") {
             if (eventobj.userData.t > ViewerConfig.max_clock_time ||
@@ -848,15 +817,10 @@
 
     }
 
-    function animateSCHits(eventobjs,clock,time_scale,min_start_time) {
-        if (eventobjs) {
-            var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-            if (SceneTime > max_total_time - min_start_time) {
-                //RealTime=SceneTime;
-                SceneTime = max_total_time - min_start_time;
-            }
-
+    function animateSCHits(SceneTime) {
+        var scobj=scene.getObjectByName("SC");
+        if(scobj) {
+            var eventobjs =scobj.children[0].children;
             for (var i = 0; i < eventobjs.length; i++) {
                 if (eventobjs[i].userData.t) {
                     if (eventobjs[i].userData.t > ViewerConfig.max_clock_time ||
@@ -884,18 +848,11 @@
         }
     }
 
-    function animateCDCHits(clock,time_scale,min_start_time) {
+    function animateCDCHits(SceneTime) {
 
         var cdcobj = scene.getObjectByName("CDC");
         if (cdcobj) {
 
-
-            var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-            if (SceneTime > max_total_time - min_start_time) {
-                //RealTime=SceneTime;
-                SceneTime = max_total_time - min_start_time;
-            }
 
             var eventobjs = cdcobj.children;
 
@@ -929,13 +886,7 @@
         }
     }
 
-    function animateFDCPseudos(clock,time_scale,eventobj,min_start_time) {
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-            //RealTime=SceneTime;
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateFDCPseudos(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "FDCPseudo") {
             if (eventobj.userData.time > ViewerConfig.max_clock_time ||
@@ -980,8 +931,7 @@
 
     }
 
-    function animateBCALPoints(clock,time_scale,eventobj,min_start_time) {
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
+    function animateBCALPoints(SceneTime,eventobj,min_start_time) {
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -1030,8 +980,7 @@
         }
     }
 
-    function animateBCALShowers(clock,time_scale,eventobj,min_start_time,max_total_time) {
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
+    function animateBCALShowers(SceneTime,eventobj,min_start_time,max_total_time) {
 
         if (SceneTime > max_total_time - min_start_time) {
             //RealTime=SceneTime;
@@ -1110,14 +1059,7 @@
             $("#EventClock").text(timeToShow.toFixed(3) + " ns");
         }
     }
-    function animateTrackLines(clock,time_scale,min_start_time,eventobj,max_swim_steps,max_swim_time,max_total_time) {
-
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-            //RealTime=SceneTime;
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateTrackLines(SceneTime,eventobj,max_swim_steps) {
 
         if (eventobj.name.split('_')[0] === "track") {
             var thisGeo = eventobj.children[0].geometry;
@@ -1164,14 +1106,7 @@
 
     }
 
-    function animateFDCHits(clock,time_scale,min_start_time,eventobj,max_swim_steps,max_swim_time,max_total_time) {
-
-        var SceneTime = SceneClock;// clock.getElapsedTime() * time_scale;
-
-        if (SceneTime > max_total_time - min_start_time) {
-
-            SceneTime = max_total_time - min_start_time;
-        }
+    function animateFDCHits(SceneTime,eventobj) {
 
         if (eventobj.name.split('_')[0] === "FDCHit") {
 
@@ -1437,78 +1372,52 @@
         var time_scale=ViewerConfig.time_scale;
         updateClockMessage(clock,time_scale);
 
-        if(firstShowing)
-        {
-
-            clock.stop();
-            clock.start();
-        }
-
-
-        var SceneTime=SceneClock;//clock.getElapsedTime()*time_scale;
-
-        var RealTime=SceneTime;
-
-        // console.log(SceneTime);
+        var SceneTime=SceneClock;
 
         var eventObj = scene.getObjectByName("GluexEvent");
-        var geoObj = scene.getObjectByName("GluexGeometry");
+
         if( eventObj ) {
             var eventobjs = eventObj.children;
 
-            if(ViewerConfig.TimingsNeedsUpdate===true) {
+            if (ViewerConfig.TimingsNeedsUpdate === true) {
                 UpdateAnimationTriggers(eventobjs);
                 ViewerConfig.TimingsNeedsUpdate = false;
             }
 
-            if(SceneTime>max_total_time-min_start_time)
-            {
+            if (SceneTime > max_total_time - min_start_time) {
                 //RealTime=SceneTime;
-                SceneTime=max_total_time-min_start_time;
+                SceneTime = max_total_time - min_start_time;
             }
 
-            for(var i=0;i<eventobjs.length;i++) {
-                animateTrackLines(clock, time_scale, min_start_time, eventobjs[i], max_swim_steps, max_swim_time, max_total_time);
-                animateBCALPoints(clock, time_scale, eventobjs[i], min_start_time);
-                animateBCALShowers(clock, time_scale, eventobjs[i], min_start_time, max_total_time);
-                animateFDCHits(clock, time_scale, min_start_time, eventobjs[i], max_swim_steps, max_swim_time, max_total_time);
-                animateFDCPseudos(clock, time_scale, eventobjs[i], min_start_time);
-                animateTOFPoints(clock, time_scale, eventobjs[i], min_start_time);
-                animateFCALHits(clock, time_scale, eventobjs[i], min_start_time);
-                animateFCALShowers(clock, time_scale, eventobjs[i], min_start_time, max_total_time);
+            for (var i = 0; i < eventobjs.length; i++) {
+                animateTrackLines(SceneTime, eventobjs[i], max_swim_steps);
+                animateBCALPoints(SceneTime, eventobjs[i], min_start_time);
+                animateBCALShowers(SceneTime, eventobjs[i], min_start_time, max_total_time);
+                animateFDCHits(SceneTime, eventobjs[i]);
+                animateFDCPseudos(SceneTime, eventobjs[i]);
+                animateTOFPoints(SceneTime, eventobjs[i]);
+                animateFCALHits(SceneTime, eventobjs[i]);
+                animateFCALShowers(SceneTime, eventobjs[i]);
             }
-            var scobj=scene.getObjectByName("SC");
-            if(scobj) {
-                animateSCHits(scobj.children[0].children, clock, time_scale, min_start_time);
+
+            animateSCHits(SceneTime);
+            animateCDCHits(SceneTime);
+            animateTOFHits(SceneTime);
+            animateBCALHits(SceneTime);
+
+            if (firstShowing) {
+                firstShowing = false;
             }
-            animateCDCHits(clock, time_scale, min_start_time);
-            animateTOFHits(clock, time_scale, min_start_time, max_total_time);
-            animateBCALHits(clock, time_scale, min_start_time, max_total_time);
 
+            // required after the first render
+            for (var i = 0; i < eventobjs.length; i++) {
+                if (eventobjs[i].name.split('_')[0] === "track") {
+                    var thisGeo = eventobjs[i].children[0].geometry;
 
-            if((SceneTime>(max_total_time) || firstShowing || RealTime>=max_total_time+2*time_scale))//includes a delay at the end
-            {
-                if(firstShowing)
-                {
-
-                    firstShowing=false;
+                    updateTrackPositions(eventobjs[i], max_swim_steps);
+                    thisGeo.attributes.position.needsUpdate = true;
                 }
-                clock.stop();
-                //SceneClockOffset=0.;
-                //ViewerConfig.SceneTimeMessage=min_start_time.toFixed(3);
-                // required after the first render
-                for (var i = 0; i < eventobjs.length; i++) {
-                    if (eventobjs[i].name.split('_')[0] === "track") {
-                        var thisGeo = eventobjs[i].children[0].geometry;
-
-                        updateTrackPositions(eventobjs[i], max_swim_steps);
-                        thisGeo.attributes.position.needsUpdate = true;
-                    }
-                }
-
-                clock.start();
             }
-
 
         }
         render();
