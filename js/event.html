@@ -126,6 +126,8 @@
 <script src="js/threex.atmospherematerial.js"></script>
 <script src="js/cameras/CombinedCamera.js"></script>
 <script src="js/effects/AsciiEffect.js"></script>
+<script src="js/effects/StereoEffect.js"></script>
+<script src="js/effects/VREffect.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 
@@ -215,7 +217,7 @@
     var container, stats;
 
     var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
-    var asciieffect;
+    var asciieffect,stereoeffect;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -225,6 +227,7 @@
     var firstShowing=true;
     var VRbool=false;
     var asciibool=false;
+    var stereobool=false;
 
     var ViewerConfig;
     // start scene
@@ -344,6 +347,14 @@
 
         asciicontrols = new THREE.OrbitControls( camera, asciieffect.domElement );
 
+        //---STEREO---
+        stereoeffect = new THREE.StereoEffect( renderer );
+        stereoeffect.setSize( window.innerWidth, window.innerHeight );
+        //stereoeffect.shadowMapAutoUpdate = false;
+        stereoeffect.setEyeSeparation(0);
+
+        stereocontrols = new THREE.OrbitControls( camera, stereoeffect.domElement );
+
 
         //---DEFAULT CONTROLS/RENDERING
         controls_in_use=regcontrols;
@@ -378,8 +389,8 @@
             loadEventFromFile();
         });
 
- //       object = new THREE.AxisHelper( 100 );
- //       object.position.set( 0, 0, 0 );
+        //       object = new THREE.AxisHelper( 100 );
+        //       object.position.set( 0, 0, 0 );
         //scene.add( object );
 
 
@@ -421,6 +432,8 @@
 
         renderer.setSize( window.innerWidth, window.innerHeight );
         asciieffect.setSize( window.innerWidth, window.innerHeight );
+        stereo.setSize( window.innerWidth, window.innerHeight );
+
 
     }
 
@@ -430,12 +443,34 @@
         switch (event.keyCode) {
 
             case 86: event.preventDefault();VRbool = !VRbool;break;//v
-            case 219: event.preventDefault();asciibool = !asciibool;//[
+            case 219: event.preventDefault();//[
                 if(asciibool)
-                {container.removeChild(renderer.domElement);container.appendChild( asciieffect.domElement );controls_in_use = asciicontrols;break;
+                {
+                    container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;
+                }
+                else if(stereobool)
+                {
+                    container.removeChild(renderer.domElement);container.appendChild( asciieffect.domElement );asciieffect.setSize( window.innerWidth, window.innerHeight );controls_in_use = asciicontrols;stereobool=false;asciibool=true;
                 }
                 else
-                {container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;break;}
+                {
+                    container.removeChild(renderer.domElement);container.appendChild( asciieffect.domElement );controls_in_use = asciicontrols;asciibool=true;
+                }
+                break;
+            case 221: event.preventDefault();//]
+                if(asciibool)
+                {
+                    container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = stereocontrols;asciibool=false;stereobool=true;
+                }
+                else if(stereobool)
+                {
+                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;stereobool=false;
+                }
+                else
+                {
+                    controls_in_use = stereocontrols;stereobool=true;
+                }
+                break;
             case 87: event.preventDefault();camera.translateZ(-MoveDelta);raytracing();break;//w
             case 83: event.preventDefault();camera.translateZ(MoveDelta);raytracing();break;//s
             case 65: event.preventDefault();camera.translateX(-MoveDelta);raytracing();break;//a
@@ -1489,11 +1524,14 @@
 
             if(asciibool)
             {
-
                 asciieffect.render( scene, camera );
             }
-            else {
-
+            else if(stereobool)
+            {
+                stereoeffect.render( scene, camera );
+            }
+            else
+            {
                 renderer.render(scene, camera);
             }
             stats.update();
