@@ -215,7 +215,7 @@
     var container, stats;
 
     var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
-    var effect;
+    var asciieffect;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -314,16 +314,10 @@
         camera.position.y=56;//100;
 
         scene = new THREE.Scene();
-        //shadowscene = new THREE.Scene();
 
-        //console.log(shadowscene);
+        var ambientLight=new THREE.AmbientLight(0xFFFFFF);
 
-
-        var light = new THREE.PointLight( 0xffffff, 1.5 );
-        light.position.set( 1000, 1000, 2000 );
-        //scene.add( light );
-
-        scene.add(new THREE.AmbientLight(0xFFFFFF/*A0A0A0*/));
+        scene.add(ambientLight);
 
         renderer = new THREE.WebGLRenderer( { antialias: false } ); // WebGLRenderer CanvasRenderer
         renderer.setClearColor( 0xff0f0 );
@@ -332,10 +326,17 @@
         renderer.shadowMap.enabled=false;
         renderer.precision="lowp";
 
-        effect = new THREE.AsciiEffect( renderer );
-        effect.setSize( window.innerWidth, window.innerHeight );
+        asciieffect = new THREE.AsciiEffect( renderer );
+        asciieffect.setSize( window.innerWidth, window.innerHeight );
         //container.appendChild( effect.domElement );
         //container.removeChild(effect.domElement);
+
+        renderer.shadowMapAutoUpdate = false;
+        //renderer.clearTarget( ambientLight.shadowMap );
+
+        asciieffect.shadowMapAutoUpdate = false;
+        //asciieffect.clearTarget( ambientLight.shadowMap );
+
 
         container.appendChild( renderer.domElement );
 
@@ -356,7 +357,7 @@
 
         regcontrols = new THREE.OrbitControls( camera, renderer.domElement );
 
-        asciicontrols = new THREE.OrbitControls( camera, effect.domElement );
+        asciicontrols = new THREE.OrbitControls( camera, asciieffect.domElement );
 
         camera.updateMatrixWorld();
         if(asciibool) {
@@ -422,7 +423,7 @@
         camera.updateProjectionMatrix();
 
         renderer.setSize( window.innerWidth, window.innerHeight );
-        effect.setSize( window.innerWidth, window.innerHeight );
+        asciieffect.setSize( window.innerWidth, window.innerHeight );
 
     }
 
@@ -434,10 +435,10 @@
             case 86: event.preventDefault();VRbool = !VRbool;break;//v
             case 219: event.preventDefault();asciibool = !asciibool;//[
                 if(asciibool)
-                {container.removeChild(renderer.domElement);container.appendChild( effect.domElement );controls_in_use = asciicontrols;break;
+                {container.removeChild(renderer.domElement);container.appendChild( asciieffect.domElement );controls_in_use = asciicontrols;break;
                 }
                 else
-                {container.removeChild(effect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;break;}
+                {container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;break;}
             case 87: event.preventDefault();camera.translateZ(-MoveDelta);raytracing();break;//w
             case 83: event.preventDefault();camera.translateZ(MoveDelta);raytracing();break;//s
             case 65: event.preventDefault();camera.translateX(-MoveDelta);raytracing();break;//a
@@ -1516,7 +1517,7 @@
             if(asciibool)
             {
 
-                effect.render( scene, camera );
+                asciieffect.render( scene, camera );
             }
             else {
 

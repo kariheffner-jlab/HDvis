@@ -122,6 +122,7 @@ THREE.GluexHDDSLoader.prototype = {
         var fcalGeo = new THREE.BoxBufferGeometry(236.0, 236.0, 43.0);//was 45
         var fcal = new THREE.Mesh(fcalGeo, new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .1, side: THREE.DoubleSide }));
         fcal.position.set(0.529, -0.002, 624.906 + 22.5-1);
+        fcal.renderOrder = 100;
         this.group.add(fcal);
 
         return this.group;
@@ -132,7 +133,8 @@ THREE.GluexHDDSLoader.prototype = {
 
         // BCAL mother volume
         var bcalGeo = this.tubeGeometry(64.2485, 90.5185, 390.0);
-        var bcalMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc, transparent: true, opacity: .2, side: THREE.DoubleSide })
+        var bcalMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc, transparent: true, opacity: .2, side: THREE.DoubleSide });
+        //var bcalMaterial = new THREE.MeshPhongMaterial( { map: new THREE.TextureLoader().load('textures/test.jpg') } );
         var bcal = new THREE.Mesh(bcalGeo, bcalMaterial);
         bcal.name = "BCAL";
         bcal.renderOrder = 100;     // should be higher than FDC and CDC mother volumes render Order
@@ -461,6 +463,7 @@ THREE.GluexHDDSLoader.prototype = {
         fcal.add(sectionleft);
         fcal.add(sectionright);
 
+        fcal.renderOrder = 1;
         // FCAL section has its own placement adjustment
         var xmlSectionPlacement = xmlSection.querySelector('composition[name="ForwardEMcal"] > posXYZ[volume="forwardEMcal"]');
         var sectionInternalPlacement = extractPlacement(xmlSectionPlacement);
