@@ -305,6 +305,16 @@
         container = document.createElement( 'div' );
         document.body.appendChild( container );
 
+        scene = new THREE.Scene();
+
+        //Lights!
+        var ambientLight=new THREE.AmbientLight(0xFFFFFF);
+
+        scene.add(ambientLight);
+
+
+        //Camera
+
         //camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 5000, 0, 5000 );
         //camera.toPerspective();
         // camera.toOrthographic();
@@ -313,11 +323,7 @@
         camera.position.x=-625;//-1000;
         camera.position.y=56;//100;
 
-        scene = new THREE.Scene();
-
-        var ambientLight=new THREE.AmbientLight(0xFFFFFF);
-
-        scene.add(ambientLight);
+        //Action
 
         renderer = new THREE.WebGLRenderer( { antialias: false } ); // WebGLRenderer CanvasRenderer
         renderer.setClearColor( 0xff0f0 );
@@ -325,22 +331,23 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.shadowMap.enabled=false;
         renderer.precision="lowp";
+        renderer.shadowMapAutoUpdate = false;
 
+        renderer.setClearColor( 0x000000 );
+
+        regcontrols = new THREE.OrbitControls( camera, renderer.domElement );
+
+        //---ASCII---
         asciieffect = new THREE.AsciiEffect( renderer );
         asciieffect.setSize( window.innerWidth, window.innerHeight );
-        //container.appendChild( effect.domElement );
-        //container.removeChild(effect.domElement);
-
-        renderer.shadowMapAutoUpdate = false;
-        //renderer.clearTarget( ambientLight.shadowMap );
-
         asciieffect.shadowMapAutoUpdate = false;
-        //asciieffect.clearTarget( ambientLight.shadowMap );
+
+        asciicontrols = new THREE.OrbitControls( camera, asciieffect.domElement );
 
 
+        //---DEFAULT CONTROLS/RENDERING
+        controls_in_use=regcontrols;
         container.appendChild( renderer.domElement );
-
-
 
         if(renderer.vr)
         {
@@ -355,39 +362,28 @@
 
         raycaster = new THREE.Raycaster();
 
-        regcontrols = new THREE.OrbitControls( camera, renderer.domElement );
-
-        asciicontrols = new THREE.OrbitControls( camera, asciieffect.domElement );
-
         camera.updateMatrixWorld();
-        if(asciibool) {
-            controls_in_use=asciicontrols;
-            resetOrbitPoint(controls_in_use, camera, camera_facing);
-        }
-        else
-        {
-            controls_in_use=regcontrols;
-            resetOrbitPoint(controls_in_use, camera, camera_facing);
-        }
+
+        resetOrbitPoint(controls_in_use, camera, camera_facing);
+
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
         document.addEventListener( 'keydown', onKeyDown, false );
 
+        //--GEOMETRY----
         var geometryLoader = new THREE.GluexHDDSLoader();
-
         geometryLoader.load('./hdds/main_full_HDDS.xml', function (loadedGeom) {
             gluexGeometry = loadedGeom;
-
             // when we have a geometry, we can load the event
             loadEventFromFile();
         });
 
-        object = new THREE.AxisHelper( 100 );
-        object.position.set( 0, 0, 0 );
+ //       object = new THREE.AxisHelper( 100 );
+ //       object.position.set( 0, 0, 0 );
         //scene.add( object );
 
-        renderer.setClearColor( 0x000000 );
 
+        //---MOUSE OVER BOX
         canvas1 = document.createElement('canvas');
         context1 = canvas1.getContext('2d');
         context1.font = "Bold 20px Arial";
@@ -408,6 +404,7 @@
         // GUI----------------------------------------------------------------------------------------
         ViewerConfig=makeGUI(scene);
     }
+
 
     function onDocumentMouseMove( event ) {
         event.preventDefault();
