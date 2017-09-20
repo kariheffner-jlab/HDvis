@@ -560,7 +560,6 @@ THREE.GluexHDDSLoader.prototype = {
             }
         }
 
-
         var CombinedMesh = new THREE.Mesh(new THREE.BufferGeometry().fromGeometry(TotalGeometry), material);
         CombinedMesh.name="wholeSection";
         region.add(CombinedMesh);
