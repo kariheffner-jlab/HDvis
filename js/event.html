@@ -368,12 +368,14 @@
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
         document.addEventListener( 'keydown', onKeyDown, false );
-        document.addEventListener('touchend',function(event){ var currentTime = new Date().getTime();
+        document.addEventListener('touchend',function(event){
+            var currentTime = new Date().getTime();
             var tapLength = currentTime - lastTap;
             clearTimeout(taptimeout);
             if (tapLength < 500 && tapLength > 0) {
                 if(stereobool)
                 {
+                    renderer.setSize( window.innerWidth, window.innerHeight );
                     stereobool=false;
                 }
                 else
@@ -383,7 +385,7 @@
                 event.preventDefault();
             } else {
                 taptimeout = setTimeout(function() {
-                    clearTimeout(timeout);
+                    clearTimeout(taptimeout);
                 }, 500);
             }
             lastTap = currentTime;} );
