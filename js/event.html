@@ -113,6 +113,7 @@
 
 <script src="js/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
+<script src="js/controls/DeviceOrientationControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
 <script src="js/libs/dat.gui.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
@@ -217,7 +218,7 @@
 
     var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
     var ASCIIEffect,StereoEffect,OcculusEffect;
-    var regcontrols,asciicontrols;
+    var regcontrols,asciicontrols,stereocontrols;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -348,6 +349,8 @@
         StereoEffect.shadowMapAutoUpdate = false;
         StereoEffect.setEyeSeparation(.1);//make variable
 
+        stereocontrols= new THREE.DeviceOrientationControls(camera);
+
         OcculusEffect = new THREE.VREffect(renderer);
         OcculusEffect.setSize( window.innerWidth, window.innerHeight );
         OcculusEffect.shadowMapAutoUpdate = false;
@@ -376,11 +379,13 @@
                 if(stereobool)
                 {
                     renderer.setSize( window.innerWidth, window.innerHeight );
+                    controls_in_use=regcontrols;
                     stereobool=false;
                 }
                 else
                 {
                     stereobool=true;
+                    controls_in_use=stereocontrols;
                 }
                 event.preventDefault();
             } else {
@@ -466,7 +471,7 @@
                 {
                     controls_in_use = regcontrols;VRbool=true;
                 }
-                break;//\
+                break;
             case 219: event.preventDefault();//[
                 if(asciibool)
                 {
@@ -518,9 +523,12 @@
     //
     function resetOrbitPoint(controls,camera,camera_facing)
     {
-        camera.getWorldDirection( camera_facing );
-        orbit_point=camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
-        controls.target.set(orbit_point.x,orbit_point.y,orbit_point.z);
+
+        camera.getWorldDirection(camera_facing);
+        orbit_point = camera.position.clone().add(camera_facing.clone().setLength(30));//pretty much an arbitrary length above 10
+        if (controls !== stereocontrols ) {
+            controls.target.set(orbit_point.x, orbit_point.y, orbit_point.z);
+        }
     }
     function updateTrackPositions(lineGeo,max_swim_steps) {
         var positions = lineGeo.children[0].geometry.attributes.position.array;
@@ -1369,8 +1377,10 @@
 
     function animate() {
 
-
         requestAnimationFrame( animate ); //may need a vr bool for rift.....
+
+        if(controls_in_use === stereocontrols)
+            controls_in_use.update();
 
         if(!isPlaying)
         {
