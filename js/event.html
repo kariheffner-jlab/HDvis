@@ -217,7 +217,7 @@
     var container, stats;
 
     var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
-    var asciieffect,stereoeffect;
+    var ASCIIEffect,StereoEffect,OcculusEffect;
     var regcontrols,asciicontrols;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
@@ -249,13 +249,13 @@
     keyState: new Array();
 
 
-    if(VRbool)
+    /*if(VRbool)
     {
         WEBVR.checkAvailability().catch( function( message ) {
             document.body.appendChild( WEBVR.getMessageContainer( message ) );
         } );
 
-    }
+    }*/
 
     init();
     animate();
@@ -341,19 +341,22 @@
         regcontrols = new THREE.OrbitControls( camera, renderer.domElement );
 
         //---ASCII---
-        asciieffect = new THREE.AsciiEffect( renderer );
-        asciieffect.setSize( window.innerWidth, window.innerHeight );
-        asciieffect.shadowMapAutoUpdate = false;
+        ASCIIEffect = new THREE.AsciiEffect( renderer );
+        ASCIIEffect.setSize( window.innerWidth, window.innerHeight );
+        ASCIIEffect.shadowMapAutoUpdate = false;
 
-        asciicontrols = new THREE.OrbitControls( camera, asciieffect.domElement );
+        asciicontrols = new THREE.OrbitControls( camera, ASCIIEffect.domElement );
 
 
         //---STEREO---
-        stereoeffect = new THREE.StereoEffect( renderer );
-        stereoeffect.setSize( window.innerWidth, window.innerHeight );
-        stereoeffect.shadowMapAutoUpdate = false;
-        stereoeffect.setEyeSeparation(.1);//make variable
+        StereoEffect = new THREE.StereoEffect( renderer );
+        StereoEffect.setSize( window.innerWidth, window.innerHeight );
+        StereoEffect.shadowMapAutoUpdate = false;
+        StereoEffect.setEyeSeparation(.1);//make variable
 
+        OcculusEffect = new THREE.VREffect(renderer);
+        OcculusEffect.setSize( window.innerWidth, window.innerHeight );
+        OcculusEffect.shadowMapAutoUpdate = false;
 
         //---DEFAULT CONTROLS/RENDERING
         controls_in_use=regcontrols;
@@ -430,7 +433,7 @@
         camera.updateProjectionMatrix();
 
         renderer.setSize( window.innerWidth, window.innerHeight );
-        asciieffect.setSize( window.innerWidth, window.innerHeight );
+        ASCIIEffect.setSize( window.innerWidth, window.innerHeight );
 
     }
 
@@ -439,29 +442,54 @@
 
         switch (event.keyCode) {
 
-            case 86: event.preventDefault();VRbool = !VRbool;break;//v
-            case 219: event.preventDefault();//[
+            case 220: event.preventDefault();//\
                 if(asciibool)
                 {
-                    container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;
+                    container.removeChild(ASCIIEffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;VRbool=true;
                 }
                 else if(stereobool)
                 {
-                    container.removeChild(renderer.domElement);container.appendChild( asciieffect.domElement );asciieffect.setSize( window.innerWidth, window.innerHeight );controls_in_use = asciicontrols;stereobool=false;asciibool=true;
+                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;stereobool=false;VRbool=true;
+                }
+                else if(VRbool)
+                {
+                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;VRbool=false;
                 }
                 else
                 {
-                    container.removeChild(renderer.domElement);container.appendChild( asciieffect.domElement );controls_in_use = asciicontrols;asciibool=true;
+                    controls_in_use = regcontrols;VRbool=true;
+                }
+                break;//\
+            case 219: event.preventDefault();//[
+                if(asciibool)
+                {
+                    container.removeChild(ASCIIEffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;
+                }
+                else if(stereobool)
+                {
+                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );ASCIIEffect.setSize( window.innerWidth, window.innerHeight );controls_in_use = asciicontrols;stereobool=false;asciibool=true;
+                }
+                else if (VRbool)
+                {
+                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );ASCIIEffect.setSize( window.innerWidth, window.innerHeight );controls_in_use = asciicontrols;VRbool=false;asciibool=true;
+                }
+                else
+                {
+                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );controls_in_use = asciicontrols;asciibool=true;
                 }
                 break;
             case 221: event.preventDefault();//]
                 if(asciibool)
                 {
-                    container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;stereobool=true;
+                    container.removeChild(ASCIIEffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;stereobool=true;
                 }
                 else if(stereobool)
                 {
                     renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;stereobool=false;
+                }
+                else if(VRbool)
+                {
+                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;VRbool=false;stereobool=true;
                 }
                 else
                 {
@@ -1499,34 +1527,26 @@
 
     function render() {
 
-        if(VRbool)
+        if(renderer.vr)
+            renderer.vr.enabled = false;
+
+        if(asciibool)
         {
-
-            if(renderer.vr)
-                renderer.vr.enabled = true;
-
-            renderer.render( scene, camera );
-
+            ASCIIEffect.render( scene, camera );
         }
-        else {
-            // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
-            //renderer.vr.enabled = false;
-            if(renderer.vr)
-                renderer.vr.enabled = false;
-
-            if(asciibool)
-            {
-                asciieffect.render( scene, camera );
-            }
-            else if(stereobool)
-            {
-                stereoeffect.render( scene, camera );
-            }
-            else
-            {
-                renderer.render(scene, camera);
-            }
+        else if(stereobool)
+        {
+            StereoEffect.render( scene, camera );
         }
+        else if( VRbool)
+        {
+            OcculusEffect.render(scene, camera);
+        }
+        else
+        {
+            renderer.render(scene, camera);
+        }
+
         stats.update();
 
     }
