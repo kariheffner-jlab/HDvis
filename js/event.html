@@ -243,6 +243,9 @@
     var min_start_time=99999999999;
     var max_total_time=-9999999999;
 
+    var taptimeout;
+    var lastTap = 0;
+
     // var animationTimings=[min_start_time,max_swim_steps,max_swim_time,max_total_time];
 
     keyState: new Array();
@@ -367,7 +370,7 @@
         document.addEventListener( 'keydown', onKeyDown, false );
         document.addEventListener('touchend',function(event){ var currentTime = new Date().getTime();
             var tapLength = currentTime - lastTap;
-            clearTimeout(timeout);
+            clearTimeout(taptimeout);
             if (tapLength < 500 && tapLength > 0) {
                 if(stereobool)
                 {
@@ -379,8 +382,7 @@
                 }
                 event.preventDefault();
             } else {
-                elm2.innerHTML = 'Single Tap';
-                timeout = setTimeout(function() {
+                taptimeout = setTimeout(function() {
                     clearTimeout(timeout);
                 }, 500);
             }
