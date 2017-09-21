@@ -3,7 +3,7 @@
 <head>
     <title>GlueX HDvis -- Dmitry Romanov and Thomas Britton</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, minimum-scale=1.0, maximum-scale=1.0">
     <style>
         body {
             font-family: Monospace;
@@ -365,6 +365,26 @@
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
         document.addEventListener( 'keydown', onKeyDown, false );
+        document.addEventListener('touchend',function(event){ var currentTime = new Date().getTime();
+            var tapLength = currentTime - lastTap;
+            clearTimeout(timeout);
+            if (tapLength < 500 && tapLength > 0) {
+                if(stereobool)
+                {
+                    stereobool=false;
+                }
+                else
+                {
+                    stereobool=true;
+                }
+                event.preventDefault();
+            } else {
+                elm2.innerHTML = 'Single Tap';
+                timeout = setTimeout(function() {
+                    clearTimeout(timeout);
+                }, 500);
+            }
+            lastTap = currentTime;} );
 
         //--GEOMETRY----
         var geometryLoader = new THREE.GluexHDDSLoader();
