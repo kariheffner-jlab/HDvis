@@ -113,22 +113,21 @@
 
 <script src="js/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
-<script src="js/controls/FlyControls.js"></script>
 <script src="js/libs/stats.min.js"></script>
 <script src="js/libs/dat.gui.min.js"></script>
 <script src="js/GluexEventLoader.js"></script>
 <script src="js/GluexHDDSLoader.js"></script>
 <script src="js/GluexGUI.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
-<script src="js/vr/WebVR.js"></script>
-<script src="js/threex.geometricglowmesh.js"></script>
-<script src="js/threex.dilategeometry.js"></script>
-<script src="js/threex.atmospherematerial.js"></script>
-<script src="js/cameras/CombinedCamera.js"></script>
+<!--<script src="js/vr/WebVR.js"></script>-->
+<!--<script src="js/threex.geometricglowmesh.js"></script>-->
+<!--<script src="js/threex.dilategeometry.js"></script>-->
+<!--<script src="js/threex.atmospherematerial.js"></script>-->
+<!--<script src="js/cameras/CombinedCamera.js"></script>-->
 <script src="js/effects/AsciiEffect.js"></script>
-<!--<script src="js/effects/StereoEffect.js"></script>-->
 <script src="js/effects/VREffect.js"></script>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!--<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>-->
+<script src="js/jquery-3.2.1.min.js"></script>
 
 
 <nav style="position:absolute; left: 100px; z-index: 100">
@@ -249,14 +248,6 @@
     keyState: new Array();
 
 
-    /*if(VRbool)
-    {
-        WEBVR.checkAvailability().catch( function( message ) {
-            document.body.appendChild( WEBVR.getMessageContainer( message ) );
-        } );
-
-    }*/
-
     init();
     animate();
 
@@ -361,14 +352,6 @@
         //---DEFAULT CONTROLS/RENDERING
         controls_in_use=regcontrols;
         container.appendChild( renderer.domElement );
-
-        if(renderer.vr)
-        {
-            WEBVR.getVRDisplay( function ( display ) {
-                renderer.vr.setDevice( display );
-                document.body.appendChild( WEBVR.getButton( display, renderer.domElement ) );
-            } );
-        }
 
         stats = new Stats();
         document.body.appendChild(stats.dom);
@@ -1363,7 +1346,7 @@
     function animate() {
 
 
-        requestAnimationFrame( animate );
+        requestAnimationFrame( animate ); //may need a vr bool for rift.....
 
         if(!isPlaying)
         {
@@ -1526,9 +1509,6 @@
     }
 
     function render() {
-
-        if(renderer.vr)
-            renderer.vr.enabled = false;
 
         if(asciibool)
         {
