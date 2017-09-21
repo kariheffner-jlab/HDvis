@@ -126,7 +126,7 @@
 <script src="js/threex.atmospherematerial.js"></script>
 <script src="js/cameras/CombinedCamera.js"></script>
 <script src="js/effects/AsciiEffect.js"></script>
-<script src="js/effects/StereoEffect.js"></script>
+<!--<script src="js/effects/StereoEffect.js"></script>-->
 <script src="js/effects/VREffect.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
@@ -218,6 +218,7 @@
 
     var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
     var asciieffect,stereoeffect;
+    var regcontrols,asciicontrols;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -315,7 +316,6 @@
 
         scene.add(ambientLight);
 
-
         //Camera
 
         //camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 5000, 0, 5000 );
@@ -347,13 +347,12 @@
 
         asciicontrols = new THREE.OrbitControls( camera, asciieffect.domElement );
 
+
         //---STEREO---
         stereoeffect = new THREE.StereoEffect( renderer );
         stereoeffect.setSize( window.innerWidth, window.innerHeight );
-        //stereoeffect.shadowMapAutoUpdate = false;
-        stereoeffect.setEyeSeparation(0);
-
-        stereocontrols = new THREE.OrbitControls( camera, stereoeffect.domElement );
+        stereoeffect.shadowMapAutoUpdate = false;
+        stereoeffect.setEyeSeparation(.1);//make variable
 
 
         //---DEFAULT CONTROLS/RENDERING
@@ -432,8 +431,6 @@
 
         renderer.setSize( window.innerWidth, window.innerHeight );
         asciieffect.setSize( window.innerWidth, window.innerHeight );
-        stereo.setSize( window.innerWidth, window.innerHeight );
-
 
     }
 
@@ -460,7 +457,7 @@
             case 221: event.preventDefault();//]
                 if(asciibool)
                 {
-                    container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = stereocontrols;asciibool=false;stereobool=true;
+                    container.removeChild(asciieffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;stereobool=true;
                 }
                 else if(stereobool)
                 {
@@ -468,7 +465,7 @@
                 }
                 else
                 {
-                    controls_in_use = stereocontrols;stereobool=true;
+                    controls_in_use = regcontrols;stereobool=true;
                 }
                 break;
             case 87: event.preventDefault();camera.translateZ(-MoveDelta);raytracing();break;//w
@@ -481,6 +478,7 @@
         }
         camera.updateMatrixWorld();
         resetOrbitPoint(controls_in_use,camera,camera_facing);
+
     }
     //
     function resetOrbitPoint(controls,camera,camera_facing)
@@ -1338,13 +1336,7 @@
 
 
         requestAnimationFrame( animate );
-        if(asciibool) {
-            asciicontrols.update();
-        }
-        else
-        {
-            regcontrols.update();
-        }
+
         if(!isPlaying)
         {
             render();
@@ -1514,7 +1506,7 @@
                 renderer.vr.enabled = true;
 
             renderer.render( scene, camera );
-            stats.update();
+
         }
         else {
             // camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
@@ -1534,9 +1526,8 @@
             {
                 renderer.render(scene, camera);
             }
-            stats.update();
-
         }
+        stats.update();
 
     }
 
