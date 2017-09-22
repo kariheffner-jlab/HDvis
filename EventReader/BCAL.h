@@ -31,7 +31,7 @@ public:
         for(uint i=0;i<BCALPoints.size();i++)
         {
 
-            arr.emplace_back(WritePointJSON(i,BCALPoints[i]->r(), BCALPoints[i]->phi(), BCALPoints[i]->z(), BCALPoints[i]->E(), BCALPoints[i]->t() ));
+            arr.emplace_back(WritePointJSON(i,BCALPoints[i]->r(), BCALPoints[i]->phi(), BCALPoints[i]->z(), BCALPoints[i]->E(), BCALPoints[i]->t(), BCALPoints[i]->module() ));
 
         }
         return arr;
@@ -63,7 +63,7 @@ public:
                                         {"cellId", cellId}
                                 });
     }
-    static tao::json::value WritePointJSON(int id,double r, double theta, double z, double E, double t )
+    static tao::json::value WritePointJSON(int id,double r, double theta, double z, double E, double t, int module )
     {
 
         return tao::json::value({
@@ -72,7 +72,8 @@ public:
                                         {"r", r},
                                         {"theta", theta},
                                         {"E", E},
-                                        {"t", t}
+                                        {"t", t},
+                                        {"module", module}
 
                                 });
     }

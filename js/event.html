@@ -120,6 +120,12 @@
 <script src="js/GluexHDDSLoader.js"></script>
 <script src="js/GluexGUI.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
+
+<script src="js/shaders/CopyShader.js"></script>
+<script src="js/postprocessing/EffectComposer.js"></script>
+<script src="js/postprocessing/RenderPass.js"></script>
+<script src="js/postprocessing/ShaderPass.js"></script>
+<script src="js/postprocessing/OutlinePass.js"></script>
 <!--<script src="js/vr/WebVR.js"></script>-->
 <!--<script src="js/threex.geometricglowmesh.js"></script>-->
 <!--<script src="js/threex.dilategeometry.js"></script>-->
@@ -169,6 +175,7 @@
         xhr.send();
 
         cleanGeometry(scene,gluexGeometry);
+        clock.start();
 
     }
 
@@ -219,6 +226,7 @@
     var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
     var ASCIIEffect,StereoEffect,OcculusEffect;
     var regcontrols,asciicontrols,stereocontrols;
+    var outlinePass,composer;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -354,6 +362,34 @@
         OcculusEffect = new THREE.VREffect(renderer);
         OcculusEffect.setSize( window.innerWidth, window.innerHeight );
         OcculusEffect.shadowMapAutoUpdate = false;
+
+        //------POST--------
+        composer = new THREE.EffectComposer(renderer);
+
+        var renderPass = new THREE.RenderPass(scene,camera);
+        composer.addPass( renderPass );
+
+        outlinePass = new THREE.OutlinePass( new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+        composer.addPass( outlinePass );
+
+        renderPass.renderToScreen = true;
+        /* var onLoad = function ( texture ) {
+             outlinePass.patternTexture = texture;
+             texture.wrapS = THREE.RepeatWrapping;
+             texture.wrapT = THREE.RepeatWrapping;
+         };*/
+
+        outlinePass.edgeStrength=10;
+        outlinePass.pulsePeriod=0;
+
+        outlinePass.visibleEdgeColor.r=1;
+        outlinePass.visibleEdgeColor.g=1;
+        outlinePass.visibleEdgeColor.b=1;
+
+        outlinePass.hiddenEdgeColor.r=.1;
+        outlinePass.hiddenEdgeColor.g=.04;
+        outlinePass.hiddenEdgeColor.b=.02;
+
 
         //---DEFAULT CONTROLS/RENDERING
         controls_in_use=regcontrols;
@@ -1488,12 +1524,13 @@
                 {
                     if (INTERSECTED) {
                         //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
-                        INTERSECTED.material.wireframe = false;
+                        //INTERSECTED.material.wireframe = false;
                     }
                     INTERSECTED = intersects[depth_index].object;  //set the intersected object
 
                     //INTERSECTED.material.opacity=0;
-                    INTERSECTED.material.wireframe = true;
+                    outlinePass.selectedObjects = [INTERSECTED];
+                    //INTERSECTED.material.wireframe = true;
 
                     if (intersects[depth_index].object.name) {
 
@@ -1532,7 +1569,7 @@
         }else {
 
             if ( INTERSECTED ) {
-                INTERSECTED.material.wireframe=false;
+                //INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;
             visible_intersect=false;
@@ -1558,7 +1595,8 @@
         }
         else
         {
-            renderer.render(scene, camera);
+            //renderer.render(scene,camera);
+            composer.render();//(scene, camera);
         }
 
         stats.update();
