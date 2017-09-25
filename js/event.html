@@ -327,9 +327,14 @@
         //camera.toPerspective();
         // camera.toOrthographic();
         camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+
         camera.position.z =510;// 371;
         camera.position.x=13;//-625;
         camera.position.y=0;//56;
+
+        camera.position.z =762;// 371;
+        camera.position.x=-510;//-625;
+        camera.position.y=33;//56;
 
         //Action
 
@@ -342,6 +347,7 @@
         renderer.shadowMapAutoUpdate = false;
 
         renderer.setClearColor( 0x000000 );
+        renderer.autoClear = false;
 
         regcontrols = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -383,6 +389,7 @@
         outlinePass.hiddenEdgeColor.r=.1;
         outlinePass.hiddenEdgeColor.g=.04;
         outlinePass.hiddenEdgeColor.b=.02;
+        //outlinePass.renderToScreen=true;
         composer.addPass( outlinePass );
 
         //renderPass.renderToScreen = true;
@@ -658,7 +665,7 @@
             eventobj.material.visibile = false;
         }
         else if (ViewerConfig.FCALHitVis === "Static" && eventobj.scale.z !== eventobj.userData.E * ViewerConfig.FCAL_EScale) {
-            eventobj.scale.set(1, 1, eventobjs[i].userData.E * ViewerConfig.FCAL_EScale);
+            eventobj.scale.set(1, 1, eventobj.userData.E * ViewerConfig.FCAL_EScale);
             eventobj.position.z = (655 + (eventobj.userData.E * ViewerConfig.FCAL_EScale / 2) + 15);
             eventobj.geometryNeedsUpdate = true;
         }
@@ -1534,18 +1541,37 @@
 
     function raytracing() {
         raycaster.setFromCamera( mouse, camera );
-        var intersects = raycaster.intersectObjects( [ scene ], true );
+        var event = scene.getObjectByName("GluexEvent");
+        if(!event) return;
+        var intersects = raycaster.intersectObjects( event.children);
         if ( intersects.length > 0 ) {
-            var selectedObject = intersects[ 0 ].object;
 
-            DumpObjectUserData(selectedObject);
+            var visible_intersect=false;
+            var depth_index=0;
+            for(;depth_index<intersects.length;depth_index++)
+            {
 
-            addSelectedObject(selectedObject);
-            outlinePass.selectedObjects = selectedObjects;
+                if(intersects[depth_index].object.userData !== {}) {
+                    if (intersects[depth_index].object.material.visible)
+                    {
+                        visible_intersect = true;
+                        break;
+                    }
+                }
+            }
+
+            if(visible_intersect) {
+                var selectedObject = intersects[depth_index].object;
+
+                DumpObjectUserData(selectedObject);
+
+                //addSelectedObject(selectedObject);
+                outlinePass.selectedObjects = [selectedObject];
+            }
         }
         else
         {
-            selectedObjects=[];
+            //selectedObjects=[];
             outlinePass.selectedObjects=[];
         }
 
@@ -1655,9 +1681,10 @@
         {
             //renderer.render(scene,camera);
             renderer.autoClear=true;
-            renderer.setClearColor(ViewerConfig.backgroundColor);
-            renderer.setClearAlpha(.6);
-            composer.render();//(scene, camera);
+            //renderer.setClearColor(ViewerConfig.backgroundColor);
+            // renderer.setClearAlpha(.6);
+            //composer.autoClearDepth=true;
+            composer.render(scene,camera);//(scene, camera);
         }
 
         stats.update();
