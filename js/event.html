@@ -122,10 +122,12 @@
 <script src="js/effects/StereoEffect.js"></script>
 
 <script src="js/shaders/CopyShader.js"></script>
+<script src="js/shaders/FXAAShader.js"></script>
 <script src="js/postprocessing/EffectComposer.js"></script>
 <script src="js/postprocessing/RenderPass.js"></script>
 <script src="js/postprocessing/ShaderPass.js"></script>
 <script src="js/postprocessing/OutlinePass.js"></script>
+
 <!--<script src="js/vr/WebVR.js"></script>-->
 <!--<script src="js/threex.geometricglowmesh.js"></script>-->
 <!--<script src="js/threex.dilategeometry.js"></script>-->
@@ -226,7 +228,7 @@
     var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
     var ASCIIEffect,StereoEffect,OcculusEffect;
     var regcontrols,asciicontrols,stereocontrols;
-    var outlinePass,composer;
+    var outlinePass,composer,effectFXAA;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
@@ -255,7 +257,7 @@
     var taptimeout;
     var lastTap = 0;
 
-    // var animationTimings=[min_start_time,max_swim_steps,max_swim_time,max_total_time];
+    var selectedObjects = [];
 
     keyState: new Array();
 
@@ -370,17 +372,9 @@
         composer.addPass( renderPass );
 
         outlinePass = new THREE.OutlinePass( new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
-        composer.addPass( outlinePass );
-
-        renderPass.renderToScreen = true;
-        /* var onLoad = function ( texture ) {
-             outlinePass.patternTexture = texture;
-             texture.wrapS = THREE.RepeatWrapping;
-             texture.wrapT = THREE.RepeatWrapping;
-         };*/
-
         outlinePass.edgeStrength=10;
         outlinePass.pulsePeriod=0;
+        outlinePass.edgeThickness=2;
 
         outlinePass.visibleEdgeColor.r=1;
         outlinePass.visibleEdgeColor.g=1;
@@ -389,7 +383,22 @@
         outlinePass.hiddenEdgeColor.r=.1;
         outlinePass.hiddenEdgeColor.g=.04;
         outlinePass.hiddenEdgeColor.b=.02;
+        composer.addPass( outlinePass );
 
+        //renderPass.renderToScreen = true;
+        /* var onLoad = function ( texture ) {
+             outlinePass.patternTexture = texture;
+             texture.wrapS = THREE.RepeatWrapping;
+             texture.wrapT = THREE.RepeatWrapping;
+         };*/
+
+
+        composer.setSize(window.innerWidth, window.innerHeight);
+
+        effectFXAA = new THREE.ShaderPass(THREE.FXAAShader);
+        effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight );
+        effectFXAA.renderToScreen = true;
+        composer.addPass( effectFXAA );
 
         //---DEFAULT CONTROLS/RENDERING
         controls_in_use=regcontrols;
@@ -481,7 +490,9 @@
         camera.updateProjectionMatrix();
 
         renderer.setSize( window.innerWidth, window.innerHeight );
+        composer.setSize( window.innerWidth, window.innerHeight );
         ASCIIEffect.setSize( window.innerWidth, window.innerHeight );
+        effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight );
 
     }
 
@@ -1496,7 +1507,50 @@
 
     }
 
+
+    function addSelectedObject(object) {
+        selectedObjects = [];
+        selectedObjects.push(object);
+    }
+
+    function DumpObjectUserData(object)
+    {
+        var objType = object.name.split("_")[0];
+        var message = object.name.split("_")[1];
+        var userDataList = Object.keys(object.userData);
+        var total_data = userDataList.length;
+
+        if (objType === "track") {
+            total_data--;
+        }
+
+        for (var i = 0; i < total_data; i++) {
+            message += ",";
+            message += userDataList[i] + ":";
+            message += object.userData[userDataList[i]];
+        }
+        console.log(message);
+    }
+
     function raytracing() {
+        raycaster.setFromCamera( mouse, camera );
+        var intersects = raycaster.intersectObjects( [ scene ], true );
+        if ( intersects.length > 0 ) {
+            var selectedObject = intersects[ 0 ].object;
+
+            DumpObjectUserData(selectedObject);
+
+            addSelectedObject(selectedObject);
+            outlinePass.selectedObjects = selectedObjects;
+        }
+        else
+        {
+            selectedObjects=[];
+            outlinePass.selectedObjects=[];
+        }
+
+    }
+    function raytracingold() {
 
         raycaster.setFromCamera( mouse, camera );
         var event = scene.getObjectByName("GluexEvent");
@@ -1525,11 +1579,13 @@
                     if (INTERSECTED) {
                         //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
                         //INTERSECTED.material.wireframe = false;
+                        selectedObjects=[];
                     }
                     INTERSECTED = intersects[depth_index].object;  //set the intersected object
 
                     //INTERSECTED.material.opacity=0;
-                    outlinePass.selectedObjects = [INTERSECTED];
+                    addSelectedObject(INTERSECTED);
+                    outlinePass.selectedObjects = selectedObjects;
                     //INTERSECTED.material.wireframe = true;
 
                     if (intersects[depth_index].object.name) {
@@ -1569,9 +1625,11 @@
         }else {
 
             if ( INTERSECTED ) {
+                selectedObjects=[];
                 //INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;
+            selectedObjects=[];
             visible_intersect=false;
             context1.clearRect(0,0,300,300);
             texture1.needsUpdate = true;
@@ -1596,6 +1654,9 @@
         else
         {
             //renderer.render(scene,camera);
+            renderer.autoClear=true;
+            renderer.setClearColor(ViewerConfig.backgroundColor);
+            renderer.setClearAlpha(.6);
             composer.render();//(scene, camera);
         }
 
