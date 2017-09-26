@@ -137,6 +137,7 @@ THREE.GluexEventLoader.prototype = {
                 var linematerial = new THREE.LineBasicMaterial({color: material.color, linewidth: 2});
                 linematerial.side = THREE.DoubleSide;
                 var lineBufferGeo = new THREE.BufferGeometry().fromGeometry(geometry);
+                lineBufferGeo.drawRange.count=0;
                 var positions = new Float32Array(trackMesh.geometry.vertices.length * 3); // 3 vertices per point
                 lineBufferGeo.addAttribute('position', new THREE.BufferAttribute(positions, 3));
                 var trackLineMesh = new THREE.Line(lineBufferGeo, linematerial);
@@ -195,7 +196,7 @@ THREE.GluexEventLoader.prototype = {
                 var linematerial = new THREE.LineBasicMaterial({color: material.color, linewidth: 2});
                 linematerial.side = THREE.DoubleSide;
                 var lineBufferGeo = new THREE.BufferGeometry().fromGeometry(geometry);
-
+                var trackLineMesh = new THREE.Line(lineBufferGeo, linematerial);
                 var positions = new Float32Array(trackMesh.geometry.vertices.length * 3); // 3 vertices per point
                 lineBufferGeo.addAttribute('position', new THREE.BufferAttribute(positions, 3));
                 var trackLineMesh = new THREE.Line(lineBufferGeo, linematerial);

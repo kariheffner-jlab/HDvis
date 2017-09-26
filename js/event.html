@@ -475,7 +475,7 @@
 
         sprite1 = new THREE.Sprite( spriteMaterial );
         sprite1.scale.set(512,128,1.0);
-        sprite1.position.set( mouse.x, mouse.y, 0 );
+        sprite1.position.set( mouse.x, mouse.y, 1 );
         scene.add( sprite1 );
 
         // GUI----------------------------------------------------------------------------------------
@@ -485,8 +485,10 @@
 
     function onDocumentMouseMove( event ) {
         event.preventDefault();
+
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        //sprite1.position.set(mouse.x, mouse.y, 1 );
         raytracing();
 
     }
@@ -1523,7 +1525,7 @@
     function DumpObjectUserData(object)
     {
         var objType = object.name.split("_")[0];
-        var message = object.name.split("_")[1];
+        var message = object.name.split("_")[1]+"\n";
         var userDataList = Object.keys(object.userData);
         var total_data = userDataList.length;
 
@@ -1532,14 +1534,16 @@
         }
 
         for (var i = 0; i < total_data; i++) {
-            message += ",";
+            // message += ",";
             message += userDataList[i] + ":";
-            message += object.userData[userDataList[i]];
+            message += object.userData[userDataList[i]].toString().substring(0,7);
+            message += "\n"
         }
         console.log(message);
+        return message;
     }
 
-    function raytracing() {
+    function raytracingnew() {
         raycaster.setFromCamera( mouse, camera );
         var event = scene.getObjectByName("GluexEvent");
         if(!event) return;
@@ -1576,6 +1580,52 @@
         }
 
     }
+    function raytracing()
+    {
+        raycaster.setFromCamera( mouse, camera );
+        var intersects = raycaster.intersectObjects( [scene],true/*event.children*/);
+
+        var valid_intersect=false;
+        var searchdepth=0;
+
+        for(;searchdepth<intersects.length;searchdepth++)
+        {
+
+            if(intersects[searchdepth].object.name.substring(0,6)==="trackl")///filter for track lines
+            {
+
+                if(intersects[searchdepth].object.geometry.drawRange.count !== 0) {
+                    valid_intersect = true;
+                    break;
+                }
+            }
+            else if (intersects[searchdepth].object.name.substring(0,5)==="track")
+            {
+                if(intersects[searchdepth].object.material.visible) {
+                    valid_intersect = true;
+                    break;
+                }
+            }
+            else
+            {
+
+                if(Object.keys(intersects[searchdepth].object.userData).length !==0) {
+                    if (intersects[searchdepth].object.material.visible) {
+                        valid_intersect = true;
+                        break;
+                    }
+                }
+            }
+
+
+        }
+
+        if(valid_intersect)
+        {
+            DumpObjectUserData(intersects[searchdepth].object);
+        }
+
+    }
     function raytracingold() {
 
         raycaster.setFromCamera( mouse, camera );
@@ -1583,7 +1633,7 @@
         var evgeometry = scene.getObjectByName("GluexGeometry");
         if(!event) return;    // There might be no event loaded (yet... or at all)
 
-        var intersects = raycaster.intersectObjects( event.children);// Make improvement
+        var intersects = raycaster.intersectObjects( [scene],true/*event.children*/);// Make improvement
 
         if ( intersects.length > 0  ) {
 
@@ -1592,7 +1642,7 @@
             for(;depth_index<intersects.length;depth_index++)
             {
 
-                if(intersects[depth_index].object.material.visible);
+                if(intersects[depth_index].object.material.visible && intersects[depth_index].object.userData !=={});
                 {
                     visible_intersect=true;
                     break;
@@ -1605,39 +1655,26 @@
                     if (INTERSECTED) {
                         //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
                         //INTERSECTED.material.wireframe = false;
-                        selectedObjects=[];
+                        outlinePass.selectedObjects=[];
                     }
                     INTERSECTED = intersects[depth_index].object;  //set the intersected object
 
                     //INTERSECTED.material.opacity=0;
                     addSelectedObject(INTERSECTED);
-                    outlinePass.selectedObjects = selectedObjects;
+                    outlinePass.selectedObjects = [INTERSECTED];
                     //INTERSECTED.material.wireframe = true;
 
-                    if (intersects[depth_index].object.name) {
+                    if (INTERSECTED.name) {
 
                         context1.clearRect(0, 0, 1024, 512);
-                        var objType = intersects[depth_index].object.name.split("_")[0];
-                        var message = intersects[depth_index].object.name.split("_")[1];
-                        var userDataList = Object.keys(intersects[0].object.userData);
-                        var total_data = userDataList.length;
-
-                        if (objType === "track") {
-                            total_data--;
-                        }
-
-                        for (var i = 0; i < total_data; i++) {
-                            message += ",";
-                            message += userDataList[i] + ":";
-                            message += intersects[depth_index].object.userData[userDataList[i]];
-                        }
-                        console.log(message);
+                        var message=DumpObjectUserData(INTERSECTED);
                         var metrics = context1.measureText(message);
                         var width = metrics.width;
+                        var height = 100;
                         context1.fillStyle = "rgba(0,0,0,0.95)"; // black border
-                        context1.fillRect(0, 0, width + 8, 20 + 8);
+                        context1.fillRect(0, 0, width + 8, height + 8);
                         context1.fillStyle = "rgba(255,255,255,0.95)"; // white filler
-                        context1.fillRect(2, 2, width + 4, 20 + 4);
+                        context1.fillRect(2, 2, width + 4, height + 4);
                         context1.fillStyle = "rgba(0,0,0,1)"; // text color
                         context1.fillText(message, 4, 20);
                         texture1.needsUpdate = true;
@@ -1651,11 +1688,11 @@
         }else {
 
             if ( INTERSECTED ) {
-                selectedObjects=[];
+                outlinePass.selectedObjects=[];
                 //INTERSECTED.material.wireframe=false;
             }
             INTERSECTED = null;
-            selectedObjects=[];
+            outlinePass.selectedObjects=[];
             visible_intersect=false;
             context1.clearRect(0,0,300,300);
             texture1.needsUpdate = true;
@@ -1679,12 +1716,12 @@
         }
         else
         {
-            //renderer.render(scene,camera);
-            renderer.autoClear=true;
+            renderer.render(scene,camera);
+            //renderer.autoClear=true;
             //renderer.setClearColor(ViewerConfig.backgroundColor);
             // renderer.setClearAlpha(.6);
             //composer.autoClearDepth=true;
-            composer.render(scene,camera);//(scene, camera);
+            //composer.render();//(scene, camera);
         }
 
         stats.update();
