@@ -339,15 +339,15 @@
         //Action
 
         renderer = new THREE.WebGLRenderer( { antialias: false } ); // WebGLRenderer CanvasRenderer
-        renderer.setClearColor( 0xff0f0 );
-        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setPixelRatio(window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.shadowMap.enabled=false;
-        renderer.precision="lowp";
+        //renderer.precision="lowp";
         renderer.shadowMapAutoUpdate = false;
-
         renderer.setClearColor( 0x000000 );
-        renderer.autoClear = false;
+        document.body.appendChild( renderer.domElement );
+        //renderer.autoClear = false;
+
 
         regcontrols = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -378,9 +378,13 @@
         composer.addPass( renderPass );
 
         outlinePass = new THREE.OutlinePass( new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+        composer.addPass( outlinePass );
         outlinePass.edgeStrength=10;
+        outlinePass.edgeGlow=0;
+        outlinePass.edgeThickness=3;
         outlinePass.pulsePeriod=0;
-        outlinePass.edgeThickness=2;
+
+        outlinePass.usePatternTexture=false;
 
         outlinePass.visibleEdgeColor.r=1;
         outlinePass.visibleEdgeColor.g=1;
@@ -389,18 +393,7 @@
         outlinePass.hiddenEdgeColor.r=.1;
         outlinePass.hiddenEdgeColor.g=.04;
         outlinePass.hiddenEdgeColor.b=.02;
-        //outlinePass.renderToScreen=true;
-        composer.addPass( outlinePass );
 
-        //renderPass.renderToScreen = true;
-        /* var onLoad = function ( texture ) {
-             outlinePass.patternTexture = texture;
-             texture.wrapS = THREE.RepeatWrapping;
-             texture.wrapT = THREE.RepeatWrapping;
-         };*/
-
-
-        composer.setSize(window.innerWidth, window.innerHeight);
 
         effectFXAA = new THREE.ShaderPass(THREE.FXAAShader);
         effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight );
@@ -497,10 +490,9 @@
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-
+        ASCIIEffect.setSize( window.innerWidth, window.innerHeight );
         renderer.setSize( window.innerWidth, window.innerHeight );
         composer.setSize( window.innerWidth, window.innerHeight );
-        ASCIIEffect.setSize( window.innerWidth, window.innerHeight );
         effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight );
 
     }
@@ -1512,6 +1504,7 @@
 
             }
         }
+
         render();
 
     }
@@ -1543,77 +1536,36 @@
         return message;
     }
 
-    function raytracingnew() {
-        raycaster.setFromCamera( mouse, camera );
-        var event = scene.getObjectByName("GluexEvent");
-        if(!event) return;
-        var intersects = raycaster.intersectObjects( event.children);
-        if ( intersects.length > 0 ) {
-
-            var visible_intersect=false;
-            var depth_index=0;
-            for(;depth_index<intersects.length;depth_index++)
-            {
-
-                if(intersects[depth_index].object.userData !== {}) {
-                    if (intersects[depth_index].object.material.visible)
-                    {
-                        visible_intersect = true;
-                        break;
-                    }
-                }
-            }
-
-            if(visible_intersect) {
-                var selectedObject = intersects[depth_index].object;
-
-                DumpObjectUserData(selectedObject);
-
-                //addSelectedObject(selectedObject);
-                outlinePass.selectedObjects = [selectedObject];
-            }
-        }
-        else
-        {
-            //selectedObjects=[];
-            outlinePass.selectedObjects=[];
-        }
-
-    }
     function raytracing()
     {
         raycaster.setFromCamera( mouse, camera );
         var intersects = raycaster.intersectObjects( [scene],true/*event.children*/);
 
-        var valid_intersect=false;
+        var valid_intersect=null;
         var searchdepth=0;
+        outlinePass.selectedObjects=[];
 
         for(;searchdepth<intersects.length;searchdepth++)
         {
+            var skewered_object =intersects[searchdepth].object;
 
-            if(intersects[searchdepth].object.name.substring(0,6)==="trackl")///filter for track lines
+            if (skewered_object.name.substring(0,5)==="track")//filter for track points
             {
-
-                if(intersects[searchdepth].object.geometry.drawRange.count !== 0) {
-                    valid_intersect = true;
+                if(skewered_object.name.substring(0,6)!=="trackl")
+                {
+                    skewered_object=skewered_object.children[0];
+                }
+                if(skewered_object.geometry.drawRange.count !== 0) {
+                    valid_intersect = skewered_object.parent;
                     break;
                 }
             }
-            else if (intersects[searchdepth].object.name.substring(0,5)==="track")
-            {
-                if(intersects[searchdepth].object.material.visible) {
-                    valid_intersect = true;
-                    break;
-                }
-            }
-            else
-            {
+            else{
+                if(Object.keys(skewered_object.userData).length !== 0 && skewered_object.material.visible) {
 
-                if(Object.keys(intersects[searchdepth].object.userData).length !==0) {
-                    if (intersects[searchdepth].object.material.visible) {
-                        valid_intersect = true;
-                        break;
-                    }
+                    valid_intersect = skewered_object;
+                    break;
+
                 }
             }
 
@@ -1622,7 +1574,9 @@
 
         if(valid_intersect)
         {
-            DumpObjectUserData(intersects[searchdepth].object);
+            DumpObjectUserData(valid_intersect);
+            addSelectedObject(valid_intersect);
+            outlinePass.selectedObjects = selectedObjects;
         }
 
     }
@@ -1716,12 +1670,8 @@
         }
         else
         {
-            renderer.render(scene,camera);
-            //renderer.autoClear=true;
-            //renderer.setClearColor(ViewerConfig.backgroundColor);
-            // renderer.setClearAlpha(.6);
-            //composer.autoClearDepth=true;
-            //composer.render();//(scene, camera);
+            //renderer.render(scene,camera);
+            composer.render();
         }
 
         stats.update();
