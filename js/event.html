@@ -339,8 +339,8 @@
         //Action
 
         renderer = new THREE.WebGLRenderer( { antialias: false } ); // WebGLRenderer CanvasRenderer
-        renderer.setPixelRatio(window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setPixelRatio(1);//window.devicePixelRatio );
+        renderer.setSize( window.innerWidth || 1, window.innerHeight || 1 );
         renderer.shadowMap.enabled=false;
         //renderer.precision="lowp";
         renderer.shadowMapAutoUpdate = false;
@@ -353,7 +353,7 @@
 
         //---ASCII---
         ASCIIEffect = new THREE.AsciiEffect( renderer );
-        ASCIIEffect.setSize( window.innerWidth, window.innerHeight );
+        ASCIIEffect.setSize( window.innerWidth || 1, window.innerHeight || 1 );
         ASCIIEffect.shadowMapAutoUpdate = false;
 
         asciicontrols = new THREE.OrbitControls( camera, ASCIIEffect.domElement );
@@ -368,7 +368,7 @@
         stereocontrols= new THREE.DeviceOrientationControls(camera);
 
         OcculusEffect = new THREE.VREffect(renderer);
-        OcculusEffect.setSize( window.innerWidth, window.innerHeight );
+        OcculusEffect.setSize( window.innerWidth || 1, window.innerHeight || 1);
         OcculusEffect.shadowMapAutoUpdate = false;
 
         //------POST--------
@@ -423,7 +423,7 @@
             if (tapLength < 500 && tapLength > 0) {
                 if(stereobool)
                 {
-                    renderer.setSize( window.innerWidth, window.innerHeight );
+                    resetWindowSize();
                     controls_in_use=regcontrols;
                     stereobool=false;
                 }
@@ -488,13 +488,21 @@
 
     function onWindowResize() {
 
+        resetWindowSize();
+    }
+
+    function resetWindowSize()
+    {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-        ASCIIEffect.setSize( window.innerWidth, window.innerHeight );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        composer.setSize( window.innerWidth, window.innerHeight );
-        effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight );
-
+        if(asciibool) {
+            ASCIIEffect.setSize(window.innerWidth, window.innerHeight);
+        }
+        else {
+            renderer.setSize(window.innerWidth || 1, window.innerHeight || 1);
+            composer.setSize(window.innerWidth || 1, window.innerHeight || 1);
+            effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        }
     }
 
     function onKeyDown(event) {
@@ -509,11 +517,11 @@
                 }
                 else if(stereobool)
                 {
-                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;stereobool=false;VRbool=true;
+                    resetWindowSize();controls_in_use = regcontrols;stereobool=false;VRbool=true;
                 }
                 else if(VRbool)
                 {
-                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;VRbool=false;
+                    resetWindowSize();controls_in_use = regcontrols;VRbool=false;
                 }
                 else
                 {
@@ -523,19 +531,19 @@
             case 219: event.preventDefault();//[
                 if(asciibool)
                 {
-                    container.removeChild(ASCIIEffect.domElement);container.appendChild( renderer.domElement );controls_in_use = regcontrols;asciibool=false;
+                    container.removeChild(ASCIIEffect.domElement);container.appendChild( renderer.domElement );resetWindowSize();controls_in_use = regcontrols;asciibool=false;
                 }
                 else if(stereobool)
                 {
-                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );ASCIIEffect.setSize( window.innerWidth, window.innerHeight );controls_in_use = asciicontrols;stereobool=false;asciibool=true;
+                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );resetWindowSize();controls_in_use = asciicontrols;stereobool=false;asciibool=true;
                 }
                 else if (VRbool)
                 {
-                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );ASCIIEffect.setSize( window.innerWidth, window.innerHeight );controls_in_use = asciicontrols;VRbool=false;asciibool=true;
+                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );resetWindowSize();controls_in_use = asciicontrols;VRbool=false;asciibool=true;
                 }
                 else
                 {
-                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );controls_in_use = asciicontrols;asciibool=true;
+                    container.removeChild(renderer.domElement);container.appendChild( ASCIIEffect.domElement );resetWindowSize();controls_in_use = asciicontrols;asciibool=true;
                 }
                 break;
             case 221: event.preventDefault();//]
@@ -545,11 +553,11 @@
                 }
                 else if(stereobool)
                 {
-                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;stereobool=false;
+                    resetWindowSize();controls_in_use = regcontrols;stereobool=false;
                 }
                 else if(VRbool)
                 {
-                    renderer.setSize( window.innerWidth, window.innerHeight );controls_in_use = regcontrols;VRbool=false;stereobool=true;
+                    resetWindowSize();controls_in_use = regcontrols;VRbool=false;stereobool=true;
                 }
                 else
                 {
