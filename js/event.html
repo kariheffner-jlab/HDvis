@@ -242,7 +242,7 @@
     var VRbool=false;
     var asciibool=false;
     var stereobool=false;
-    var orthobool=true;
+    var orthobool=false;
 
     var ViewerConfig;
     // start scene
@@ -539,7 +539,7 @@
                     orthobool=true;
                     camera_in_use.toOrthographic();
                     // camera_in_use=ortho_camera;
-                }resetWindowSize();controls_in_use.update();camera_in_use.updateMatrixWorld();camera_in_use.updateProjectionMatrix();render();break;
+                }resetWindowSize();controls_in_use.update();camera_in_use.updateMatrixWorld();camera_in_use.updateProjectionMatrix();break;
             case 220: event.preventDefault();//\
                 if(asciibool)
                 {
@@ -1592,9 +1592,9 @@
 
             vector.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 ); // z = 0.5 important!
 
-            vector.unproject( camera );
+            vector.unproject( camera_in_use );
 
-            raycaster.set( camera.position, vector.sub( camera.position ).normalize());
+            raycaster.set( camera_in_use.position, vector.sub( camera_in_use.position ).normalize());
 
         }
 
