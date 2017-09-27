@@ -120,6 +120,9 @@
 <script src="js/GluexHDDSLoader.js"></script>
 <script src="js/GluexGUI.js"></script>
 <script src="js/effects/StereoEffect.js"></script>
+<script src="js/cameras/CombinedCamera.js"></script>
+<script src="js/controls/TrackballControls.js"></script>
+
 
 <script src="js/shaders/CopyShader.js"></script>
 <script src="js/shaders/FXAAShader.js"></script>
@@ -225,7 +228,7 @@
     var clock = new THREE.Clock();
     var container, stats;
 
-    var camera,ortho_camera, controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
+    var camera_in_use,ortho_camera, perspec_camera,controls_in_use, scene, shadowgeom, shadowevent, renderer, raycaster;
     var ASCIIEffect,StereoEffect,OcculusEffect;
     var regcontrols,asciicontrols,stereocontrols;
     var outlinePass,composer,effectFXAA;
@@ -239,6 +242,7 @@
     var VRbool=false;
     var asciibool=false;
     var stereobool=false;
+    var orthobool=true;
 
     var ViewerConfig;
     // start scene
@@ -323,18 +327,31 @@
 
         //Camera
 
-        //camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 5000, 0, 5000 );
-        //camera.toPerspective();
-        // camera.toOrthographic();
-        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+        camera_in_use = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 1000, - 500, 1000 );
+        camera_in_use.toPerspective();
+        //camera_in_use.toOrthographic();
 
-        camera.position.z =510;// 371;
-        camera.position.x=13;//-625;
-        camera.position.y=0;//56;
+        var frustumSize=1000;
+        var aspect = window.innerWidth / window.innerHeight;
+        ortho_camera    = camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 2000 );
+        ortho_camera.name = "orthographicCamera";
+        //scene.add(ortho_camera);
+        ortho_camera.position.z =510;// 371;
+        ortho_camera.position.x=13;//-625;
+        ortho_camera.position.y=0;//56;
 
-        camera.position.z =762;// 371;
-        camera.position.x=-510;//-625;
-        camera.position.y=33;//56;
+        perspec_camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+
+
+        //camera_in_use=ortho_camera;//perspec_camera;
+
+        camera_in_use.position.z =510;// 371;
+        camera_in_use.position.x=13;//-625;
+        camera_in_use.position.y=0;//56;
+
+        // camera.position.z =762;// 371;
+        // camera.position.x=-510;//-625;
+        // camera.position.y=33;//56;
 
         //Action
 
@@ -349,14 +366,14 @@
         //renderer.autoClear = false;
 
 
-        regcontrols = new THREE.OrbitControls( camera, renderer.domElement );
+        regcontrols = new THREE.OrbitControls( camera_in_use, renderer.domElement );
 
         //---ASCII---
         ASCIIEffect = new THREE.AsciiEffect( renderer );
         ASCIIEffect.setSize( window.innerWidth || 1, window.innerHeight || 1 );
         ASCIIEffect.shadowMapAutoUpdate = false;
 
-        asciicontrols = new THREE.OrbitControls( camera, ASCIIEffect.domElement );
+        asciicontrols = new THREE.OrbitControls( camera_in_use, ASCIIEffect.domElement );
 
 
         //---STEREO---
@@ -365,7 +382,7 @@
         StereoEffect.shadowMapAutoUpdate = false;
         StereoEffect.setEyeSeparation(.1);//make variable
 
-        stereocontrols= new THREE.DeviceOrientationControls(camera);
+        stereocontrols= new THREE.DeviceOrientationControls(camera_in_use);
 
         OcculusEffect = new THREE.VREffect(renderer);
         OcculusEffect.setSize( window.innerWidth || 1, window.innerHeight || 1);
@@ -374,10 +391,10 @@
         //------POST--------
         composer = new THREE.EffectComposer(renderer);
 
-        var renderPass = new THREE.RenderPass(scene,camera);
+        var renderPass = new THREE.RenderPass(scene,camera_in_use);
         composer.addPass( renderPass );
 
-        outlinePass = new THREE.OutlinePass( new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+        outlinePass = new THREE.OutlinePass( new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera_in_use);
         composer.addPass( outlinePass );
         outlinePass.edgeStrength=10;
         outlinePass.edgeGlow=0;
@@ -409,9 +426,9 @@
 
         raycaster = new THREE.Raycaster();
 
-        camera.updateMatrixWorld();
+        camera_in_use.updateMatrixWorld();
 
-        resetOrbitPoint(controls_in_use, camera, camera_facing);
+        resetOrbitPoint(controls_in_use, camera_in_use, camera_facing);
 
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
@@ -493,8 +510,8 @@
 
     function resetWindowSize()
     {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        camera_in_use.aspect = window.innerWidth / window.innerHeight;
+        camera_in_use.updateProjectionMatrix();
         if(asciibool) {
             ASCIIEffect.setSize(window.innerWidth, window.innerHeight);
         }
@@ -510,6 +527,19 @@
 
         switch (event.keyCode) {
 
+            case 79:event.preventDefault();//o
+                if(orthobool)
+                {
+                    orthobool=false;
+                    camera_in_use.toPerspective();
+                    //camera_in_use=perspec_camera;
+                }
+                else
+                {
+                    orthobool=true;
+                    camera_in_use.toOrthographic();
+                    // camera_in_use=ortho_camera;
+                }resetWindowSize();controls_in_use.update();camera_in_use.updateMatrixWorld();camera_in_use.updateProjectionMatrix();render();break;
             case 220: event.preventDefault();//\
                 if(asciibool)
                 {
@@ -564,16 +594,16 @@
                     controls_in_use = regcontrols;stereobool=true;
                 }
                 break;
-            case 87: event.preventDefault();camera.translateZ(-MoveDelta);raytracing();break;//w
-            case 83: event.preventDefault();camera.translateZ(MoveDelta);raytracing();break;//s
-            case 65: event.preventDefault();camera.translateX(-MoveDelta);raytracing();break;//a
-            case 68: event.preventDefault();camera.translateX(MoveDelta);raytracing();break;//d
-            case 32: event.preventDefault();camera.translateY(MoveDelta);raytracing();break;//spacebar
-            case 90: event.preventDefault();camera.translateY(-MoveDelta);raytracing();break;//z
+            case 87: event.preventDefault();camera_in_use.translateZ(-MoveDelta);raytracing();break;//w
+            case 83: event.preventDefault();camera_in_use.translateZ(MoveDelta);raytracing();break;//s
+            case 65: event.preventDefault();camera_in_use.translateX(-MoveDelta);raytracing();break;//a
+            case 68: event.preventDefault();camera_in_use.translateX(MoveDelta);raytracing();break;//d
+            case 32: event.preventDefault();camera_in_use.translateY(MoveDelta);raytracing();break;//spacebar
+            case 90: event.preventDefault();camera_in_use.translateY(-MoveDelta);raytracing();break;//z
 
         }
-        camera.updateMatrixWorld();
-        resetOrbitPoint(controls_in_use,camera,camera_facing);
+        camera_in_use.updateMatrixWorld();
+        resetOrbitPoint(controls_in_use,camera_in_use,camera_facing);
 
     }
     //
@@ -1546,30 +1576,50 @@
 
     function raytracing()
     {
-        raycaster.setFromCamera( mouse, camera );
-        var intersects = raycaster.intersectObjects( [scene],true/*event.children*/);
+        var vector = new THREE.Vector3();
+        var dir = new THREE.Vector3();
+        if ( orthobool ) {
 
-        var valid_intersect=null;
-        var searchdepth=0;
-        outlinePass.selectedObjects=[];
+            vector.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, - 1 ); // z = - 1 important!
 
-        for(;searchdepth<intersects.length;searchdepth++)
-        {
-            var skewered_object =intersects[searchdepth].object;
+            vector.unproject( camera_in_use );
 
-            if (skewered_object.name.substring(0,5)==="track")//filter for track points
+            dir.set( 0, 0, - 1 ).transformDirection( camera_in_use.matrixWorld );
+
+            raycaster.set( vector, dir );
+
+        } else {
+
+            vector.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 ); // z = 0.5 important!
+
+            vector.unproject( camera );
+
+            raycaster.set( camera.position, vector.sub( camera.position ).normalize());
+
+        }
+
+        //raycaster.setFromCamera(mouse, camera_in_use);
+        var intersects = raycaster.intersectObjects([scene], true/*event.children*/);
+
+        var valid_intersect = null;
+        var searchdepth = 0;
+        outlinePass.selectedObjects = [];
+
+        for (; searchdepth < intersects.length; searchdepth++) {
+            var skewered_object = intersects[searchdepth].object;
+
+            if (skewered_object.name.substring(0, 5) === "track")//filter for track points
             {
-                if(skewered_object.name.substring(0,6)!=="trackl")
-                {
-                    skewered_object=skewered_object.children[0];
+                if (skewered_object.name.substring(0, 6) !== "trackl") {
+                    skewered_object = skewered_object.children[0];
                 }
-                if(skewered_object.geometry.drawRange.count !== 0) {
+                if (skewered_object.geometry.drawRange.count !== 0) {
                     valid_intersect = skewered_object.parent;
                     break;
                 }
             }
-            else{
-                if(Object.keys(skewered_object.userData).length !== 0 && skewered_object.material.visible) {
+            else {
+                if (Object.keys(skewered_object.userData).length !== 0 && skewered_object.material.visible) {
 
                     valid_intersect = skewered_object;
                     break;
@@ -1580,8 +1630,7 @@
 
         }
 
-        if(valid_intersect)
-        {
+        if (valid_intersect) {
             DumpObjectUserData(valid_intersect);
             addSelectedObject(valid_intersect);
             outlinePass.selectedObjects = selectedObjects;
@@ -1590,7 +1639,7 @@
     }
     function raytracingold() {
 
-        raycaster.setFromCamera( mouse, camera );
+        raycaster.setFromCamera( mouse, camera_in_use );
         var event = scene.getObjectByName("GluexEvent");
         var evgeometry = scene.getObjectByName("GluexGeometry");
         if(!event) return;    // There might be no event loaded (yet... or at all)
@@ -1666,20 +1715,20 @@
 
         if(asciibool)
         {
-            ASCIIEffect.render( scene, camera );
+            ASCIIEffect.render( scene, camera_in_use );
         }
         else if(stereobool)
         {
-            StereoEffect.render( scene, camera );
+            StereoEffect.render( scene, camera_in_use );
         }
         else if( VRbool)
         {
-            OcculusEffect.render(scene, camera);
+            OcculusEffect.render(scene, camera_in_use);
         }
         else
         {
             //renderer.render(scene,camera);
-            composer.render();
+            composer.render(scene,camera_in_use);
         }
 
         stats.update();
@@ -1727,4 +1776,3 @@
 
 </body>
 </html>
-\\
