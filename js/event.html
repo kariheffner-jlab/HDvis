@@ -539,7 +539,7 @@
                     orthobool=true;
                     camera_in_use.toOrthographic();
                     // camera_in_use=ortho_camera;
-                }resetWindowSize();controls_in_use.update();camera_in_use.updateMatrixWorld();camera_in_use.updateProjectionMatrix();break;
+                }resetWindowSize();camera_in_use.setZoom(1);controls_in_use.update();camera_in_use.updateMatrixWorld();camera_in_use.updateProjectionMatrix();break;
             case 220: event.preventDefault();//\
                 if(asciibool)
                 {
