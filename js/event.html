@@ -331,20 +331,20 @@
         camera_in_use.toPerspective();
         //camera_in_use.toOrthographic();
 
-        var frustumSize=1000;
+        /*var frustumSize=1000;
         var aspect = window.innerWidth / window.innerHeight;
         ortho_camera    = camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 2000 );
         ortho_camera.name = "orthographicCamera";
         //scene.add(ortho_camera);
         ortho_camera.position.z =510;// 371;
         ortho_camera.position.x=13;//-625;
-        ortho_camera.position.y=0;//56;
+        ortho_camera.position.y=0;//56;*/
 
         perspec_camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
 
 
         //camera_in_use=ortho_camera;//perspec_camera;
-
+        camera_in_use.add(perspec_camera);
         camera_in_use.position.z =510;// 371;
         camera_in_use.position.x=13;//-625;
         camera_in_use.position.y=0;//56;
@@ -1719,7 +1719,7 @@
         }
         else if(stereobool)
         {
-            StereoEffect.render( scene, camera_in_use );
+            StereoEffect.render( scene, perspec_camera );
         }
         else if( VRbool)
         {
