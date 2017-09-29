@@ -243,7 +243,7 @@ THREE.GluexEventLoader.prototype = {
             this.EventData.FCAL_hits.forEach(function (hit) {
                 //console.log(hit.id);
                 var geometry = new THREE.Geometry();
-                geometry.name = "FCALHit_" + hit.id;
+                geometry.name = "FCALHit_" +"FCAL Hit "+ hit.id;
 
                 var box = new THREE.BoxGeometry(2, 2, 1/*hit.E*FCAL_EScale*/);
 
@@ -295,8 +295,7 @@ THREE.GluexEventLoader.prototype = {
             this.EventData.FCAL_showers.forEach(function (shower) {
                 //console.log(hit.id);
                 var geometry = new THREE.Geometry();
-                geometry.name = "FCALShower_" + shower.id;
-
+                geometry.name = "FCALShower_" +"FCAL Shower "+shower.id;
 
                 var cone = new THREE.ConeGeometry(1, 1, 60, 60, 0, 0, 2 * Math.PI);//(10,20...)
 
@@ -569,7 +568,7 @@ THREE.GluexEventLoader.prototype = {
                 if (strawMesh) {
                     var strawmeshToAdd= strawMesh.clone();
                     strawmeshToAdd.material.visible = vis;
-
+                    strawmeshToAdd.name=name;
                     strawmeshToAdd.userData.t=cdchit.t
                     scope.geometry.getObjectByName("CDC",true).add(strawmeshToAdd);
                 }
@@ -584,7 +583,7 @@ THREE.GluexEventLoader.prototype = {
             this.EventData.TOF_points.forEach(function (point) {
                 //console.log(hit.id);
                 var geometry = new THREE.Geometry();
-                geometry.name = "TOFPoint_" + point.id;
+                geometry.name = "TOFPoint_" +"TOF Point "+ point.id;
 
                 var vis = true;
                 if (scope.Configuration.TOFPointVis === "Off") {

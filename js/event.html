@@ -435,7 +435,7 @@
         raycaster = new THREE.Raycaster();
 
         camera_in_use.updateMatrixWorld();
-        perspec_camera.updateMatrixWorld
+        perspec_camera.updateMatrixWorld();
 
         resetOrbitPoint(controls_in_use, camera_in_use, camera_facing);
         resetOrbitPoint(perspecregcontrols, perspec_camera, camera_facing);
@@ -1568,8 +1568,31 @@
 
     function DumpObjectUserData(object)
     {
-        var objType = object.name.split("_")[0];
-        var message = object.name.split("_")[1]+"\n";
+        var objSplit=object.name.split("_");
+        var objType = objSplit[0];
+        var message = "";
+
+        if(objType==="CDCstraw")
+        {
+            message="CDC Straw Ring: "+objSplit[1]+" Straw: "+objSplit[2]+"\n";
+        }
+        else if(objType==="SCsector")
+        {
+            message="SC Sector "+objSplit[1]+"\n";
+        }
+        else if(objType==="BCAL")
+        {
+            message="BCAL Module "+objSplit[1].substring(1)+" Layer: "+objSplit[2].substring(1)+" Sector: "+objSplit[3].substring(1)+" End: "+objSplit[4].substring(1)+"\n";
+        }
+        else if(objType==="TOFBar")
+        {
+            message="TOF Hit Plane: "+objSplit[1]+" Bar: "+objSplit[2]+"\n";
+        }
+        else
+        {
+            message=objSplit[1]+"\n";
+        }
+
         var userDataList = Object.keys(object.userData);
         var total_data = userDataList.length;
 
