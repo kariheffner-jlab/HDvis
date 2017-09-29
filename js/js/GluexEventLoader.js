@@ -691,7 +691,7 @@ THREE.GluexEventLoader.prototype = {
                 var end = hit.end;
                 var time = hit.t;
 
-                var geoName = "BCAL_m" + (module - 1).toString() + "_l" + (layer - 1).toString() + "_s" + (sector - 1).toString()+"_e"+end.toString();
+                var geoName = "BCAL_m" + (module).toString() + "_l" + (layer).toString() + "_s" + (sector).toString()+"_e"+end.toString();
 
 
                 var modulemesh = scope.shadowGeom.getObjectByName(geoName, true);

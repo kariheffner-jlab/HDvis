@@ -174,7 +174,7 @@ THREE.GluexHDDSLoader.prototype = {
                     let sectionMat = new THREE.MeshLambertMaterial(
                         { color: sectorColors[layerIndex], transparent: true, opacity: .2, side: THREE.DoubleSide })
                     let sector = new THREE.Mesh(pieceGeo, sectionMat);
-                    sector.name = `BCAL_m${moduleIndex}_l${layerIndex}_s${sectorIndex}_e1`
+                    sector.name = `BCAL_m${moduleIndex+1}_l${layerIndex+1}_s${sectorIndex+1}_e1`
                     bcalDetails.add(sector)
                 }
             }
@@ -200,7 +200,7 @@ THREE.GluexHDDSLoader.prototype = {
                     let sectionMat = new THREE.MeshLambertMaterial(
                         { color: sectorColors[layerIndex], transparent: true, opacity: .2, side: THREE.DoubleSide })
                     let sector = new THREE.Mesh(pieceGeo, sectionMat);
-                    sector.name = `BCAL_m${moduleIndex}_l${layerIndex}_s${sectorIndex}_e0`
+                    sector.name = `BCAL_m${moduleIndex+1}_l${layerIndex+1}_s${sectorIndex+1}_e0`
                     bcalDetails2.add(sector)
                 }
             }
