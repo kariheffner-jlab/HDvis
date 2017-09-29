@@ -235,6 +235,7 @@
     var outlinePass,composer,effectFXAA;
 
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
+    var recordedCamera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
 
     var canvas1, context1;
@@ -439,6 +440,7 @@
         window.addEventListener( 'resize', onWindowResize, false );
         document.addEventListener( 'keydown', onKeyDown, false );
         document.addEventListener('mouseup',SelectObject,false);
+        document.addEventListener('mousedown',RecordCameraFacing,false);
 
 
         document.addEventListener('touchend',function(event){
@@ -490,9 +492,15 @@
         ViewerConfig=makeGUI(scene);
     }
 
+    function RecordCameraFacing()
+    {
+        camera_in_use.getWorldDirection(recordedCamera_facing);
+
+    }
+
     function SelectObject(event)
     {
-        if(event.button===0)
+        if(event.button===0 )
         {
 
             if(!ObjectLock)
@@ -504,21 +512,26 @@
             }
             else
             {
-                INTERSECTED_OBJECT=raytracing();
-
-                if(INTERSECTED_OBJECT!==null)
+                camera_in_use.getWorldDirection(camera_facing);
+                if(camera_facing.x===recordedCamera_facing.x && camera_facing.y===recordedCamera_facing.y && camera_facing.z===recordedCamera_facing.z)
                 {
-                    ObjectLock=true;
-                }
-                else
-                {
-                    ObjectLock=false
-                }
+                    INTERSECTED_OBJECT = raytracing();
 
+                    if (INTERSECTED_OBJECT !== null) {
+                        ObjectLock = true;
+                    }
+                    else {
+                        ObjectLock = false
+                    }
+                }
+                else {
+
+                }
             }
 
         }
     }
+
     function onDocumentMouseMove( event ) {
         event.preventDefault();
 
