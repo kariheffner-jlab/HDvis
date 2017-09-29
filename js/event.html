@@ -237,8 +237,8 @@
     var camera_facing = new THREE.Vector3( 0, 0, -1 );
     var orbit_point=new THREE.Vector3();
 
-    var canvas1, context1, texture1;
-    var sprite1;
+    var canvas1, context1;
+
     var firstShowing=true;
     var VRbool=false;
     var asciibool=false;
@@ -246,8 +246,10 @@
     var orthobool=false;
 
     var ViewerConfig;
-    // start scene
-    var mouse = new THREE.Vector2(), INTERSECTED;
+
+    var mouse = new THREE.Vector2();
+    var INTERSECTED_OBJECT=null;
+    var ObjectLock=false;
 
     var gluexGeometry = null;
 
@@ -332,14 +334,6 @@
         combinedcamera.toPerspective();
         //camera_in_use.toOrthographic();
 
-        /*var frustumSize=1000;
-        var aspect = window.innerWidth / window.innerHeight;
-        ortho_camera    = camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 2000 );
-        ortho_camera.name = "orthographicCamera";
-        //scene.add(ortho_camera);
-        ortho_camera.position.z =510;// 371;
-        ortho_camera.position.x=13;//-625;
-        ortho_camera.position.y=0;//56;*/
 
         perspec_camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
 
@@ -444,6 +438,9 @@
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         window.addEventListener( 'resize', onWindowResize, false );
         document.addEventListener( 'keydown', onKeyDown, false );
+        document.addEventListener('mousedown',SelectObject,false)
+
+
         document.addEventListener('touchend',function(event){
             var currentTime = new Date().getTime();
             var tapLength = currentTime - lastTap;
@@ -481,29 +478,47 @@
         //scene.add( object );
 
 
-        //---MOUSE OVER BOX
         canvas1 = document.createElement('canvas');
         context1 = canvas1.getContext('2d');
         context1.font = "Bold 20px Arial";
         context1.fillStyle = "rgba(0,0,0,0.95)";
         context1.fillText('', 0, 20);
 
-        texture1 = new THREE.Texture(canvas1);
-        texture1.minFilter=THREE.LinearFilter;
-        texture1.needsUpdate = true;
 
-        var spriteMaterial = new THREE.SpriteMaterial( { map: texture1} );
-
-        sprite1 = new THREE.Sprite( spriteMaterial );
-        sprite1.scale.set(512,128,1.0);
-        sprite1.position.set( mouse.x, mouse.y, 1 );
-        scene.add( sprite1 );
 
         // GUI----------------------------------------------------------------------------------------
         ViewerConfig=makeGUI(scene);
     }
 
+    function SelectObject(event)
+    {
+        if(event.button===0)
+        {
 
+            if(!ObjectLock)
+            {
+                INTERSECTED_OBJECT=raytracing();
+                if(INTERSECTED_OBJECT!==null) {
+                    ObjectLock = true;
+                }
+            }
+            else
+            {
+                INTERSECTED_OBJECT=raytracing();
+
+                if(INTERSECTED_OBJECT!==null)
+                {
+                    ObjectLock=true;
+                }
+                else
+                {
+                    ObjectLock=false
+                }
+
+            }
+
+        }
+    }
     function onDocumentMouseMove( event ) {
         event.preventDefault();
 
@@ -1571,14 +1586,7 @@
     {
         var ObjectDiv = document.getElementById('ObjectInfo');
         ObjectDiv.style.width=(canvas1.getContext("2d").measureText(message).width+100).toString()+"px";
-        /* var bigint = parseInt(ViewerConfig.bkg_color, 16);
-         var r = (bigint >> 16) & 255;
-         var g = (bigint >> 8) & 255;
-         var b = bigint & 255;
-         var redcolor=255-r;
-         var greencolor=255-g;
-         var bluecolor=255-b;*/
-        ObjectDiv.style.color= getContrast50(ViewerConfig.bkg_color);//"rgb("+(redcolor).toString()+","+(greencolor).toString()+","+(bluecolor).toString()+")";
+        ObjectDiv.style.color= getContrast50(ViewerConfig.bkg_color);
         ObjectDiv.innerHTML=message;
 
     }
@@ -1586,31 +1594,27 @@
         return (parseInt(hexcolor, 16) > 0xffffff/2) ? 'black':'white';
     }
 
-    function DumpObjectUserData(object)
-    {
-        var objSplit=object.name.split("_");
-        var objType = objSplit[0];
-        var message = "";
+    function DumpObjectUserData(object) {
 
-        if(objType==="CDCstraw")
-        {
-            message="CDC Straw"+"\r\n"+"Ring: "+objSplit[1]+"\r\n"+"Straw: "+objSplit[2]+"\r\n";
+        var message = "";
+        var objSplit = object.name.split("_");
+        var objType = objSplit[0];
+
+
+        if (objType === "CDCstraw") {
+            message = "CDC Straw" + "\r\n" + "Ring: " + objSplit[1] + "\r\n" + "Straw: " + objSplit[2] + "\r\n";
         }
-        else if(objType==="SCsector")
-        {
-            message="SC Sector "+objSplit[1]+"\r\n";
+        else if (objType === "SCsector") {
+            message = "SC Sector " + objSplit[1] + "\r\n";
         }
-        else if(objType==="BCAL")
-        {
-            message="BCAL Hit"+"\r\n"+"Module: "+objSplit[1].substring(1)+"\r\n"+"Layer: "+objSplit[2].substring(1)+"\r\n"+"Sector: "+objSplit[3].substring(1)+"\r\n"+"End: "+objSplit[4].substring(1)+"\r\n";
+        else if (objType === "BCAL") {
+            message = "BCAL Hit" + "\r\n" + "Module: " + objSplit[1].substring(1) + "\r\n" + "Layer: " + objSplit[2].substring(1) + "\r\n" + "Sector: " + objSplit[3].substring(1) + "\r\n" + "End: " + objSplit[4].substring(1) + "\r\n";
         }
-        else if(objType==="TOFBar")
-        {
-            message="TOF Hit"+"\r\n"+"Plane: "+objSplit[1]+"\r\n"+"Bar: "+objSplit[2]+"\r\n";
+        else if (objType === "TOFBar") {
+            message = "TOF Hit" + "\r\n" + "Plane: " + objSplit[1] + "\r\n" + "Bar: " + objSplit[2] + "\r\n";
         }
-        else
-        {
-            message=objSplit[1]+"\r\n";
+        else {
+            message = objSplit[1] + "\r\n";
         }
 
         var userDataList = Object.keys(object.userData);
@@ -1623,9 +1627,10 @@
         for (var i = 0; i < total_data; i++) {
             // message += ",";
             message += userDataList[i] + ": ";
-            message += object.userData[userDataList[i]].toString().substring(0,7);
+            message += object.userData[userDataList[i]].toString().substring(0, 7);
             message += "\r\n"
         }
+
         console.log(message);
         updateObjectInfoPane(message);
         return message;
@@ -1689,89 +1694,29 @@
 
         }
 
-        if (valid_intersect) {
-            DumpObjectUserData(valid_intersect);
-            addSelectedObject(valid_intersect);
-            outlinePass.selectedObjects = selectedObjects;
+        if(!ObjectLock) {
+            if (valid_intersect) {
+
+                DumpObjectUserData(valid_intersect);
+                addSelectedObject(valid_intersect);
+                outlinePass.selectedObjects = selectedObjects;
+            }
+            else {
+
+                INTERSECTED_OBJECT = null;
+                updateObjectInfoPane("");
+
+            }
         }
         else
         {
-            updateObjectInfoPane("");
+
+            DumpObjectUserData(INTERSECTED_OBJECT);
+            addSelectedObject(INTERSECTED_OBJECT);
+            outlinePass.selectedObjects = selectedObjects;
         }
 
-    }
-    function raytracingold() {
-
-        raycaster.setFromCamera( mouse, camera_in_use );
-        var event = scene.getObjectByName("GluexEvent");
-        var evgeometry = scene.getObjectByName("GluexGeometry");
-        if(!event) return;    // There might be no event loaded (yet... or at all)
-
-        var intersects = raycaster.intersectObjects( [scene],true/*event.children*/);// Make improvement
-
-        if ( intersects.length > 0  ) {
-
-            var visible_intersect=false;
-            var depth_index=0;
-            for(;depth_index<intersects.length;depth_index++)
-            {
-
-                if(intersects[depth_index].object.material.visible && intersects[depth_index].object.userData !=={});
-                {
-                    visible_intersect=true;
-                    break;
-                }
-            }
-
-            if (intersects[depth_index].object.material.visible) {
-                if (INTERSECTED !== intersects[depth_index].object) //you are over an object and it isn't the same one as before (otherwise do nothing)
-                {
-                    if (INTERSECTED) {
-                        //INTERSECTED.material.opacity = 1; //if INTERSECTED is not NULL.  So when you go from A->B without NULL inbetween
-                        //INTERSECTED.material.wireframe = false;
-                        outlinePass.selectedObjects=[];
-                    }
-                    INTERSECTED = intersects[depth_index].object;  //set the intersected object
-
-                    //INTERSECTED.material.opacity=0;
-                    addSelectedObject(INTERSECTED);
-                    outlinePass.selectedObjects = [INTERSECTED];
-                    //INTERSECTED.material.wireframe = true;
-
-                    if (INTERSECTED.name) {
-
-                        context1.clearRect(0, 0, 1024, 512);
-                        var message=DumpObjectUserData(INTERSECTED);
-                        var metrics = context1.measureText(message);
-                        var width = metrics.width;
-                        var height = 100;
-                        context1.fillStyle = "rgba(0,0,0,0.95)"; // black border
-                        context1.fillRect(0, 0, width + 8, height + 8);
-                        context1.fillStyle = "rgba(255,255,255,0.95)"; // white filler
-                        context1.fillRect(2, 2, width + 4, height + 4);
-                        context1.fillStyle = "rgba(0,0,0,1)"; // text color
-                        context1.fillText(message, 4, 20);
-                        texture1.needsUpdate = true;
-                    }
-                    else {
-                        context1.clearRect(0, 0, 300, 300);
-                        texture1.needsUpdate = true;
-                    }
-                }
-            }
-        }else {
-
-            if ( INTERSECTED ) {
-                outlinePass.selectedObjects=[];
-                //INTERSECTED.material.wireframe=false;
-            }
-            INTERSECTED = null;
-            outlinePass.selectedObjects=[];
-            visible_intersect=false;
-            context1.clearRect(0,0,300,300);
-            texture1.needsUpdate = true;
-        }
-
+        return valid_intersect;
     }
 
     function render() {
