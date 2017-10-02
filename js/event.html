@@ -1640,7 +1640,14 @@
         for (var i = 0; i < total_data; i++) {
             // message += ",";
             message += userDataList[i] + ": ";
-            message += object.userData[userDataList[i]].toString().substring(0, 7);
+            if(userDataList[i] === "position")
+            {
+                var positionvec = object.userData[userDataList[i]][0];
+                message += "["+parseFloat(positionvec[0]).toFixed(3)+","+parseFloat(positionvec[1]).toFixed(3)+","+parseFloat(positionvec[2]).toFixed(3)+"]";
+            }
+            else {
+                message += object.userData[userDataList[i]].toString().substring(0, 7);
+            }
             message += "\r\n"
         }
 

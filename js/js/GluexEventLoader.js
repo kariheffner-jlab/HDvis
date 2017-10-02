@@ -124,6 +124,8 @@ THREE.GluexEventLoader.prototype = {
 
                 trackMesh.userData = {
                     charge: track_charge,
+                    mass: track.mass,
+                    position: track.position,
                     momentum: track.momentum,
                     TrackChiSq_NDF: track.TrackChiSq_NDF,
                     start_time: track.start_time,
@@ -184,6 +186,8 @@ THREE.GluexEventLoader.prototype = {
 
                 trackMesh.userData = {
                     charge: 0,
+                    mass: track.mass,
+                    position: track.position,
                     momentum: track.momentum,
                     TrackChiSq_NDF: track.TrackChiSq_NDF,
                     start_time: track.start_time,
