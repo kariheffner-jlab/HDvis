@@ -68,7 +68,12 @@ THREE.GluexEventLoader.prototype = {
                     sectorMesh.material.color.setRGB(255. / 255., /*141.*/255. / 255., /*66.*/255. / 255.);
 
                     sectorMesh.userData = {
-                        "t": schit.t
+                        "t": schit.t,
+                        "t_fADC": schit.t_fADC,
+                        "t_TDC": schit.t_TDC,
+                        "pulse_height": schit.pulse_height,
+                        "dE": schit.dE
+
                     };
                 }
 
@@ -231,11 +236,11 @@ THREE.GluexEventLoader.prototype = {
                 var bcalpoint = new THREE.SphereGeometry(radius, 32, 32, 0, 6.3, 0, 6.3);
 
                 var bpointmesh = new THREE.Mesh(bcalpoint, material);
-                bpointmesh.position.x = bpoint.r * Math.cos(bpoint.theta);
-                bpointmesh.position.y = bpoint.r * Math.sin(bpoint.theta);
-                bpointmesh.position.z = bpoint.z + 65;//align by 1/2 target length
+                bpointmesh.position.x = bpoint.position[0][0]
+                bpointmesh.position.y = bpoint.position[0][1]
+                bpointmesh.position.z = bpoint.position[0][2] + 65;//align by 1/2 target length
 
-                bpointmesh.userData = {t: bpoint.t, E: bpoint.E};
+                bpointmesh.userData = {"position": bpoint.position, t: bpoint.t, E: bpoint.E, layer: bpoint.layer, sector: bpoint.sector, module: bpoint.sector};
 
                 bpointmesh.name = geometry.name;
                 scope.group.add(bpointmesh);
@@ -282,8 +287,8 @@ THREE.GluexEventLoader.prototype = {
 
                 boxmesh.userData = {
                     E: hit.E,
-                    column: hit.column,
-                    row: hit.row,
+                    // column: hit.column,
+                    // row: hit.row,
                     x: hit.x,
                     y: hit.y,
                     intOverPeak: hit.intOverPeak,
@@ -317,12 +322,12 @@ THREE.GluexEventLoader.prototype = {
                 material.side = THREE.DoubleSide;
 
                 var conemesh = new THREE.Mesh(cone, material);
-                conemesh.position.x = shower.x;
-                conemesh.position.y = shower.y;
-                conemesh.position.z = shower.z + .5;//+20;d May not be needed.....
+                conemesh.position.x = shower.position[0][0];
+                conemesh.position.y = shower.position[0][1];
+                conemesh.position.z = shower.position[0][2] + .5;//+20;d May not be needed.....
                 conemesh.rotation.x = -1 * Math.PI / 2;
 
-                conemesh.userData = {fTime: shower.fTime, showerZ: shower.z, fEnergy: shower.fEnergy};
+                conemesh.userData = {"position": shower.position, fTime: shower.fTime,  fEnergy: shower.fEnergy};
 
                 conemesh.name = geometry.name;
                 scope.group.add(conemesh);
@@ -352,13 +357,13 @@ THREE.GluexEventLoader.prototype = {
                 bmaterial.side = THREE.DoubleSide;
 
                 var bconemesh = new THREE.Mesh(bcone, bmaterial);
-                bconemesh.position.x = bshower.x;
-                bconemesh.position.y = bshower.y;
-                bconemesh.position.z = bshower.z;//Need to shift radially by 1/2 length
+                bconemesh.position.x = bshower.position[0][0];
+                bconemesh.position.y = bshower.position[0][1];
+                bconemesh.position.z = bshower.position[0][2];
 
                 bconemesh.rotation.x = -1 * Math.PI / 2;//Need rotation of showers....but maybe not
 
-                bconemesh.userData = {t: bshower.t, E: bshower.E, z: bshower.z};
+                bconemesh.userData = {position: bshower.position ,t: bshower.t, E: bshower.E, Epreshower: bshower.Epreshower, position: bshower.position, Ncell: bshower.Ncell};
 
                 bconemesh.name = geometry.name;
                 scope.group.add(bconemesh);
@@ -603,11 +608,11 @@ THREE.GluexEventLoader.prototype = {
                 var tofpoint = new THREE.SphereGeometry(2, 32, 32, 0, 6.3, 0, 6.3);
 
                 var pointmesh = new THREE.Mesh(tofpoint, material);
-                pointmesh.position.x = point.x;
-                pointmesh.position.y = point.y;
-                pointmesh.position.z = point.z;//+40 May not be needed.....
+                pointmesh.position.x = point.position[0][0];
+                pointmesh.position.y = point.position[0][1];
+                pointmesh.position.z = point.position[0][2];;//+40 May not be needed.....
 
-                pointmesh.userData = {t: point.t};
+                pointmesh.userData = {"position": point.position ,"t": point.t,"tErr": point.tErr, "dE": point.dE};
 
                 pointmesh.name = geometry.name;
                 scope.group.add(pointmesh);
@@ -707,7 +712,7 @@ THREE.GluexEventLoader.prototype = {
                          modulemesh.geometry = new THREE.Geometry().fromBufferGeometry(modulemesh.geometry);
                      }*/
                     var moduletoadd=modulemesh.clone();
-                    moduletoadd.userData.t = hit.t;
+                    moduletoadd.userData = { "E": hit.E, "t": hit.t,"t_raw": hit.t_raw,"pulse_peak":hit.pulse_peak };
 
                     moduletoadd.geometry.colorsNeedUpdate = true;
                     if(end===1)
@@ -718,7 +723,7 @@ THREE.GluexEventLoader.prototype = {
                 }
                 else if(sceneobject)
                 {
-                    sceneobject.userData.t = hit.t;
+                    sceneobject.userData = { "E": hit.E, "t": hit.t,"t_raw": hit.t_raw,"pulse_peak":hit.pulse_peak };
                 }
                 else {
                     console.log("DIDN'T FIND " + geoName);

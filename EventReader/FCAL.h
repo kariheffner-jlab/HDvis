@@ -62,10 +62,16 @@ public:
                                          {"id", id},
                                          {"fEnergy", fEnergy},
                                          {"fTime", fTime},
-                                         {"x", fPosition.X()},
-                                         {"y", fPosition.Y()},
-                                         {"z", fPosition.Z()}
+
                                  });
+
+        auto jsonposArray = tao::json::value::array({});
+
+        //std::cout<<track_points[j].X()<<" , "<< track_points[j].Y()<<" , "<<track_points[j].Z()<<" , "<<track_point_times[j]<<std::endl;
+        jsonposArray.emplace_back(tao::json::value::array({fPosition.X() , fPosition.Y() , fPosition.Z()}));
+
+
+        FCALShower["position"] = jsonposArray;
 
         return FCALShower;// << tao::json::to_string(FCALShower, 4);
 

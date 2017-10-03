@@ -15,7 +15,19 @@ public:
         auto arr = tao::json::value::array({});
 
         for (uint i = 0; i < SCHits.size(); i++) {
-            arr.emplace_back(WriteHitJSON(i, SCHits[i]->sector, SCHits[i]->dE, SCHits[i]->t, SCHits[i]->t_TDC,SCHits[i]->t_fADC, SCHits[i]->pulse_height, SCHits[i]->has_fADC, SCHits[i]->has_TDC));
+            float t_fADC_touse=SCHits[i]->t_fADC;
+            if(t_fADC_touse != t_fADC_touse)
+            {
+                t_fADC_touse=-10000;
+            }
+
+            float t_TDC_touse=SCHits[i]->t_TDC;
+            if(t_TDC_touse != t_TDC_touse)
+            {
+                t_TDC_touse=-10000;
+            }
+
+            arr.emplace_back(WriteHitJSON(i, SCHits[i]->sector, SCHits[i]->dE, SCHits[i]->t, t_TDC_touse,t_fADC_touse, SCHits[i]->pulse_height, SCHits[i]->has_fADC, SCHits[i]->has_TDC));
 
 
         }
@@ -31,8 +43,9 @@ public:
                                          {"id", id},
                                          {"sector", sector},
                                          {"t", t},
-                                         //{"t_TDC", t_TDC},
-                                         //{"t_fADC", t_fADC},
+                                         {"dE", dE},
+                                         {"t_TDC", t_TDC},
+                                         {"t_fADC", t_fADC},
                                          {"pulse_height", pulse_height},
                                          {"has_fADC", has_fADC},
                                          {"has_TDC", has_TDC}

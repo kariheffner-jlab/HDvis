@@ -35,7 +35,19 @@ public:
 
         for(uint i=0;i<TOFHits.size();i++)
         {
-            arr.emplace_back(WriteHitJSON(i, TOFHits[i]->plane,TOFHits[i]->bar, TOFHits[i]->end, TOFHits[i]->dE, TOFHits[i]->Amp, TOFHits[i]->t_fADC, TOFHits[i]->t_TDC, TOFHits[i]->t, TOFHits[i]->has_fADC, TOFHits[i]->has_TDC));
+            float t_fADC_touse=TOFHits[i]->t_fADC;
+            if(t_fADC_touse != t_fADC_touse)
+            {
+                t_fADC_touse=-10000;
+            }
+
+            float t_TDC_touse=TOFHits[i]->t_TDC;
+            if(t_TDC_touse != t_TDC_touse)
+            {
+                t_TDC_touse=-10000;
+            }
+
+            arr.emplace_back(WriteHitJSON(i, TOFHits[i]->plane,TOFHits[i]->bar, TOFHits[i]->end, TOFHits[i]->dE, TOFHits[i]->Amp, t_fADC_touse, t_TDC_touse, TOFHits[i]->t, TOFHits[i]->has_fADC, TOFHits[i]->has_TDC));
 
         }
         return arr;
@@ -49,10 +61,15 @@ public:
                                             {"t", t},
                                             {"dE", dE},
                                             {"tErr", tErr},
-                                            {"x", fPosition.X()},
-                                            {"y", fPosition.Y()},
-                                            {"z", fPosition.Z()}
                                     });
+
+        auto jsonposArray = tao::json::value::array({});
+
+        //std::cout<<track_points[j].X()<<" , "<< track_points[j].Y()<<" , "<<track_points[j].Z()<<" , "<<track_point_times[j]<<std::endl;
+        jsonposArray.emplace_back(tao::json::value::array({fPosition.X() , fPosition.Y() , fPosition.Z()}));
+
+
+        TOFPoint["position"] = jsonposArray;
 
         return TOFPoint;//event_out << tao::json::to_string(TOFPoint, 4);
     }
@@ -66,8 +83,8 @@ public:
                                           {"end", end},
                                           {"dE", dE},
                                           {"Amp", Amp},
-                                          //{"t_fADC", t_fADC},
-                                          //{"t_TDC", t_TDC},
+                                          {"t_fADC", t_fADC},
+                                          {"t_TDC", t_TDC},
                                           {"t", t},
                                           {"has_fADC", has_fADC},
                                           {"has_TDC", has_TDC}

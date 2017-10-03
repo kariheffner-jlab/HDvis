@@ -152,7 +152,7 @@
     <span id="janaStatus" style="color: darkgray"> JANA status </span>
     <span style="display: block; text-align: center;color: green; font-size: 30px" id="EventClock" > Event Clock </span>
     <span style="display: block; text-align: center;color: green; font-size: 30px" id="play_pause" > <a href="#" class="button gray" OnClick="togglePlay()">play/pause</a> </span>
-    <div style="position: absolute; top: 100px; left: -90px; width: 1000px; white-space: pre-line;" id="ObjectInfo"> </div>
+    <div style="position: absolute; top: 125px; left: -90px; width: 1000px; white-space: pre-line;" id="ObjectInfo"> </div>
 </nav>
 <script>
     function togglePlay(){
@@ -757,13 +757,13 @@
         if (ViewerConfig.FCALShowerVis === "Dynamic") {
             if (SceneTime > eventobj.userData.fTime) {
                 eventobj.scale.set(10, 20, 10);
-                eventobj.position.z = eventobj.userData.showerZ + 10;
+                eventobj.position.z = eventobj.userData.position[0][2] + 10;
                 eventobj.geometryNeedsUpdate = true;
 
             }
             else if (SceneTime < eventobj.userData.fTime && eventobj.scale.z !== 1) {
                 eventobj.scale.set(1, 1, 1);
-                eventobj.position.z = eventobj.userData.showerZ + .5;
+                eventobj.position.z = eventobj.userData.position[0][2] + .5;
                 eventobj.geometryNeedsUpdate = true;
             }
         }
@@ -772,7 +772,7 @@
         }
         else if (ViewerConfig.FCALShowerVis === "Static" && eventobj.scale.z !== 10) {
             eventobj.scale.set(10, 20, 10);
-            eventobj.position.z = eventobj.userData.showerZ + 5;
+            eventobj.position.z = eventobj.userData.position[0][2] + 5;
             eventobj.geometryNeedsUpdate = true;
         }
     }
@@ -1191,13 +1191,13 @@
             if (SceneTime > eventobj.userData.t) {
                 var EScale = 5 + 10 * eventobj.userData.E;
                 eventobj.scale.set(EScale, 2 * EScale, EScale);
-                eventobj.position.z = eventobj.userData.z + EScale;
+                eventobj.position.z = eventobj.userData.position[0][2] + EScale;
                 eventobj.geometryNeedsUpdate = true;
 
             }
             else if (SceneTime < eventobj.userData.t && eventobj.scale.z !== 1) {
                 eventobj.scale.set(1, 1, 1);
-                eventobj.position.z = eventobj.userData.z + .5;
+                eventobj.position.z = eventobj.userData.position[0][2] + .5;
                 eventobj.geometryNeedsUpdate = true;
             }
         }
@@ -1207,7 +1207,7 @@
         else if (ViewerConfig.BCALShowerVis === "Static" && eventobj.scale.z === 1) {
             var EScale = 5 + 10 * eventobj.userData.E;
             eventobj.scale.set(EScale, 2 * EScale, EScale);
-            eventobj.position.z = eventobj.userData.z + EScale;
+            eventobj.position.z = eventobj.userData.position[0][2] + EScale;
             eventobj.geometryNeedsUpdate = true;
         }
     }
