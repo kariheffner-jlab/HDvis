@@ -504,9 +504,11 @@ THREE.GluexEventLoader.prototype = {
 
 
                 linemesh.userData = {
+                    "gLayer": fhit.gLayer, //convert to package and chamber
+                    "layer": fhit.layer,
                     "q": fhit.q,
                     "t": fhit.t,
-                    "gLayer": fhit.gLayer,
+                    "pulse_height_raw": fhit.pulse_height_raw,
                     "plane": fhit.plane,
                     "u": fhit.u,
                     "type": fhit.type
@@ -538,17 +540,19 @@ THREE.GluexEventLoader.prototype = {
                 var fdcpoint = new THREE.SphereGeometry(radius, 32, 32, 0, 6.3, 0, 6.3);
 
                 var fdcpseudomesh = new THREE.Mesh(fdcpoint, material);
-                fdcpseudomesh.position.x = fpseudo.x;
-                fdcpseudomesh.position.y = fpseudo.y;
-                fdcpseudomesh.position.z = fpseudo.z;
+                fdcpseudomesh.position.x = fpseudo.position[0][0];
+                fdcpseudomesh.position.y = fpseudo.position[0][1];
+                fdcpseudomesh.position.z = fpseudo.position[0][2];
 
                 fdcpseudomesh.userData = {
+                    "position": fpseudo.position,
                     "time": fpseudo.time,
-                    "x": fpseudo.x,
-                    "y": fpseudo.y,
-                    "z": fpseudo.z,
                     "u": fpseudo.u,
-                    "v": fpseudo.v
+                    "t_u": fpseudo.u_t,
+                    "v": fpseudo.v,
+                    "t_v": fpseudo.v_t,
+                    "dE": fpseudo.dE,
+                    "q": fpseudo.q
                 };
 
                 fdcpseudomesh.name = geometry.name;
@@ -578,7 +582,7 @@ THREE.GluexEventLoader.prototype = {
                     var strawmeshToAdd= strawMesh.clone();
                     strawmeshToAdd.material.visible = vis;
                     strawmeshToAdd.name=name;
-                    strawmeshToAdd.userData.t=cdchit.t
+                    strawmeshToAdd.userData={t: cdchit.t, q: cdchit.q, d: cdchit.d, itrack: cdchit.itrack, ptype: cdchit.ptype}
                     scope.geometry.getObjectByName("CDC",true).add(strawmeshToAdd);
                 }
 

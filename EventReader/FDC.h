@@ -101,7 +101,7 @@ public:
 
         for(uint i=0;i<FDCPseudos.size();i++)
         {
-            arr.emplace_back(WritePseudoJSON(i,FDCPseudos[i]->time,FDCPseudos[i]->xy.X(),FDCPseudos[i]->xy.Y(),FDCPseudos[i]->wire->origin.Z(),FDCPseudos[i]->u,FDCPseudos[i]->v));
+            arr.emplace_back(WritePseudoJSON(i,FDCPseudos[i]->time,FDCPseudos[i]->xy.X(),FDCPseudos[i]->xy.Y(),FDCPseudos[i]->wire->origin.Z(),FDCPseudos[i]->u,FDCPseudos[i]->v,FDCPseudos[i]->t_u, FDCPseudos[i]->t_v, FDCPseudos[i]->dE, FDCPseudos[i]->q));
         }
 
         return arr;
@@ -136,18 +136,28 @@ public:
         return FDCHit;//event_out << tao::json::to_string(FDCHit, 4);
     }
 
-    static tao::json::value WritePseudoJSON(int id,double time,double x,double y,double z, double u, double v)
+    static tao::json::value WritePseudoJSON(int id,double time,double x,double y,double z, double u, double v, double u_t, double v_t, double dE, double q)
     {
         tao::json::value FDCPseudo({
                                         {"id", id},
                                         {"time", time},
-                                        {"x", x},
-                                        {"y", y},
-                                        {"z", z},
                                         {"u", u},
-                                        {"v", v}
+                                        {"v", v},
+                                        {"u_t", u_t},
+                                        {"v_t", v_t},
+                                        {"dE", dE},
+                                        {"q", q},
 
                                 });
+
+
+        auto jsonposArray = tao::json::value::array({});
+
+        //std::cout<<track_points[j].X()<<" , "<< track_points[j].Y()<<" , "<<track_points[j].Z()<<" , "<<track_point_times[j]<<std::endl;
+
+        jsonposArray.emplace_back(tao::json::value::array({x,y, z}));
+
+        FDCPseudo["position"] = jsonposArray;
 
         return FDCPseudo;//event_out << tao::json::to_string(FDCHit, 4);
     }
