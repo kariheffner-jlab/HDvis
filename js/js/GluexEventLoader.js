@@ -649,13 +649,23 @@ THREE.GluexEventLoader.prototype = {
                 var sceneobject = scope.geometry.getObjectByName(geoName, true);
                 //getObjectByName( "TestBox", true );
 
-                if (object) {
+                if(sceneobject)
+                {
+                    sceneobject.userData.HitTimes.push({end: end, time: time});
+                    sceneobject.userData.HitEnds.push(end);
+                    sceneobject.userData.HitdE.push(hit.dE);
+                    sceneobject.userData.HitAmp.push(hit.Amp);
+                    sceneobject.userData.Hitt.push(hit.t);
+                    sceneobject.userData.Hitt_fADC.push(hit.t_fADC);
+                    sceneobject.userData.Hitt_TDC.push(hit.t_TDC);
+                }
+                else if (object) {
                     if (object.geometry.type === "BufferGeometry") {
                         object.geometry = new THREE.Geometry().fromBufferGeometry(object.geometry);
                     }
 
 
-                    var objectToAdd= object.clone();
+                    var objectToAdd=object.clone();
 
                     objectToAdd.userData={
                         plane: hit.plane,
@@ -744,10 +754,7 @@ THREE.GluexEventLoader.prototype = {
 
 
                 }
-                else if(sceneobject)
-                {
-                    sceneobject.userData.HitTimes.push({end: end, time: time});
-                }
+
                 else
                 {
                     console.log("DIDN'T FIND " + geoName);
