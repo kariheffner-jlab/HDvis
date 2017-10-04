@@ -505,7 +505,7 @@
 
             if(!ObjectLock)
             {
-                INTERSECTED_OBJECT=raytracing();
+                INTERSECTED_OBJECT=raytracing(event);
                 if(INTERSECTED_OBJECT!==null) {
                     ObjectLock = true;
                 }
@@ -515,7 +515,7 @@
                 camera_in_use.getWorldDirection(camera_facing);
                 if(camera_facing.x===recordedCamera_facing.x && camera_facing.y===recordedCamera_facing.y && camera_facing.z===recordedCamera_facing.z)
                 {
-                    INTERSECTED_OBJECT = raytracing();
+                    INTERSECTED_OBJECT = raytracing(event);
 
                     if (INTERSECTED_OBJECT !== null) {
                         ObjectLock = true;
@@ -538,7 +538,7 @@
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
         //sprite1.position.set(mouse.x, mouse.y, 1 );
-        raytracing();
+        raytracing(event);
 
     }
 
@@ -633,12 +633,12 @@
                     controls_in_use = perspecregcontrols;stereobool=true;
                 }
                 break;
-            case 87: event.preventDefault();camera_in_use.translateZ(-MoveDelta);perspec_camera.translateZ(-MoveDelta);raytracing();break;//w
-            case 83: event.preventDefault();camera_in_use.translateZ(MoveDelta);perspec_camera.translateZ(MoveDelta);raytracing();break;//s
-            case 65: event.preventDefault();camera_in_use.translateX(-MoveDelta);perspec_camera.translateX(-MoveDelta);raytracing();break;//a
-            case 68: event.preventDefault();camera_in_use.translateX(MoveDelta);perspec_camera.translateX(MoveDelta);raytracing();break;//d
-            case 32: event.preventDefault();camera_in_use.translateY(MoveDelta);perspec_camera.translateY(MoveDelta);raytracing();break;//spacebar
-            case 90: event.preventDefault();camera_in_use.translateY(-MoveDelta);perspec_camera.translateY(-MoveDelta);raytracing();break;//z
+            case 87: event.preventDefault();camera_in_use.translateZ(-MoveDelta);perspec_camera.translateZ(-MoveDelta);raytracing(event);break;//w
+            case 83: event.preventDefault();camera_in_use.translateZ(MoveDelta);perspec_camera.translateZ(MoveDelta);raytracing(event);break;//s
+            case 65: event.preventDefault();camera_in_use.translateX(-MoveDelta);perspec_camera.translateX(-MoveDelta);raytracing(event);break;//a
+            case 68: event.preventDefault();camera_in_use.translateX(MoveDelta);perspec_camera.translateX(MoveDelta);raytracing(event);break;//d
+            case 32: event.preventDefault();camera_in_use.translateY(MoveDelta);perspec_camera.translateY(MoveDelta);raytracing(event);break;//spacebar
+            case 90: event.preventDefault();camera_in_use.translateY(-MoveDelta);perspec_camera.translateY(-MoveDelta);raytracing(event);break;//z
 
         }
         camera_in_use.updateMatrixWorld();
@@ -1674,7 +1674,7 @@
 
 
 
-    function raytracing()
+    function raytracing(event)
     {
         var vector = new THREE.Vector3();
         var dir = new THREE.Vector3();
