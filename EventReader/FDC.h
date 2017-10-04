@@ -101,7 +101,7 @@ public:
 
         for(uint i=0;i<FDCPseudos.size();i++)
         {
-            arr.emplace_back(WritePseudoJSON(i,FDCPseudos[i]->time,FDCPseudos[i]->xy.X(),FDCPseudos[i]->xy.Y(),FDCPseudos[i]->wire->origin.Z(),FDCPseudos[i]->u,FDCPseudos[i]->v,FDCPseudos[i]->t_u, FDCPseudos[i]->t_v, FDCPseudos[i]->dE, FDCPseudos[i]->q));
+            arr.emplace_back(WritePseudoJSON(i,FDCPseudos[i]->time,FDCPseudos[i]->xy.X(),FDCPseudos[i]->xy.Y(),FDCPseudos[i]->wire->origin.Z(),FDCPseudos[i]->u,FDCPseudos[i]->v,FDCPseudos[i]->t_u, FDCPseudos[i]->t_v, FDCPseudos[i]->dE, FDCPseudos[i]->q, FDCPseudos[i]->wire->layer, FDCPseudos[i]->w, FDCPseudos[i]->s));
         }
 
         return arr;
@@ -128,15 +128,16 @@ public:
                                         {"midy", wire_strip_midy},
                                         {"midz", wire_strip_midz},
                                         {"u", xdispl},
-                                        {"angle", angle}
-
+                                        {"angle", angle},
+                                        {"package", (gLayer-1/6)+1},
+                                        {"chamber", (gLayer%6)+1}
 
                                 });
 
         return FDCHit;//event_out << tao::json::to_string(FDCHit, 4);
     }
 
-    static tao::json::value WritePseudoJSON(int id,double time,double x,double y,double z, double u, double v, double u_t, double v_t, double dE, double q)
+    static tao::json::value WritePseudoJSON(int id,double time,double x,double y,double z, double u, double v, double u_t, double v_t, double dE, double q, int gLayer, double w, double s)
     {
         tao::json::value FDCPseudo({
                                         {"id", id},
@@ -147,6 +148,10 @@ public:
                                         {"v_t", v_t},
                                         {"dE", dE},
                                         {"q", q},
+                                        {"package", (gLayer-1/6)+1},
+                                        {"chamber", (gLayer%6)+1},
+                                        {"w", w},
+                                        {"s", s}
 
                                 });
 

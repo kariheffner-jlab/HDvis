@@ -504,7 +504,8 @@ THREE.GluexEventLoader.prototype = {
 
 
                 linemesh.userData = {
-                    "gLayer": fhit.gLayer, //convert to package and chamber
+                    "package": fhit.package,
+                    "chamber": fhit.chamber,
                     "layer": fhit.layer,
                     "q": fhit.q,
                     "t": fhit.t,
@@ -545,7 +546,11 @@ THREE.GluexEventLoader.prototype = {
                 fdcpseudomesh.position.z = fpseudo.position[0][2];
 
                 fdcpseudomesh.userData = {
+                    "package": fpseudo.package,
+                    "chamber": fpseudo.chamber,
                     "position": fpseudo.position,
+                    "w": fpseudo.w,
+                    "s": fpseudo.s,
                     "time": fpseudo.time,
                     "u": fpseudo.u,
                     "t_u": fpseudo.u_t,
@@ -652,6 +657,64 @@ THREE.GluexEventLoader.prototype = {
 
                     var objectToAdd= object.clone();
 
+                    objectToAdd.userData={
+                        plane: hit.plane,
+                        bar: hit.bar
+                    }
+
+                    if(objectToAdd.userData.HitEnds) {
+                        objectToAdd.userData.HitEnds.push(end);
+                    }
+                    else
+                    {
+                        objectToAdd.userData.HitEnds=[];
+                        objectToAdd.userData.HitEnds.push(end);
+                    }
+
+                    if(objectToAdd.userData.HitdE) {
+                        objectToAdd.userData.HitdE.push(hit.dE);
+                    }
+                    else
+                    {
+                        objectToAdd.userData.HitdE=[];
+                        objectToAdd.userData.HitdE.push(hit.dE);
+                    }
+
+                    if(objectToAdd.userData.HitAmp) {
+                        objectToAdd.userData.HitAmp.push(hit.Amp);
+                    }
+                    else
+                    {
+                        objectToAdd.userData.HitAmp=[];
+                        objectToAdd.userData.HitAmp.push(hit.Amp);
+                    }
+
+                    if(objectToAdd.userData.Hitt) {
+                        objectToAdd.userData.Hitt.push(hit.t);
+                    }
+                    else
+                    {
+                        objectToAdd.userData.Hitt=[];
+                        objectToAdd.userData.Hitt.push(hit.t);
+                    }
+
+                    if(objectToAdd.userData.Hitt_fADC) {
+                        objectToAdd.userData.Hitt_fADC.push(hit.t_fADC);
+                    }
+                    else
+                    {
+                        objectToAdd.userData.Hitt_fADC=[];
+                        objectToAdd.userData.Hitt_fADC.push(hit.t_fADC);
+                    }
+
+                    if(objectToAdd.userData.Hitt_TDC) {
+                        objectToAdd.userData.Hitt_TDC.push(hit.t_TDC);
+                    }
+                    else
+                    {
+                        objectToAdd.userData.Hitt_TDC=[];
+                        objectToAdd.userData.Hitt_TDC.push(hit.t_TDC);
+                    }
 
                     if(objectToAdd.userData.HitTimes) {
                         objectToAdd.userData.HitTimes.push({end: end, time: time});
@@ -661,6 +724,7 @@ THREE.GluexEventLoader.prototype = {
                         objectToAdd.userData.HitTimes=[];
                         objectToAdd.userData.HitTimes.push({end: end, time: time});
                     }
+
                     objectToAdd.geometry.colorsNeedUpdate = true;
 
                     if(plane==1)

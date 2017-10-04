@@ -1639,11 +1639,27 @@
 
         for (var i = 0; i < total_data; i++) {
             // message += ",";
+
+            if(userDataList[i] === "HitTimes")
+            {
+                continue;
+            }
             message += userDataList[i] + ": ";
+
+
             if(userDataList[i] === "position")
             {
                 var positionvec = object.userData[userDataList[i]][0];
                 message += "["+parseFloat(positionvec[0]).toFixed(3)+","+parseFloat(positionvec[1]).toFixed(3)+","+parseFloat(positionvec[2]).toFixed(3)+"]";
+            }
+            else if(object.userData[userDataList[i]] instanceof Array) {
+                message += "[";
+                for(var j=0;j<object.userData[userDataList[i]].length;j++)
+                {
+                    message += object.userData[userDataList[i]][j].toString().substring(0, 7)+",";
+                }
+                message = message.substring(0,message.length-1);
+                message += "]";
             }
             else {
                 message += object.userData[userDataList[i]].toString().substring(0, 7);

@@ -38,13 +38,13 @@ public:
             float t_fADC_touse=TOFHits[i]->t_fADC;
             if(t_fADC_touse != t_fADC_touse)
             {
-                t_fADC_touse=-10000;
+                t_fADC_touse=-99999;
             }
 
             float t_TDC_touse=TOFHits[i]->t_TDC;
             if(t_TDC_touse != t_TDC_touse)
             {
-                t_TDC_touse=-10000;
+                t_TDC_touse=-99999;
             }
 
             arr.emplace_back(WriteHitJSON(i, TOFHits[i]->plane,TOFHits[i]->bar, TOFHits[i]->end, TOFHits[i]->dE, TOFHits[i]->Amp, t_fADC_touse, t_TDC_touse, TOFHits[i]->t, TOFHits[i]->has_fADC, TOFHits[i]->has_TDC));
