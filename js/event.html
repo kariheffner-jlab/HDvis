@@ -1656,9 +1656,9 @@
                 message += "[";
                 for(var j=0;j<object.userData[userDataList[i]].length;j++)
                 {
-                    message += object.userData[userDataList[i]][j].toString().substring(0, 7)+",";
+                    message += object.userData[userDataList[i]][j].toString().substring(0, 7)+", ";
                 }
-                message = message.substring(0,message.length-1);
+                message = message.substring(0,message.length-2);
                 message += "]";
             }
             else {
