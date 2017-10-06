@@ -26,7 +26,6 @@ link_directories(
         $ENV{EVIOROOT}/lib
         $ENV{CCDB_HOME}/lib
         $ENV{XERCESCROOT}/lib/
-        /group/halld/Software/builds/Linux_CentOS7-x86_64-gcc4.8.5/xerces-c/xerces-c-3.1.2/lib/
         /usr/lib64/mysql/
 )
 
