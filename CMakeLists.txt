@@ -80,34 +80,34 @@ target_link_libraries(hdvis
 
         #sim-recon
         DANA
-        TTAB
-
         ANALYSIS
-        BCAL
-        CCAL
-        CDC
-        CERE
-        DAQ
-        DIRC
-        EVENTSTORE
-        FCAL
-        FDC
-        FMWPC
-        HDDM
-
-
         KINFITTER
-        PAIR_SPECTROMETER
         PID
-        RF
-        START_COUNTER
-        TAC
         TAGGER
-        TOF
-        TPOL
         TRACKING
-        HDGEOMETRY
+        START_COUNTER
+        CERE
+        DIRC
+        CDC
         TRIGGER
+        PAIR_SPECTROMETER
+        RF
+        FDC
+        TOF
+        BCAL
+        FCAL
+        CCAL
+        TPOL
+        HDGEOMETRY
+        TTAB
+        FMWPC
+        TAC
+        DAQ
+        JANA
+        EVENTSTORE
+
+
+        HDDM
         xstream
 
         ${ROOT_LIBRARIES}
@@ -115,7 +115,7 @@ target_link_libraries(hdvis
 
 
         #JANA
-        JANA
+
         evio
         evioxx
 
@@ -136,6 +136,8 @@ target_link_libraries(hdvis
 
         mysqlclient
         pthread
+
+        DANA
 
 
         )

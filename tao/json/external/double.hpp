@@ -1114,7 +1114,7 @@ namespace json_double_conversion
       }
 
       static double NaN() {
-         return Double(kNaN).value();
+         return (Double(kNaN).value());
       }
 
    private:
