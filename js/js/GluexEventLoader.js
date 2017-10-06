@@ -584,7 +584,7 @@ THREE.GluexEventLoader.prototype = {
                 // var strawMesh = scope.geometry.getObjectByName(name, true);
                 var strawMesh = scope.shadowGeom.getObjectByName(name, true);
                 if (strawMesh) {
-                    var strawmeshToAdd= strawMesh.clone();
+                    var strawmeshToAdd= strawMesh;//.clone();
                     strawmeshToAdd.material.visible = vis;
                     strawmeshToAdd.name=name;
                     strawmeshToAdd.userData={t: cdchit.t, q: cdchit.q, d: cdchit.d, itrack: cdchit.itrack, ptype: cdchit.ptype}
@@ -665,7 +665,7 @@ THREE.GluexEventLoader.prototype = {
                     }
 
 
-                    var objectToAdd=object.clone();
+                    var objectToAdd=object;//.clone();
 
                     objectToAdd.userData={
                         plane: hit.plane,
@@ -783,10 +783,8 @@ THREE.GluexEventLoader.prototype = {
                 //getObjectByName( "TestBox", true );
 
                 if (modulemesh) {
-                    /* if (modulemesh.geometry.type === "BufferGeometry") {
-                         modulemesh.geometry = new THREE.Geometry().fromBufferGeometry(modulemesh.geometry);
-                     }*/
-                    var moduletoadd=modulemesh.clone();
+
+                    var moduletoadd=modulemesh;//.clone();
                     moduletoadd.userData = { "E": hit.E, "t": hit.t,"t_raw": hit.t_raw,"pulse_peak":hit.pulse_peak };
 
                     moduletoadd.geometry.colorsNeedUpdate = true;
