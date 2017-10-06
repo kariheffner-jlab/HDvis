@@ -60,7 +60,7 @@ public:
                 start_time = ChargedTracks[i]->Get_BestTrackingFOM()->t0();
             }
 
-            double TrackChiSq_NDF=ChargedTracks[i]->Get_Hypothesis(PID)->dChiSq_Track/double(ChargedTracks[i]->Get_Hypothesis(PID)->dNDF_Track);
+            double TrackChiSq_NDF=ChargedTracks[i]->Get_Hypothesis(PID)->Get_TrackTimeBased()->chisq/double(ChargedTracks[i]->Get_Hypothesis(PID)->Get_TrackTimeBased()->Ndof);
 
             rt->Swim(position, momentum, charge);
             //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());

@@ -101,6 +101,7 @@ target_link_libraries(hdvis
         PID
         RF
         START_COUNTER
+        TAC
         TAGGER
         TOF
         TPOL
