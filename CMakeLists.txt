@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(EveStandAlone C CXX)
+project(hdvis C CXX)
 
 # You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:
 #   - ROOT built with classic configure/make use the provided $ROOTSYS/etc/cmake/FindROOT.cmake
@@ -68,7 +68,7 @@ set(SOURCE_FILES
         )
 
 
-add_executable(EveStandAlone ${SOURCE_FILES})
+add_executable(hdvis ${SOURCE_FILES})
 
 
 #AMPTOOLS_AMPS
@@ -77,7 +77,7 @@ add_executable(EveStandAlone ${SOURCE_FILES})
 # gelhad
 #        rt
 #hitutil
-target_link_libraries(EveStandAlone
+target_link_libraries(hdvis
 
         #sim-recon
         DANA
@@ -140,8 +140,8 @@ target_link_libraries(EveStandAlone
 
         )
 
-add_custom_command(TARGET EveStandAlone POST_BUILD
+add_custom_command(TARGET hdvis POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/js
-        $<TARGET_FILE_DIR:EveStandAlone>/www
+        $<TARGET_FILE_DIR:hdvis>/www
         )
