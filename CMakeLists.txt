@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 project(EveStandAlone C CXX)
 
@@ -30,19 +30,15 @@ link_directories(
         /usr/lib64/mysql/
 )
 
-
 add_definitions(${ROOT_CXX_FLAGS})
 
-ROOT_GENERATE_DICTIONARY(G__GuiListener GuiListener.h LINKDEF GuiListenerLinkDef.h)
+
 #---Create a shared library with geneated dictionary
-add_library(GuiListener SHARED GuiListener.cpp G__GuiListener.cxx)
-target_link_libraries(GuiListener ${ROOT_LIBRARIES})
 
 include_directories(
         $ENV{JANA_HOME}/include
         $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/include
         EventReader
-
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
@@ -52,23 +48,28 @@ set(SOURCE_FILES
         hd_vis.cpp
         EventReader/JEventProcessor_EventReader.cpp
         EventReader/TOF.h
-        RootLoopCommander.h
+        EventReader/BCAL.h
+        EventReader/CDC.h
+        EventReader/SC.h
+        EventReader/FDC.h
+
+
         WaitingLogic.h
+        ControlLoop.h
+        ApplicationContext.h
+        ApplicationContext.cpp
 
-        RootLoop.h RootLoopCommander.cpp GeometryConverter.h EventReader/BCAL.h EventReader/CDC.h EventReader/SC.h EventReader/FDC.h)
-set(GEO_SOURCE_FILES
-        hd_vis_geo.cpp
-        geometry.cpp
+        httplib.h
+        HttpController.h
+        KeyboardControl.h
+        StringUtils.h
 
+        tao/json.hpp
         )
 
+
 add_executable(EveStandAlone ${SOURCE_FILES})
-add_executable(EveGeo ${GEO_SOURCE_FILES})
 
-target_link_libraries(EveGeo
-        ${ROOT_LIBRARIES}
-
-)
 
 #AMPTOOLS_AMPS
 #AMPTOOLS_DATAIO
@@ -77,7 +78,6 @@ target_link_libraries(EveGeo
 #        rt
 #hitutil
 target_link_libraries(EveStandAlone
-        GuiListener
 
         #sim-recon
         DANA
@@ -140,4 +140,8 @@ target_link_libraries(EveStandAlone
 
         )
 
-add_subdirectory(examples)
+add_custom_command(TARGET EveStandAlone POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/js
+        $<TARGET_FILE_DIR:EveStandAlone>/www
+        )

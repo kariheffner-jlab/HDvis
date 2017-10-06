@@ -11,27 +11,21 @@ class CDC
 {
 public:
 
-    void Add_CDCHits(vector<const DCDCHit*> CDCHits)
+    static tao::json::value Add_CDCHits(vector<const DCDCHit*> CDCHits)
     {
 
-        ofstream event_out;
-        event_out.open("../js/event.json", ios::app);//JSON
-        event_out<<"\"CDC_hits\": "<<"[\n";//JSON
+        auto arr = tao::json::value::array({});
 
         for(uint i=0;i<CDCHits.size();i++)
         {
-            WriteHitJSON(event_out, i, CDCHits[i]->ring, CDCHits[i]->straw, CDCHits[i]->q, CDCHits[i]->t, CDCHits[i]->d, CDCHits[i]->itrack, CDCHits[i]->ptype);
-            if(i!=CDCHits.size()-1)
-                event_out<<","<<endl;
-
+            //std::cout<<i<<","<< CDCHits[i]->ring<<","<< CDCHits[i]->straw<<","<< CDCHits[i]->q<<","<< CDCHits[i]->t<<","<< CDCHits[i]->d<<","<< CDCHits[i]->itrack<<","<< CDCHits[i]->ptype<<std::endl;
+            arr.emplace_back(WriteHitJSON(i, CDCHits[i]->ring, CDCHits[i]->straw, CDCHits[i]->q, CDCHits[i]->t, CDCHits[i]->d, CDCHits[i]->itrack, CDCHits[i]->ptype));
         }
 
-        event_out<<"]"<<endl;
-        event_out.close();
-
+        return arr;
     }
 
-    void WriteHitJSON(ofstream& event_out, int id,	int ring, int straw, float q, float t, float d, int itrack, int ptype)
+    static tao::json::value WriteHitJSON(int id, int ring, int straw, float q, float t, float d, int itrack, int ptype)
     {
         tao::json::value CDCHit({
                                          {"id", id},
@@ -44,7 +38,7 @@ public:
                                          {"ptype", ptype}
                                  });
 
-        event_out << tao::json::to_string(CDCHit, 4);
+        return CDCHit;//, 4);
     }
 
 };

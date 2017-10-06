@@ -14,6 +14,7 @@ THREE.GluexGeometryLoader.prototype = {
     geometries: {},
     refs: {},
     meshes: [],
+    tofDefaultColor: 0xa3bad2,
 
     load: function (url, onLoad, onProgress, onError) {
 
@@ -125,8 +126,9 @@ THREE.GluexGeometryLoader.prototype = {
         this.group.add(ftofMesh);
 
     },
-    
+
     buildTofSection: function (path, sectionName, planeNum, startIndex, isRight) {
+        var scope = this;
 
         var sectionJson = this.importedGeometry[path];
         var shape = sectionJson.shape;
@@ -148,18 +150,19 @@ THREE.GluexGeometryLoader.prototype = {
         // Go through repetitions and create modules
         for(var i=0; i< sectionJson.division.number; i++){
 
-            var moduleGeo = new THREE.BoxBufferGeometry(shape.x, moduleY, shape.z);
+            var moduleGeo = new THREE.BoxGeometry(shape.x, moduleY, shape.z);
 
-            var material = new THREE.MeshLambertMaterial({
-                color: 0xa3bad2,
+            var material = new THREE.MeshBasicMaterial({
+                color: scope.tofDefaultColor,
                 transparent: true,
-                opacity: 0.5});
+                opacity: 0.5,
+                vertexColors: THREE.VertexColors});
             var module = new THREE.Mesh(moduleGeo, material);
 
             module.position.set(0, 0 + i*moduleY, 0);
 
 
-            module.name = "TOF_" + planeNum + "_" + (startIndex+i);
+            module.name = "TOFBar_" + planeNum + "_" + (startIndex+i);
             if(isRight) module.name += "_r";
             section.add(module);
         }

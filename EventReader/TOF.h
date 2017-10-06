@@ -15,58 +15,66 @@
 class TOF
 {
 public:
-    void Add_TOFPoints(vector<const DTOFPoint*> TOFPoints)
+    static tao::json::value Add_TOFPoints(vector<const DTOFPoint*> TOFPoints)
     {
-        ofstream event_out;
-        event_out.open("../js/event.json", ios::app);//JSON
-        event_out<<"\"TOF_points\": "<<"[\n";//JSON
+        auto arr = tao::json::value::array({});
 
         for(uint i=0;i<TOFPoints.size();i++)
         {
-            WritePointJSON(event_out,i,TOFPoints[i]->t,TOFPoints[i]->dE, TOFPoints[i]->tErr,TOFPoints[i]->pos);
-            if(i!=TOFPoints.size()-1)
-                event_out<<","<<endl;
+            arr.emplace_back(WritePointJSON(i,TOFPoints[i]->t,TOFPoints[i]->dE, TOFPoints[i]->tErr,TOFPoints[i]->pos));
         }
 
-        event_out<<"]"<<endl;
-        event_out.close();
-
+        return arr;
     }
 
-    void Add_TOFHits(vector<const DTOFHit*> TOFHits)
+    static tao::json::value  Add_TOFHits(vector<const DTOFHit*> TOFHits)
     {
+        auto arr = tao::json::value::array({});
 
-        ofstream event_out;
-        event_out.open("../js/event.json", ios::app);//JSON
-        event_out<<"\"TOF_hits\": "<<"[\n";//JSON
+
 
         for(uint i=0;i<TOFHits.size();i++)
         {
-            WriteHitJSON(event_out, i, TOFHits[i]->plane,TOFHits[i]->bar, TOFHits[i]->end, TOFHits[i]->dE, TOFHits[i]->Amp, TOFHits[i]->t_fADC, TOFHits[i]->t_TDC, TOFHits[i]->t, TOFHits[i]->has_fADC, TOFHits[i]->has_TDC);
-            if(i!=TOFHits.size()-1)
-                event_out<<","<<endl;
+            float t_fADC_touse=TOFHits[i]->t_fADC;
+            if(t_fADC_touse != t_fADC_touse)
+            {
+                t_fADC_touse=-99999;
+            }
+
+            float t_TDC_touse=TOFHits[i]->t_TDC;
+            if(t_TDC_touse != t_TDC_touse)
+            {
+                t_TDC_touse=-99999;
+            }
+
+            arr.emplace_back(WriteHitJSON(i, TOFHits[i]->plane,TOFHits[i]->bar, TOFHits[i]->end, TOFHits[i]->dE, TOFHits[i]->Amp, t_fADC_touse, t_TDC_touse, TOFHits[i]->t, TOFHits[i]->has_fADC, TOFHits[i]->has_TDC));
 
         }
-
-        event_out<<"]"<<endl;
-        event_out.close();
+        return arr;
 
     }
-    void WritePointJSON(ofstream& event_out, int id, double t, double dE, double tErr, DVector3 fPosition)
+
+    static  tao::json::value WritePointJSON(int id, double t, double dE, double tErr, DVector3 fPosition)
     {
         tao::json::value TOFPoint({
                                             {"id", id},
                                             {"t", t},
                                             {"dE", dE},
                                             {"tErr", tErr},
-                                            {"x", fPosition.X()},
-                                            {"y", fPosition.Y()},
-                                            {"z", fPosition.Z()}
                                     });
 
-        event_out << tao::json::to_string(TOFPoint, 4);
+        auto jsonposArray = tao::json::value::array({});
+
+        //std::cout<<track_points[j].X()<<" , "<< track_points[j].Y()<<" , "<<track_points[j].Z()<<" , "<<track_point_times[j]<<std::endl;
+        jsonposArray.emplace_back(tao::json::value::array({fPosition.X() , fPosition.Y() , fPosition.Z()}));
+
+
+        TOFPoint["position"] = jsonposArray;
+
+        return TOFPoint;//event_out << tao::json::to_string(TOFPoint, 4);
     }
-    void WriteHitJSON(ofstream& event_out, int id, int plane,int bar, int end, float dE, float Amp, float t_fADC, float t_TDC, float t, bool has_fADC, bool has_TDC)
+
+    static  tao::json::value WriteHitJSON(int id, int plane,int bar, int end, float dE, float Amp, float t_fADC, float t_TDC, float t, bool has_fADC, bool has_TDC)
     {
         tao::json::value TOFHit({
                                           {"id", id},
@@ -75,14 +83,14 @@ public:
                                           {"end", end},
                                           {"dE", dE},
                                           {"Amp", Amp},
-                                          //{"t_fADC", t_fADC},
-                                          //{"t_TDC", t_TDC},
+                                          {"t_fADC", t_fADC},
+                                          {"t_TDC", t_TDC},
                                           {"t", t},
                                           {"has_fADC", has_fADC},
                                           {"has_TDC", has_TDC}
                                   });
 
-        event_out << tao::json::to_string(TOFHit, 4);
+        return TOFHit;//event_out << tao::json::to_string(TOFHit, 4);
     }
 
 };
