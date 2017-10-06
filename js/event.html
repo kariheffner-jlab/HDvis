@@ -308,7 +308,7 @@
         //shadoweventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
             shadowevent=loadedEvent.clone();
-            scene.add(loadedEvent);
+            scene.add(shadowevent);
             UpdateAnimationTriggers(loadedEvent.children);
         });
 
@@ -1813,6 +1813,7 @@
             scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTOY", true));
             recursiveRemove(gluexGeometry.getObjectByName("TOF_plane1_FTOT", true));
             scene.remove(gluexGeometry.getObjectByName("TOF_plane1_FTOT", true));
+
         }
     }
 
