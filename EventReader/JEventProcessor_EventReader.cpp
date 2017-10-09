@@ -229,7 +229,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
             auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
 
-
             // FCAL;
             auto fcalHitsJson = FCAL::Add_FCALHits(FCALHits);
             auto fcalShowersJson = FCAL::Add_FCALShowers(FCALShowers);
