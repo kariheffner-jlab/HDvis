@@ -9,6 +9,9 @@
 #include <TEveManager.h>
 #include <TEveArrow.h>
 #include <TRandom3.h>
+#include <FCAL/DFCALHit.h>
+#include <FCAL/DFCALShower.h>
+#include <FCAL/DFCALCluster.h>
 
 #include <tao/json.hpp>
 #include <tao/json/from_string.hpp>

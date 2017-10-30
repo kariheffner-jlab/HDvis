@@ -55,7 +55,7 @@ set(SOURCE_FILES
 
         WaitingLogic.h
         ControlLoop.h
-        ApplicationContext.h
+	    ApplicationContext.h
         ApplicationContext.cpp
 
         httplib.h
@@ -136,6 +136,8 @@ target_link_libraries(hdvis
 
         mysqlclient
         pthread
+
+		DANA
 
 
         )

@@ -1113,9 +1113,15 @@ namespace json_double_conversion
          return Double(kInfinity).value();
       }
 
-      static double NaN() {
+
+       /*static std::function<double()> NaN()
+       {
+           return Double(kNaN).value();
+       }*/
+     static double NaN() {
          return Double(kNaN).value();
       }
+
 
    private:
       static const int kExponentBias = 0x3FF + kPhysicalSignificandSize;
