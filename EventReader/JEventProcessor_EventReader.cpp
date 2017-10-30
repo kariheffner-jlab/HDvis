@@ -6,7 +6,7 @@
 //
 #include <thread>
 #include "JEventProcessor_EventReader.h"
-//#include "Tracking.h"
+#include "Tracking.h"
 #include "FCAL.h"
 #include "TOF.h"
 #include "BCAL.h"
@@ -169,8 +169,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
         std::ostringstream event_out;
         std::cout<<"opened/created event json "<<endl;
 
-       // vector<const DChargedTrack*> ChargedTracks;
-       // vector<const DNeutralParticle*> NeutralTracks;
+        vector<const DChargedTrack*> ChargedTracks;
+        vector<const DNeutralParticle*> NeutralTracks;
         vector<const DTrackCandidate *> TrackCandidates;
 
         vector<const DFCALHit *> FCALHits;
@@ -197,8 +197,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
 
         loop->Get(TrackCandidates);
-       // loop->Get(ChargedTracks);
-       // loop->Get(NeutralTracks);
+        loop->Get(ChargedTracks);
+        loop->Get(NeutralTracks);
         loop->Get(TOFPoints);
         loop->Get(TOFHits);
         loop->Get(BCALHits);
@@ -211,12 +211,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
 
         try {
             //Setup the tracking to display tracking info
-            //Tracking Tracks(Bfield,Geom);
-
+            Tracking Tracks(Bfield,Geom);
             //Will take the Charged Tracks given and visualize them
-
-            //auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
-           // auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
+            auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
+            auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
 
 
             // StartCounter
@@ -247,8 +245,8 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
            auto fdcPseudosJson = FDC::Add_FDCPseudos(FDCPseudos);
 
             tao::json::value eventJson ({
-                                            //{ "charged_tracks", chargedTracksJson },
-                                           // { "neutral_tracks", neutralTracksJson },
+                                            { "charged_tracks", chargedTracksJson },
+                                            { "neutral_tracks", neutralTracksJson },
                                             { "SC_hits", scdHitsJson },
                                             { "TOF_points", tofPointsJson },
                                             { "TOF_hits", tofHitsJson },
