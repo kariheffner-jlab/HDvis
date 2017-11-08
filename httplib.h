@@ -50,7 +50,7 @@ typedef int socket_t;
 #include <functional>
 #include <map>
 #include <memory>
-#include <regex>
+//#include <regex>
 #include <boost/regex.hpp>
 #include <string>
 #include <sys/stat.h>
@@ -65,7 +65,7 @@ namespace httplib
 
     typedef std::map<std::string, std::string>      Map;
     typedef std::multimap<std::string, std::string> MultiMap;
-    typedef std::smatch                             Match;
+    typedef boost::smatch                             Match;
 
     struct Request {
         std::string method;
@@ -142,7 +142,7 @@ namespace httplib
         void process_request(Stream& strm);
 
     private:
-        typedef std::vector<std::pair<std::regex, Handler>> Handlers;
+        typedef std::vector<std::pair<boost::regex, Handler>> Handlers;
 
         bool routing(Request& req, Response& res);
         bool handle_file_request(Request& req, Response& res);
@@ -411,9 +411,9 @@ private:
         inline std::string file_extension(const std::string& path)
         {
             std::cout<<"FILE EXTENSION"<<std::endl;
-            std::smatch m;
-            auto pat = std::regex("\\.([a-zA-Z0-9]+)$");
-            if (std::regex_search(path, m, pat)) {
+            boost::smatch m;
+            auto pat = boost::regex("\\.([a-zA-Z0-9]+)$");
+            if (boost::regex_search(path, m, pat)) {
                 return m[1].str();
             }
             return std::string();
@@ -484,7 +484,7 @@ private:
         inline bool read_headers(Stream& strm, MultiMap& headers)
         {
             std::cout<<"READ HEADERS"<<std::endl;
-            static std::regex re("(.+?): (.+?)\r\n");
+            static boost::regex re("(.+?): (.+?)\r\n");
 
             const auto BUFSIZ_HEADER = 2048;
             char buf[BUFSIZ_HEADER];
@@ -496,8 +496,8 @@ private:
                 if (!strcmp(buf, "\r\n")) {
                     break;
                 }
-                std::cmatch m;
-                if (std::regex_match(buf, m, re)) {
+                boost::cmatch m;
+                if (boost::regex_match(buf, m, re)) {
                     auto key = std::string(m[1]);
                     auto val = std::string(m[2]);
                     headers.insert(std::make_pair(key, val));
@@ -827,13 +827,13 @@ static WSInit wsinit_;
     inline void Server::get(const char* pattern, Handler handler)
     {
         std::cout<<"GET"<<std::endl;
-        get_handlers_.push_back(std::make_pair(std::regex(pattern), handler));
+        get_handlers_.push_back(std::make_pair(boost::regex(pattern), handler));
     }
 
     inline void Server::post(const char* pattern, Handler handler)
     {
         std::cout<<"POST"<<std::endl;
-        post_handlers_.push_back(std::make_pair(std::regex(pattern), handler));
+        post_handlers_.push_back(std::make_pair(boost::regex(pattern), handler));
     }
 
     inline bool Server::set_base_dir(const char* path)
@@ -893,14 +893,14 @@ static WSInit wsinit_;
 
     inline bool Server::read_request_line(Stream& strm, Request& req)
     {
-        std::cout<<"READ REQUEST LINE"<<std::endl;
+        //std::cout<<"READ REQUEST LINE"<<std::endl;
         const auto BUFSIZ_REQUESTLINE = 2048;
         char buf[BUFSIZ_REQUESTLINE];
         if (!detail::socket_gets(strm, buf, BUFSIZ_REQUESTLINE)) {
             return false;
         }
-        std::cout<<"GET HEAD POST REGEX"<<std::endl;
-        std::cout<<buf<<std::endl;
+        //std::cout<<"GET HEAD POST REGEX"<<std::endl;
+       // std::cout<<buf<<std::endl;
 
         // if(std::string(buf)=="GET /event.html HTTP/1.1")
         if(std::strcmp(buf,"GET /event.html HTTP/1.1")==0)
@@ -911,11 +911,11 @@ static WSInit wsinit_;
             return true;
         }
 
-        static std::regex re("(GET|HEAD|POST) ([^?]+)(?:\\?(.+?))? HTTP/1\\.[01]\r\n");
-        std::cout<<"OKAY REGEX EXISTS"<<std::endl;
-        std::cmatch m;
-        std::cout<<"MATCHING NOW"<<std::endl;
-        if (std::regex_match(buf, m, re)) {
+        static boost::regex re("(GET|HEAD|POST) ([^?]+)(?:\\?(.+?))? HTTP/1\\.[01]\r\n");
+        //std::cout<<"OKAY REGEX EXISTS"<<std::endl;
+        boost::cmatch m;
+        //std::cout<<"MATCHING NOW"<<std::endl;
+        if (boost::regex_match(buf, m, re)) {
             req.method = std::string(m[1]);
             req.path = detail::decode_url(m[2]);
 
@@ -970,12 +970,12 @@ static WSInit wsinit_;
 
     inline bool Server::dispatch_request(Request& req, Response& res, Handlers& handlers)
     {
-        std::cout<<"DISPATCH REQUEST"<<std::endl;
+        //std::cout<<"DISPATCH REQUEST"<<std::endl;
         for (const auto& x: handlers) {
             const auto& pattern = x.first;
             const auto& handler = x.second;
 
-            if (std::regex_match(req.path, req.matches, pattern)) {
+            if (boost::regex_match(req.path, req.matches, pattern)) {
                 handler(req, res);
                 return true;
             }
@@ -1053,10 +1053,10 @@ static WSInit wsinit_;
             return false;
         }
 
-        const static std::regex re("HTTP/1\\.[01] (\\d+?) .+\r\n");
+        const static boost::regex re("HTTP/1\\.[01] (\\d+?) .+\r\n");
 
-        std::cmatch m;
-        if (std::regex_match(buf, m, re)) {
+        boost::cmatch m;
+        if (boost::regex_match(buf, m, re)) {
             res.status = std::stoi(std::string(m[1]));
         }
 

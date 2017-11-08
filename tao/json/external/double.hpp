@@ -1114,10 +1114,6 @@ namespace json_double_conversion
       }
 
 
-       /*static std::function<double()> NaN()
-       {
-           return Double(kNaN).value();
-       }*/
      static double NaN() {
          return Double(kNaN).value();
       }

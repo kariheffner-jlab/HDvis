@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 #---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
-find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve TMVA Gui)
+find_package(ROOT REQUIRED COMPONENTS MathCore RIO RGL Hist Tree Net Core Geom Eve TMVA Gui boost_regex)
 
 #---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
 include(${ROOT_USE_FILE})
@@ -76,9 +76,11 @@ add_executable(hdvis ${SOURCE_FILES})
 # gelhad
 #        rt
 #hitutil
-target_link_libraries(hdvis
+target_link_libraries(
 
+		hdvis
         #sim-recon
+
         DANA
         TTAB
 
