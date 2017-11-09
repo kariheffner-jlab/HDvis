@@ -410,7 +410,7 @@ private:
 
         inline std::string file_extension(const std::string& path)
         {
-            std::cout<<"FILE EXTENSION"<<std::endl;
+            //std::cout<<"FILE EXTENSION"<<std::endl;
             boost::smatch m;
             auto pat = boost::regex("\\.([a-zA-Z0-9]+)$");
             if (boost::regex_search(path, m, pat)) {
@@ -483,7 +483,7 @@ private:
 
         inline bool read_headers(Stream& strm, MultiMap& headers)
         {
-            std::cout<<"READ HEADERS"<<std::endl;
+            //std::cout<<"READ HEADERS"<<std::endl;
             static boost::regex re("(.+?): (.+?)\r\n");
 
             const auto BUFSIZ_HEADER = 2048;
@@ -826,13 +826,13 @@ static WSInit wsinit_;
 
     inline void Server::get(const char* pattern, Handler handler)
     {
-        std::cout<<"GET"<<std::endl;
+        //std::cout<<"GET"<<std::endl;
         get_handlers_.push_back(std::make_pair(boost::regex(pattern), handler));
     }
 
     inline void Server::post(const char* pattern, Handler handler)
     {
-        std::cout<<"POST"<<std::endl;
+        //std::cout<<"POST"<<std::endl;
         post_handlers_.push_back(std::make_pair(boost::regex(pattern), handler));
     }
 
