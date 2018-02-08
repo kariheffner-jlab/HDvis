@@ -5,7 +5,7 @@ project(hdvis C CXX)
 # You need to tell CMake where to find the ROOT installation. This can be done in a number of ways:
 #   - ROOT built with classic configure/make use the provided $ROOTSYS/etc/cmake/FindROOT.cmake
 #   - ROOT built with CMake. Add in CMAKE_PREFIX_PATH the installation prefix for ROOT
-list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
+list(APPEND CMAKE_PREFIX_PATH $ENV(ROOT_SYS))
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -24,6 +24,7 @@ link_directories(
         $ENV{JANA_HOME}/lib
         $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/lib
         $ENV{EVIOROOT}/lib
+        $ENV{SQLITECPP_HOME}/lib
         $ENV{CCDB_HOME}/lib
         $ENV{XERCESCROOT}/lib/
         /usr/lib64/mysql/
@@ -121,6 +122,9 @@ target_link_libraries(hdvis
 
         # xerces
         xerces-c-3.1
+
+        SQLiteCpp
+        sqlite3
 
         # ccdb
         ccdb

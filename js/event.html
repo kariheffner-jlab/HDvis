@@ -301,15 +301,20 @@
             scene.remove(event);
         }
 
+
         var eventLoader = new THREE.GluexEventLoader();
         //var shadoweventLoader = new THREE.GluexEventLoader();
         eventLoader.setConfiguration(ViewerConfig);
         eventLoader.setGeometry(gluexGeometry,shadowgeom);
         //shadoweventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
+            if(shadowevent)
+            {
+                recursiveRemove(shadowevent);
+            }
             shadowevent=loadedEvent.clone();
             scene.add(shadowevent);
-            UpdateAnimationTriggers(loadedEvent.children);
+            UpdateAnimationTriggers(shadowevent);//loadedEvent.children);
         });
 
         firstShowing=true;
