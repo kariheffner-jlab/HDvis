@@ -83,75 +83,78 @@ THREE.GluexEventLoader.prototype = {
         if(this.EventData.charged_tracks) {
             this.EventData.charged_tracks.forEach(function (track) {
 
-                var geometry = new THREE.Geometry();
-                geometry.name = "track_" + track.id;//+"_" + track.charge;
+                if(track.points.length > 0) {
 
-                var track_charge = track.charge;
+                    var geometry = new THREE.Geometry();
+                    geometry.name = "track_" + track.id;//+"_" + track.charge;
 
-                track.points.forEach(function (point) {
-                    var vertex = new THREE.Vector3();
-                    vertex.x = point[0];
-                    vertex.y = point[1];
-                    vertex.z = point[2];
+                    var track_charge = track.charge;
 
-                    //setRGB(track_color.r,track_color.g,track_color.b);
-                    geometry.vertices.push(vertex);
-                });
+                    track.points.forEach(function (point) {
+                        var vertex = new THREE.Vector3();
+                        vertex.x = point[0];
+                        vertex.y = point[1];
+                        vertex.z = point[2];
 
-                var trackcolor = new THREE.Color;
-                var swim_vis = false;
+                        //setRGB(track_color.r,track_color.g,track_color.b);
+                        geometry.vertices.push(vertex);
+                    });
+
+                    var trackcolor = new THREE.Color;
+                    var swim_vis = false;
 
 
-                if (track_charge === 1) {
-                    trackcolor = 0xff0000;
-                    if (scope.Configuration.positive_track_swim !== false) {
-                        swim_vis = true;
+                    if (track_charge === 1) {
+                        trackcolor = 0xff0000;
+                        if (scope.Configuration.positive_track_swim !== false) {
+                            swim_vis = true;
+                        }
+
+                    }//console.log(track_charge);
+                    else if (track_charge === -1) {
+                        trackcolor = 0x00ff00;
+                        if (scope.Configuration.negative_track_swim !== false) {
+                            swim_vis = true;
+                        }
                     }
+                    var material = new THREE.PointsMaterial({
+                        color: trackcolor,
+                        size: 4,
+                        opacity: .6,
+                        visible: swim_vis,
+                        //blending: THREE.AdditiveBlending,
+                        transparent: true,
+                        sizeAttenuation: false
+                    });
 
-                }//console.log(track_charge);
-                else if (track_charge === -1) {
-                    trackcolor = 0x00ff00;
-                    if (scope.Configuration.negative_track_swim !== false) {
-                        swim_vis = true;
+                    var trackMesh = new THREE.Points(geometry, material);
+
+                    trackMesh.userData = {
+                        charge: track_charge,
+                        mass: track.mass,
+                        position: track.position,
+                        momentum: track.momentum,
+                        TrackChiSq_NDF: track.TrackChiSq_NDF,
+                        start_time: track.start_time,
+                        steps: track.points
                     }
+                    trackMesh.name = geometry.name;
+
+
+                    scope.group.add(trackMesh);
+
+                    var linematerial = new THREE.LineBasicMaterial({color: material.color, linewidth: 2});
+                    linematerial.side = THREE.DoubleSide;
+                    var lineBufferGeo = new THREE.BufferGeometry().fromGeometry(geometry);
+                    lineBufferGeo.drawRange.count = 0;
+                    var positions = new Float32Array(trackMesh.geometry.vertices.length * 3); // 3 vertices per point
+                    lineBufferGeo.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+                    var trackLineMesh = new THREE.Line(lineBufferGeo, linematerial);
+                    trackLineMesh.frustumCulled = false;
+                    trackLineMesh.name = "trackline_" + geometry.name;
+                    trackMesh.add(trackLineMesh);
+                    //console.log(track.charge);
                 }
-                var material = new THREE.PointsMaterial({
-                    color: trackcolor,
-                    size: 4,
-                    opacity: .6,
-                    visible: swim_vis,
-                    //blending: THREE.AdditiveBlending,
-                    transparent: true,
-                    sizeAttenuation: false
-                });
-
-                var trackMesh = new THREE.Points(geometry, material);
-
-                trackMesh.userData = {
-                    charge: track_charge,
-                    mass: track.mass,
-                    position: track.position,
-                    momentum: track.momentum,
-                    TrackChiSq_NDF: track.TrackChiSq_NDF,
-                    start_time: track.start_time,
-                    steps: track.points
-                }
-                trackMesh.name = geometry.name;
-
-
-                scope.group.add(trackMesh);
-
-                var linematerial = new THREE.LineBasicMaterial({color: material.color, linewidth: 2});
-                linematerial.side = THREE.DoubleSide;
-                var lineBufferGeo = new THREE.BufferGeometry().fromGeometry(geometry);
-                lineBufferGeo.drawRange.count=0;
-                var positions = new Float32Array(trackMesh.geometry.vertices.length * 3); // 3 vertices per point
-                lineBufferGeo.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-                var trackLineMesh = new THREE.Line(lineBufferGeo, linematerial);
-                trackLineMesh.frustumCulled = false;
-                trackLineMesh.name = "trackline_" + geometry.name;
-                trackMesh.add(trackLineMesh);
-                //console.log(track.charge);
             });
         }
 
