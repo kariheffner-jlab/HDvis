@@ -24,7 +24,8 @@ link_directories(
         $ENV{JANA_HOME}/lib
         $ENV{HALLD_HOME}/$ENV{BMS_OSNAME}/lib
         $ENV{EVIOROOT}/lib
-        $ENV{SQLITECPP_HOME}/lib
+        $ENV{ETROOT}/lib
+        #$ENV{SQLITECPP_HOME}/lib
         $ENV{CCDB_HOME}/lib
         $ENV{XERCESCROOT}/lib/
         /usr/lib64/mysql/
@@ -123,7 +124,7 @@ target_link_libraries(hdvis
         # xerces
         xerces-c-3.1
 
-        SQLiteCpp
+        #SQLiteCpp
         sqlite3
 
         # ccdb
@@ -142,7 +143,8 @@ target_link_libraries(hdvis
         pthread
 
         DANA
-
+        et_remote
+        et
 
         )
 
