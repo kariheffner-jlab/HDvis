@@ -657,8 +657,9 @@ THREE.GluexHDDSLoader.prototype = {
             if(isRight) module.name += "_r";
 
             module.position.set(0, y0 + i*dy, 0);
-            module.userData={end0h:0, end1h:0};
+            module.userData={end0h:0, end1h:0,HitTimes:[],HitEnds:[],HitdE:[],HitAmp:[],Hitt:[],Hitt_fADC:[],Hitt_TDC:[]};
             region.add(module);
+
         }
 
         // get placement

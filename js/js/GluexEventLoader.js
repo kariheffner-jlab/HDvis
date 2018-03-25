@@ -17,7 +17,7 @@ THREE.GluexEventLoader.prototype = {
     shadowGeom:null,
     setGeometry: function (geometry,shadowGeometry) {
         this.geometry = geometry;
-        this.shadowGeom=shadowGeometry;
+        this.shadowGeom=shadowGeometry.clone();
         this.TOFReferenceColor = new THREE.Color(1,1,1);
     },
     setConfiguration: function (config) {
