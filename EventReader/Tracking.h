@@ -40,57 +40,68 @@ public:
         for(int i=0;i<ChargedTracks.size()/*TrackCandidates.size()*/;i++)
         {
 
-            string PID_name=ParticleType(ChargedTracks[i]->Get_BestTrackingFOM()->PID());
-            string name=PID_name + Form(" Track Points %i", i);
-            //cout<<name<<endl;
-            rt->Reset();
-            //auto Track_ps = new TEvePointSet();
+            //TAG THE BEST ONE HERE
+            string BestPID_name = ParticleType(ChargedTracks[i]->Get_BestTrackingFOM()->PID());
+
+            for (int w=0;w<ChargedTracks[i]->dChargedTrackHypotheses.size();w++) {
+
+                string PID_name=ParticleType(ChargedTracks[i]->dChargedTrackHypotheses[w]->PID());
+
+                string name = PID_name + Form(" Track Points %i", i);
+                //cout<<name<<endl;
+                rt->Reset();
+                //auto Track_ps = new TEvePointSet();
 
 
-            double mass=ChargedTracks[i]->Get_BestTrackingFOM()->mass();
-            rt->SetMass(mass);
-            //rt.SetMass(TrackCandidates[i]->mass());
-            auto PID=ChargedTracks[i]->Get_BestTrackingFOM()->PID();
-            auto position = ChargedTracks[i]->Get_BestTrackingFOM()->position();
-            auto momentum = ChargedTracks[i]->Get_BestTrackingFOM()->momentum();
-            auto charge = ChargedTracks[i]->Get_BestTrackingFOM()->charge();
-            auto start_time=-1E9;
-            if(!isnan(float(ChargedTracks[i]->Get_BestTrackingFOM()->t0())))
-            {
-                start_time = ChargedTracks[i]->Get_BestTrackingFOM()->t0();
+                double mass = ChargedTracks[i]->dChargedTrackHypotheses[w]->mass();
+                rt->SetMass(mass);
+                //rt.SetMass(TrackCandidates[i]->mass());
+                auto PID = ChargedTracks[i]->dChargedTrackHypotheses[w]->PID();
+                auto position = ChargedTracks[i]->dChargedTrackHypotheses[w]->position();
+                auto momentum = ChargedTracks[i]->dChargedTrackHypotheses[w]->momentum();
+                auto charge = ChargedTracks[i]->dChargedTrackHypotheses[w]->charge();
+                auto start_time = -1E9;
+                if (!isnan(float(ChargedTracks[i]->dChargedTrackHypotheses[w]->t0()))) {
+                    start_time = ChargedTracks[i]->dChargedTrackHypotheses[w]->t0();
+                }
+
+                double TrackChiSq_NDF = ChargedTracks[i]->Get_Hypothesis(PID)->Get_TrackTimeBased()->chisq /
+                                        double(ChargedTracks[i]->Get_Hypothesis(PID)->Get_TrackTimeBased()->Ndof);
+
+                rt->Swim(position, momentum, charge);
+                //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
+                DReferenceTrajectory::swim_step_t *steps = rt->swim_steps;
+
+                vector<DVector3> track_points;
+                vector<double> track_point_times;
+
+                for (int j = 0; j < rt->Nswim_steps; j++) {
+                    DVector3 step_loc = steps[j].origin;
+
+                    //cout<<i<<"|"<<step_loc.X()<<","<<step_loc.Y()<<","<<step_loc.Z()<<endl;
+                    if (step_loc.Z() > 625)
+                        break;
+
+                    if (step_loc.Z() <= 0)
+                        continue;
+
+                    track_points.push_back(step_loc);
+                    track_point_times.push_back(steps[j].t);//flight time since start
+                }
+
+                //std::vector<>
+                //for (int k = 0; k < ChargedTracks[i]->GetAssociatedAncestors()->size(); k++) {
+
+                //}
+
+                // event_out<<WriteTrackJSON2(name, momentum,charge,TrackChiSq_NDF, track_points);
+                // std::cout<<name<<" , "<< momentum.Mag()<<" , "<<charge<<" , "<<TrackChiSq_NDF<<" , "<<start_time<<" , "<< track_points.size()<<" , "<< track_point_times.size()<<std::endl;
+                jsonTracks.emplace_back(WriteTrackJSON(name, momentum, charge, TrackChiSq_NDF, start_time, track_points,
+                                                       track_point_times, mass, position));
+                track_points.clear();
+                track_point_times.clear();
+                //delete track_points;
             }
-
-            double TrackChiSq_NDF=ChargedTracks[i]->Get_Hypothesis(PID)->Get_TrackTimeBased()->chisq/double(ChargedTracks[i]->Get_Hypothesis(PID)->Get_TrackTimeBased()->Ndof);
-
-            rt->Swim(position, momentum, charge);
-            //rt.Swim(TrackCandidates[i]->position(), TrackCandidates[i]->momentum(), TrackCandidates[i]->charge());
-            DReferenceTrajectory::swim_step_t* steps =rt->swim_steps;
-
-            vector<DVector3> track_points;
-            vector<double> track_point_times;
-
-            for(int j=0; j<rt->Nswim_steps; j++)
-            {
-                DVector3 step_loc=steps[j].origin;
-
-                //cout<<i<<"|"<<step_loc.X()<<","<<step_loc.Y()<<","<<step_loc.Z()<<endl;
-                if(step_loc.Z()>625 )
-                    break;
-
-                if(step_loc.Z()<=0)
-                    continue;
-
-                track_points.push_back(step_loc);
-                track_point_times.push_back(steps[j].t);//flight time since start
-            }
-
-           // event_out<<WriteTrackJSON2(name, momentum,charge,TrackChiSq_NDF, track_points);
-           // std::cout<<name<<" , "<< momentum.Mag()<<" , "<<charge<<" , "<<TrackChiSq_NDF<<" , "<<start_time<<" , "<< track_points.size()<<" , "<< track_point_times.size()<<std::endl;
-            jsonTracks.emplace_back(WriteTrackJSON(name, momentum,charge,TrackChiSq_NDF,start_time, track_points, track_point_times, mass, position));
-            track_points.clear();
-            track_point_times.clear();
-            //delete track_points;
-
         }
 
 
