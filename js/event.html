@@ -291,8 +291,9 @@
         var existingGeometry = scene.getObjectByName('GluexGeometry');
         var event = scene.getObjectByName('GluexEvent');
         if(!existingGeometry) {
-            shadowgeom=gluexGeometry.clone();
-            cleanGeometry(scene,gluexGeometry);
+            gluexGeometry = shadowgeom.clone();
+            //shadowgeom=gluexGeometry.clone();
+            //cleanGeometry(scene, gluexGeometry);
 
             scene.add(gluexGeometry);
         }
@@ -301,20 +302,20 @@
             scene.remove(event);
         }
 
-
+        cleanGeometry(scene,gluexGeometry);
         var eventLoader = new THREE.GluexEventLoader();
         //var shadoweventLoader = new THREE.GluexEventLoader();
         eventLoader.setConfiguration(ViewerConfig);
         eventLoader.setGeometry(gluexGeometry,shadowgeom);
         //shadoweventLoader.setGeometry(gluexGeometry);
         eventLoader.load('./event.json', function(loadedEvent) {
-            if(shadowevent)
-            {
-                recursiveRemove(shadowevent);
-            }
-            shadowevent=loadedEvent.clone();
-            scene.add(shadowevent);
-            UpdateAnimationTriggers(shadowevent);//loadedEvent.children);
+            /* if(shadowevent)
+             {
+                 recursiveRemove(shadowevent);
+             }*/
+            var newEvent=loadedEvent;
+            scene.add(newEvent);
+            UpdateAnimationTriggers(newEvent.children);//loadedEvent.children);
         });
 
         firstShowing=true;
@@ -473,9 +474,11 @@
             lastTap = currentTime;} );
 
         //--GEOMETRY----
+
         var geometryLoader = new THREE.GluexHDDSLoader();
         geometryLoader.load('./hdds/main_full_HDDS.xml', function (loadedGeom) {
-            gluexGeometry = loadedGeom;
+            shadowgeom = loadedGeom;
+            gluexGeometry = loadedGeom.clone();
             // when we have a geometry, we can load the event
             loadEventFromFile();
         });
