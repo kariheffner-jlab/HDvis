@@ -83,14 +83,23 @@ THREE.GluexEventLoader.prototype = {
         if(this.EventData.charged_tracks) {
             this.EventData.charged_tracks.forEach(function (track) {
 
-                if(track.points.length > 0) {
+                var defaultPIDname=track.BestTrackingPID;
+
+                var track_to_display=track.TrackHypos[0];
+                track.TrackHypos.forEach(function (hypo){
+                    if(hypo.id==defaultPIDname)
+                        track_to_display=hypo;
+                })
+
+
+                if(track_to_display.points.length > 0) {
 
                     var geometry = new THREE.Geometry();
-                    geometry.name = "track_" + track.id;//+"_" + track.charge;
+                    geometry.name = "track_" + track_to_display.id;//+"_" + track.charge;
 
-                    var track_charge = track.charge;
+                    var track_charge = track_to_display.charge;
 
-                    track.points.forEach(function (point) {
+                    track_to_display.points.forEach(function (point) {
                         var vertex = new THREE.Vector3();
                         vertex.x = point[0];
                         vertex.y = point[1];
@@ -131,12 +140,12 @@ THREE.GluexEventLoader.prototype = {
 
                     trackMesh.userData = {
                         charge: track_charge,
-                        mass: track.mass,
-                        position: track.position,
-                        momentum: track.momentum,
-                        TrackChiSq_NDF: track.TrackChiSq_NDF,
-                        start_time: track.start_time,
-                        steps: track.points
+                        mass: track_to_display.mass,
+                        position: track_to_display.position,
+                        momentum: track_to_display.momentum,
+                        TrackChiSq_NDF: track_to_display.TrackChiSq_NDF,
+                        start_time: track_to_display.start_time,
+                        steps: track_to_display.points
                     }
                     trackMesh.name = geometry.name;
 
