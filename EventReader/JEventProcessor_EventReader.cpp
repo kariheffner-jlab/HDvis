@@ -221,12 +221,10 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto chargedTracksJson = Tracks.Add_DChargedTracks(ChargedTracks);
             auto neutralTracksJson = Tracks.Add_DNeutralParticles(NeutralTracks);
 
-
             // StartCounter
             auto scdHitsJson = StartC::Add_SCHits(SCHits);
 
             //TOF
-
             auto tofPointsJson = TOF::Add_TOFPoints(TOFPoints);
             auto tofHitsJson = TOF::Add_TOFHits(TOFHits);
 
@@ -239,7 +237,6 @@ jerror_t JEventProcessor_EventReader::evnt(JEventLoop *loop, uint64_t eventnumbe
             auto bcalHitsJson = BCAL::Add_BCALHits(BCALHits);
             auto bcalPointsJson = BCAL::Add_BCALPoints(BCALPoints);
             auto bcalShowersJson = BCAL::Add_BCALShowers(BCALShowers);
-
 
             // CDC
             auto cdcHitsJson = CDC::Add_CDCHits(CDCHits);
