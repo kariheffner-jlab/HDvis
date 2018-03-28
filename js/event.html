@@ -133,6 +133,7 @@
 
 <script src="js/jquery-3.2.1.min.js"></script>
 <script src="js/contextMenu.js-master/contextMenu.js"></script>
+<link href="js/contextMenu.js-master/contextMenu.css"  rel="stylesheet" type="text/css" />
 
 
 <!--<script src="js/vr/WebVR.js"></script>-->
@@ -497,6 +498,41 @@
         context1.fillStyle = "rgba(0,0,0,0.95)";
         context1.fillText('', 0, 20);
 
+        // K. Heffner added this section
+        //For example we are defining menu in object. You can also define it on Ul list. See on documentation.
+        var menu = [{
+                name: 'create',
+                img: 'images/create.png',
+                title: 'create button',
+                fun: function () {
+                    alert('i am add button')
+                }
+            }, {
+                name: 'update',
+                img: 'images/update.png',
+                title: 'update button',
+                fun: function () {
+                    alert('i am update button')
+                }
+            }, {
+                name: 'delete',
+                img: 'images/delete.png',
+                title: 'delete button',
+                fun: function () {
+                    alert('i am delete button')
+                }
+            }];
+        var settings =  {
+            triggerOn:'contextmenu', 
+            onOpen: function(data, event) {
+              console.log("here is where I would put your stuff, where you build the menu based on what you are clicking on...");
+              console.log("I think I would recommend storing the object that you are clicking on, into an available javascript object *when you hover over it*");
+              console.log("and then access this object on the onOpen callback in the menu.");
+              console.log("I think you can even rebuild the menu in this onOpen callback, if you want");
+            }
+        }
+        $('body').contextMenu(menu, settings);        
+        
 
 
         // GUI----------------------------------------------------------------------------------------
